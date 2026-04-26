@@ -49,7 +49,7 @@ async function generateResponse(phone, userMessage, conversationHistory) {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview", // or gpt-3.5-turbo
+      model: "gpt-4o-mini", // Faster and more widely available
       messages: messages,
       tools: tools,
       tool_choice: "auto"
@@ -81,7 +81,7 @@ async function generateResponse(phone, userMessage, conversationHistory) {
 
       // Call OpenAI again with the tool result to formulate final reply
       const secondResponse = await openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4o-mini",
         messages: messages
       });
 
@@ -90,7 +90,9 @@ async function generateResponse(phone, userMessage, conversationHistory) {
 
     return responseMessage.content;
   } catch (error) {
-    console.error('Error generating AI response:', error);
+    console.error('CRITICAL AI ERROR:', error.response ? error.response.data : error.message);
+    if (error.message.includes('401')) return "Error: Invalid OpenAI API Key. Check Render Env Vars.";
+    if (error.message.includes('429')) return "Error: OpenAI Quota Exceeded. Add credits to your account.";
     return "I'm having trouble connecting to my brain right now. Can you try again later?";
   }
 }
