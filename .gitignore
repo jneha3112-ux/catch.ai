@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+.DS_Store
+cloudflared.exe
+simulate_call.js
+setup_tunnel.js
+update_twilio.js
+download_ngrok.ps1
+cloudflared-windows-amd64.msi
+.gemini/
