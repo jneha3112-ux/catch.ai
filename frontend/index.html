@@ -3,375 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receptionist.ai | Dental Operations Dashboard</title>
+    <title>Catch.ai | AI-Powered Revenue Recovery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #020617; /* Deep space background */
-            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            background-color: #020617;
             color: #f8fafc;
+            overflow-x: hidden;
         }
-        /* Futuristic Grid Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(13, 148, 136, 0.05) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(13, 148, 136, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .glass-dark {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
         }
-        .card-3d {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d;
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.15) 0%, transparent 50%);
         }
-        .card-3d:hover {
-            transform: translateY(-10px) rotateX(5deg) rotateY(2deg);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border-color: rgba(13, 148, 136, 0.4);
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(13, 148, 136, 0.3);
+        .text-neon {
+            background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(45, 212, 191, 0.3));
         }
-        .sidebar-item-active {
-            background: rgba(13, 148, 136, 0.1);
-            color: #2dd4bf;
-            border-left: 4px solid #0d9488;
+        .phone-frame {
+            background: #0f172a;
+            border: 8px solid #1e293b;
+            border-radius: 48px;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5), 0 0 30px rgba(13, 148, 136, 0.1);
+            overflow: hidden;
+            width: 280px;
+            height: 580px;
+            position: relative;
         }
-        .clinic-gradient {
-            background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 11px;
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .chat-bubble.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .user-bubble {
+            background: #2563eb;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-bubble {
+            background: #1e293b;
+            color: #cbd5e1;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .typing::after {
+            content: '...';
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(13, 148, 136, 0.3);
+            transform: translateY(-5px);
+        }
     </style>
 </head>
-<body class="bg-[#020617] font-['Plus Jakarta Sans'] text-slate-200 antialiased">
-    <!-- Fixed Banner -->
-    <div class="fixed top-0 left-0 right-0 bg-red-600 text-white text-[10px] font-black py-1 px-4 text-center tracking-[0.2em] uppercase shadow-lg z-[999] neon-glow">
+<body class="relative min-h-screen">
+    <!-- Fixed Under Construction Banner -->
+    <div class="fixed top-0 left-0 right-0 bg-red-600 text-white text-[10px] font-black py-1 px-4 text-center tracking-[0.2em] uppercase shadow-lg z-[999]">
         ⚠️ UNDER CONSTRUCTION - COMING SOON ⚠️
     </div>
 
-    <div class="flex h-screen overflow-hidden pt-[22px]">
-        <!-- Sidebar -->
-        <aside class="w-72 glass-dark border-r border-white/5 flex flex-col pt-4 relative">
-            <div class="p-8">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden glass neon-glow">
-                        <img src="/assets/logo.png" alt="Catch.ai Logo" class="w-full h-full object-cover">
-                    </div>
-                    <div class="leading-tight">
-                        <h1 class="font-extrabold text-2xl tracking-tighter text-white">Catch<span class="text-teal-400">.ai</span></h1>
-                        <p class="text-[9px] font-bold text-teal-500/60 uppercase tracking-[0.3em]">Neural Recovery</p>
-                    </div>
+    <!-- Navigation -->
+    <header class="fixed top-8 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50">
+        <div class="glass-nav px-8 py-3 flex items-center justify-between shadow-2xl">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-teal-500/10 border border-teal-500/20">
+                    <img src="/assets/logo.png" alt="logo" class="w-full h-full object-cover">
                 </div>
+                <span class="font-extrabold text-lg tracking-tighter">Catch<span class="text-teal-400">.ai</span></span>
             </div>
-
-            <nav class="flex-1 px-4 space-y-1">
-                <div class="text-[10px] font-bold text-slate-500 px-4 mb-4 uppercase tracking-[0.2em]">Matrix Control</div>
-                <div class="px-4 mb-8">
-                    <label class="text-[9px] font-bold text-slate-500 uppercase block mb-2">Target Niche</label>
-                    <select id="industry-selector" class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs font-bold text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/40 transition-all">
-                        <option value="dental">Dental Clinics</option>
-                        <option value="legal">Law Firms</option>
-                        <option value="medical">Medical Spas</option>
-                        <option value="services">Home Services</option>
-                    </select>
-                </div>
-                
-                <a href="#" class="sidebar-item-active flex items-center gap-3 px-5 py-3.5 rounded-xl transition-all group">
-                    <i data-lucide="layout-grid" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-bold text-sm tracking-tight">Operator Hub</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-5 py-3.5 text-slate-400 hover:bg-white/5 rounded-xl transition-all group">
-                    <i data-lucide="calendar" class="w-5 h-5 group-hover:text-teal-400 transition-all"></i>
-                    <span class="font-medium text-sm">Schedule</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-5 py-3.5 text-slate-400 hover:bg-white/5 rounded-xl transition-all group">
-                    <i data-lucide="message-circle" class="w-5 h-5 group-hover:text-teal-400 transition-all"></i>
-                    <span class="font-medium text-sm">Neural Logs</span>
-                </a>
+            
+            <nav class="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                <a href="#" class="hover:text-white transition-all">Home</a>
+                <a href="#" class="hover:text-white transition-all">Features</a>
+                <a href="#" class="hover:text-white transition-all">Pricing</a>
+                <a href="#" class="hover:text-white transition-all">FAQs</a>
             </nav>
 
-            <div class="p-6">
-                <div class="glass rounded-3xl p-5 border border-white/10 neon-glow">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="w-2.5 h-2.5 bg-teal-400 rounded-full animate-ping"></span>
-                        <span class="text-[10px] font-black text-teal-400 tracking-widest">SYSTEM ONLINE</span>
-                    </div>
-                    <p class="text-[10px] text-slate-400 leading-relaxed mb-4 font-mono">
-                        Link: <span class="text-white">+1 (567) 229-9918</span>
-                    </p>
-                    <button id="simulate-btn" class="w-full clinic-gradient text-white text-[10px] font-black py-3 rounded-xl shadow-lg hover:brightness-125 transition-all flex items-center justify-center gap-2 uppercase tracking-widest">
-                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-                        Simulate AI
-                    </button>
-                </div>
+            <div class="flex items-center gap-4">
+                <a href="/dashboard.html" class="text-xs font-bold hover:text-teal-400 transition-all">Login</a>
+                <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-900/20">Get Started</a>
             </div>
-        </aside>
+        </div>
+    </header>
 
-        <!-- Main -->
-        <main class="flex-1 flex flex-col overflow-hidden relative">
-            <!-- Header -->
-            <header class="h-24 glass border-b border-white/5 px-10 flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-black text-white tracking-tighter" id="header-title">Dental Operator</h2>
-                    <p class="text-[10px] font-bold text-teal-500 uppercase tracking-widest">Core Infrastructure 01</p>
-                </div>
-                <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-3">
-                        <div class="text-right">
-                            <p class="text-xs font-black text-white">Root Admin</p>
-                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Enterprise node</p>
-                        </div>
-                        <div class="w-12 h-12 glass rounded-2xl border border-white/20 p-0.5 neon-glow">
-                            <img src="https://ui-avatars.com/api/?name=Admin&background=0d9488&color=fff" class="rounded-[14px]" alt="avatar">
-                        </div>
+    <!-- Hero Section -->
+    <section class="pt-48 pb-20 px-6 relative overflow-hidden">
+        <div class="hero-gradient absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10"></div>
+        
+        <div class="max-w-6xl mx-auto flex flex-col items-center text-center">
+            <div class="bg-white/5 border border-white/10 px-4 py-1 rounded-full mb-8">
+                <span class="text-[10px] font-black text-teal-400 uppercase tracking-widest">🚀 Next-Gen Revenue Recovery</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-[1.1]">
+                We generate and <span class="text-gradient">convert demand</span> using AI — <span class="text-neon">end-to-end</span>
+            </h1>
+            
+            <p class="text-slate-400 max-w-2xl text-lg mb-12 font-medium leading-relaxed">
+                From missed calls to booking confirmations. Our AI system captures demand, qualifies leads, and automates every conversion step.
+            </p>
+
+            <div class="flex items-center gap-6 mb-24">
+                <button class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-900/40">
+                    Get Started Free
+                </button>
+                <button class="bg-white/5 hover:bg-white/10 text-white px-10 py-4 rounded-full font-black uppercase tracking-widest border border-white/10 transition-all">
+                    Book a demo
+                </button>
+            </div>
+
+            <!-- Phone Mockup -->
+            <div class="relative phone-frame border border-white/5 mx-auto">
+                <!-- Status Bar -->
+                <div class="h-10 flex items-end justify-between px-6 pb-2 text-[10px] font-bold text-white/40">
+                    <span>9:41</span>
+                    <div class="flex gap-1.5">
+                        <i data-lucide="signal" class="w-3 h-3"></i>
+                        <i data-lucide="wifi" class="w-3 h-3"></i>
+                        <i data-lucide="battery" class="w-3 h-3"></i>
                     </div>
                 </div>
-            </header>
-
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
-                <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="glass p-8 rounded-[32px] card-3d border border-white/10">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Lead Recovery</p>
-                        <div class="flex items-end gap-3">
-                            <span class="text-5xl font-black text-white" id="stat-missed">0</span>
-                            <span class="text-teal-400 text-xs font-black mb-2 flex items-center gap-1 neon-glow">
-                                <i data-lucide="trending-up" class="w-4 h-4"></i> 100%
-                            </span>
+                
+                <!-- Chat Interface -->
+                <div class="p-4 flex flex-col h-[calc(100%-40px)]">
+                    <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                        <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white">
+                            <i data-lucide="bot" class="w-5 h-5"></i>
                         </div>
-                    </div>
-                    <div class="glass p-8 rounded-[32px] card-3d border border-white/10">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Neural Bookings</p>
-                        <div class="flex items-end gap-3">
-                            <span class="text-5xl font-black text-white" id="stat-bookings">0</span>
-                            <span class="text-teal-400 text-xs font-black mb-2">+2 New</span>
-                        </div>
-                    </div>
-                    <div class="glass p-8 rounded-[32px] card-3d border border-white/10">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Efficiency Gain</p>
-                        <div class="flex items-end gap-3">
-                            <span class="text-5xl font-black text-white" id="stat-time">0m</span>
-                            <span class="text-slate-500 text-xs font-black mb-2 uppercase tracking-widest">Saved</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                    <!-- Activity Feed -->
-                    <div class="xl:col-span-2">
-                        <div class="glass-dark rounded-[40px] border border-white/10 overflow-hidden flex flex-col h-[550px] shadow-2xl">
-                            <div class="px-10 py-7 border-b border-white/5 flex justify-between items-center bg-white/5">
-                                <h3 class="font-black text-white tracking-tight">Neural Activity Feed</h3>
-                                <span class="text-[9px] font-black text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full border border-teal-400/20 uppercase tracking-widest neon-glow">Active Monitor</span>
-                            </div>
-                            <div id="log-container" class="flex-1 overflow-y-auto p-10 space-y-6">
-                                <div class="text-center py-20 text-slate-600">
-                                    <i data-lucide="cpu" class="w-12 h-12 mx-auto mb-6 animate-pulse opacity-20"></i>
-                                    <p class="text-sm font-bold tracking-widest uppercase opacity-40">Connecting to Neural Network...</p>
-                                </div>
-                            </div>
+                        <div>
+                            <p class="text-[10px] font-black text-white">CATCH AI ENGINE</p>
+                            <p class="text-[8px] text-teal-400 font-bold uppercase tracking-widest">● Active Now</p>
                         </div>
                     </div>
 
-                    <!-- AI Insights -->
-                    <div class="glass p-10 rounded-[40px] border border-white/10 shadow-2xl">
-                        <h3 class="font-black text-white mb-8 tracking-tight">AI Insights</h3>
-                        <div class="space-y-8">
-                            <div class="flex gap-5">
-                                <div class="w-10 h-10 rounded-2xl glass flex items-center justify-center text-teal-400 neon-glow">
-                                    <i data-lucide="brain-circuit" class="w-6 h-6"></i>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Logic Model</p>
-                                    <p class="text-xs text-slate-300 leading-relaxed font-bold">Responding via <span class="text-white underline decoration-teal-500 underline-offset-4">GPT-4o Mini</span>. Clinical neural engine optimized for conversion.</p>
-                                </div>
-                            </div>
-                        
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 border-dashed">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Active Prompt</p>
-                            <p class="text-[11px] text-slate-500 italic leading-relaxed">
-                                "You are a helpful and polite dental clinic receptionist... offer available slots... book the slot they choose."
-                            </p>
-                        </div>
+                    <div id="chat-window" class="flex-1 flex flex-col gap-2 overflow-y-auto custom-scrollbar pt-4">
+                        <!-- Bubbles injected by JS -->
+                    </div>
 
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500">API Latency</span>
-                                <span class="font-bold">42ms</span>
-                            </div>
-                            <div class="w-full bg-slate-100 h-1.5 rounded-full">
-                                <div class="bg-teal-500 h-full w-[85%] rounded-full"></div>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mt-4">
-                                <span class="text-slate-500">Booking Accuracy</span>
-                                <span class="font-bold">100%</span>
-                            </div>
-                            <div class="w-full bg-slate-100 h-1.5 rounded-full">
-                                <div class="bg-teal-500 h-full w-[100%] rounded-full"></div>
-                            </div>
-                        </div>
+                    <div class="mt-4 bg-white/5 p-3 rounded-2xl flex items-center justify-between border border-white/5">
+                        <span class="text-[10px] text-slate-500">Type your response...</span>
+                        <i data-lucide="send" class="w-4 h-4 text-teal-500"></i>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-6 py-3 rounded-full flex items-center gap-3 shadow-2xl z-50 pointer-events-none">
-        <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-400"></i>
-        <span class="text-sm font-bold">Inbound Simulation Sent</span>
-    </div>
+    <!-- How it Works -->
+    <section class="py-32 px-6">
+        <div class="max-w-6xl mx-auto text-center mb-20">
+            <p class="text-teal-400 text-[11px] font-black uppercase tracking-[0.3em] mb-4">The Process</p>
+            <h2 class="text-4xl md:text-6xl font-black tracking-tighter">How it works</h2>
+            <p class="text-slate-500 mt-6 max-w-xl mx-auto font-medium">A full traffic-to-revenue flow that turns demand into qualified bookings and high-value customers.</p>
+        </div>
+
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card p-10 rounded-[40px] space-y-6">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-teal-400">
+                    <i data-lucide="zap" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-black tracking-tight">Traffic</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Demand enters from missed calls, Google, and Social. Every single entry point is monitored by Catch.ai.</p>
+            </div>
+            <div class="feature-card p-10 rounded-[40px] space-y-6">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-blue-400">
+                    <i data-lucide="message-square" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-black tracking-tight">AI Response</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Our AI responds in under 5 seconds with personalized questions to qualify intent and book appointments.</p>
+            </div>
+            <div class="feature-card p-10 rounded-[40px] space-y-6">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-purple-400">
+                    <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-black tracking-tight">Booking</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">Appointments are scheduled automatically with direct calendar integration and instant confirmation.</p>
+            </div>
+        </div>
+    </section>
 
     <script>
         lucide.createIcons();
 
-        const logContainer = document.getElementById('log-container');
-        const simulateBtn = document.getElementById('simulate-btn');
-        const phoneInput = document.getElementById('phone');
-        const toast = document.getElementById('toast');
+        const chatWindow = document.getElementById('chat-window');
+        const script = [
+            { type: 'user', text: 'Hi, I need to book a cleaning.' },
+            { type: 'ai', text: 'Hi! I can help with that. Are you having any pain or is this just a routine checkup?' },
+            { type: 'user', text: 'Just a routine checkup.' },
+            { type: 'ai', text: 'Great! We have an opening this Monday at 10:00 AM or 2:00 PM. Which works for you?' },
+            { type: 'user', text: '10:00 AM works!' },
+            { type: 'ai', text: 'Perfect. Your appointment is confirmed for Monday at 10:00 AM. See you then!' }
+        ];
 
-        let displayedEventIds = new Set();
+        let index = 0;
 
-        function syncLogs(events) {
-            if (!events || events.length === 0) {
-                if (logContainer.innerHTML.includes('Syncing')) {
-                    logContainer.innerHTML = `
-                        <div class="text-center py-20 text-slate-400">
-                            <i data-lucide="phone" class="w-8 h-8 mx-auto mb-4 opacity-20"></i>
-                            <p class="text-sm font-medium">System Idle. Waiting for inbound calls...</p>
-                        </div>
-                    `;
-                    lucide.createIcons();
-                }
-                return;
-            }
-
-            // Clear the placeholder if we have real data
-            if (logContainer.querySelector('.py-20')) {
-                logContainer.innerHTML = '';
-            }
-
-            events.forEach(event => {
-                const eventId = `${event.phoneNumber}-${event.timestamp}`;
-                
-                if (!displayedEventIds.has(eventId)) {
-                    function addLog(latest) {
-                        const entry = document.createElement('div');
-                        entry.className = "flex gap-6 p-5 rounded-2xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100";
-                        
-                        const time = new Date(latest.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        
-                        // Randomly simulate Triage and Insurance for the demo feed to look realistic
-                        const isEmergency = Math.random() > 0.7;
-                        const insuranceStatus = Math.random() > 0.3 ? 'Verified' : 'Pending';
-                        const triageNotes = isEmergency ? 'Patient reports acute pain and swelling in lower molar. Needs urgent attention.' : 'Routine check-up and cleaning request. No reported pain.';
-
-                        entry.innerHTML = `
-                            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
-                                <i data-lucide="phone-incoming" class="w-6 h-6"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start mb-1">
-                                    <div class="flex items-center gap-2">
-                                        <h4 class="font-bold text-slate-800 text-sm">Missed Call from ${latest.phoneNumber}</h4>
-                                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded ${isEmergency ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-blue-100 text-blue-600 border border-blue-200'} uppercase tracking-tighter">
-                                            ${isEmergency ? 'Emergency' : 'Routine'}
-                                        </span>
-                                    </div>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase">${time}</span>
-                                </div>
-                                <div class="flex items-center gap-4 text-[11px] mb-2">
-                                    <span class="flex items-center gap-1.5 text-slate-500">
-                                        <i data-lucide="shield-check" class="w-3.5 h-3.5 ${insuranceStatus === 'Verified' ? 'text-teal-500' : 'text-orange-400'}"></i>
-                                        Insurance: <span class="font-bold">${insuranceStatus}</span>
-                                    </span>
-                                    <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-                                    <span class="text-teal-600 font-bold uppercase tracking-widest text-[10px]">${latest.status}</span>
-                                </div>
-                                <p class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100 italic">
-                                    "AI Triage: ${triageNotes}"
-                                </p>
-                            </div>
-                        `;
-                        
-                        if (logContainer.querySelector('.py-20')) {
-                            logContainer.innerHTML = '';
-                        }
-                        
-                        logContainer.prepend(entry);
-                        displayedEventIds.add(eventId);
-                        lucide.createIcons();
-                    }
-                    addLog(event);
-                }
-            });
+        function addBubble(type, text) {
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${type}-bubble`;
+            bubble.innerText = text;
+            chatWindow.appendChild(bubble);
+            
+            // Force reflow and show
+            setTimeout(() => bubble.classList.add('visible'), 50);
+            
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        async function updateStats() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                document.getElementById('stat-missed').innerText = data.totalMissedCalls;
-                document.getElementById('stat-bookings').innerText = data.totalAppointments;
-                document.getElementById('stat-time').innerText = (data.totalMissedCalls * 5) + 'm';
+        async function runChat() {
+            while (true) {
+                chatWindow.innerHTML = '';
+                index = 0;
+                
+                for (const line of script) {
+                    await new Promise(r => setTimeout(r, 1000));
+                    
+                    // Add typing indicator
+                    const typing = document.createElement('div');
+                    typing.className = `chat-bubble ${line.type === 'user' ? 'user' : 'ai'}-bubble typing`;
+                    chatWindow.appendChild(typing);
+                    setTimeout(() => typing.classList.add('visible'), 50);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
 
-                if (data.recentEvents) {
-                    syncLogs(data.recentEvents);
+                    await new Promise(r => setTimeout(r, 1500));
+                    typing.remove();
+                    
+                    addBubble(line.type, line.text);
                 }
-            } catch (e) {
-                console.error(e);
+                
+                await new Promise(r => setTimeout(r, 5000)); // Wait before restart
             }
         }
 
-        simulateBtn.addEventListener('click', async () => {
-            const phone = phoneInput.value;
-            if (!phone) return;
-
-            simulateBtn.disabled = true;
-            simulateBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Sending...';
-            lucide.createIcons();
-
-            try {
-                const res = await fetch('/simulate-call', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phoneNumber: phone })
-                });
-                const data = await res.json();
-                
-                if (data.success) {
-                    toast.classList.remove('translate-y-20', 'opacity-0');
-                    setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
-                }
-            } catch (e) {
-                console.error(e);
-            } finally {
-                simulateBtn.disabled = false;
-                simulateBtn.innerHTML = '<i data-lucide="phone-forwarded" class="w-3.5 h-3.5"></i> Simulate Call';
-                lucide.createIcons();
-                updateStats();
-            }
-        });
-
-        setInterval(updateStats, 3000);
-        updateStats();
+        runChat();
     </script>
 </body>
 </html>
