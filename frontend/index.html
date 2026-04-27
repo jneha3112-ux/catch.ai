@@ -245,38 +245,57 @@
             }
 
             events.forEach(event => {
-                // Create a unique ID for each event based on phone and timestamp
                 const eventId = `${event.phoneNumber}-${event.timestamp}`;
                 
                 if (!displayedEventIds.has(eventId)) {
-                    const entry = document.createElement('div');
-                    entry.className = "flex gap-6 p-5 rounded-2xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100";
-                    
-                    const time = new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    
-                    entry.innerHTML = `
-                        <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
-                            <i data-lucide="phone-incoming" class="w-6 h-6"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start mb-1">
-                                <h4 class="font-bold text-slate-800 text-sm">Missed Call from ${event.phoneNumber}</h4>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">${time}</span>
+                    function addLog(latest) {
+                        const entry = document.createElement('div');
+                        entry.className = "flex gap-6 p-5 rounded-2xl hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100";
+                        
+                        const time = new Date(latest.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        
+                        // Randomly simulate Triage and Insurance for the demo feed to look realistic
+                        const isEmergency = Math.random() > 0.7;
+                        const insuranceStatus = Math.random() > 0.3 ? 'Verified' : 'Pending';
+                        const triageNotes = isEmergency ? 'Patient reports acute pain and swelling in lower molar. Needs urgent attention.' : 'Routine check-up and cleaning request. No reported pain.';
+
+                        entry.innerHTML = `
+                            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                                <i data-lucide="phone-incoming" class="w-6 h-6"></i>
                             </div>
-                            <div class="flex items-center gap-4 text-xs">
-                                <span class="flex items-center gap-1.5 text-slate-500">
-                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                                    WhatsApp Dispatch Sent
-                                </span>
-                                <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-                                <span class="text-teal-600 font-bold">${event.status.toUpperCase()}</span>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-slate-800 text-sm">Missed Call from ${latest.phoneNumber}</h4>
+                                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded ${isEmergency ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-blue-100 text-blue-600 border border-blue-200'} uppercase tracking-tighter">
+                                            ${isEmergency ? 'Emergency' : 'Routine'}
+                                        </span>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase">${time}</span>
+                                </div>
+                                <div class="flex items-center gap-4 text-[11px] mb-2">
+                                    <span class="flex items-center gap-1.5 text-slate-500">
+                                        <i data-lucide="shield-check" class="w-3.5 h-3.5 ${insuranceStatus === 'Verified' ? 'text-teal-500' : 'text-orange-400'}"></i>
+                                        Insurance: <span class="font-bold">${insuranceStatus}</span>
+                                    </span>
+                                    <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                    <span class="text-teal-600 font-bold uppercase tracking-widest text-[10px]">${latest.status}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100 italic">
+                                    "AI Triage: ${triageNotes}"
+                                </p>
                             </div>
-                        </div>
-                    `;
-                    
-                    logContainer.prepend(entry);
-                    displayedEventIds.add(eventId);
-                    lucide.createIcons();
+                        `;
+                        
+                        if (logContainer.querySelector('.py-20')) {
+                            logContainer.innerHTML = '';
+                        }
+                        
+                        logContainer.prepend(entry);
+                        displayedEventIds.add(eventId);
+                        lucide.createIcons();
+                    }
+                    addLog(event);
                 }
             });
         }
