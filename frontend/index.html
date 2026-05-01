@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@11.0.0/dist/framer-motion.js"></script>
     <!-- Cabinet Grotesk & Satoshi -->
     <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@500,700&display=swap" rel="stylesheet">
     <style>
@@ -269,6 +270,55 @@
             width: 400px;
             flex-shrink: 0;
         }
+        /* Dock Styles */
+        .dock-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #000;
+            border-radius: 2rem;
+            box-shadow: 8px 8px 0px 0px #000;
+        }
+        .dock-item {
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease-out;
+            position: relative;
+        }
+        .dock-item:hover .dock-label {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        .dock-label {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: #000;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 <body class="bg-[#ffe17c]">
@@ -287,11 +337,9 @@
                 <span class="font-heading font-extrabold text-3xl tracking-tighter text-black">Catch.ai</span>
             </div>
             
-            <nav class="hidden md:flex items-center gap-8 font-bold text-sm text-black">
-                <a href="#" class="hover:underline decoration-2 underline-offset-4">Platform</a>
-                <a href="#" class="hover:underline decoration-2 underline-offset-4">ROI Calculator</a>
-                <a href="#" class="hover:underline decoration-2 underline-offset-4">Company</a>
-            </nav>
+            <div class="hidden md:flex items-center gap-8 font-bold text-sm text-black">
+                <!-- Links removed in favor of Dock -->
+            </div>
 
             <a href="/dashboard.html" class="creepy-btn">
                 <span class="creepy-btn__eyes">
@@ -710,7 +758,52 @@
         </div>
     </footer>
 
+    <!-- Magnification Dock -->
+    <div class="dock-container" id="main-dock">
+        <div class="dock-item" data-label="Home" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+            <i data-lucide="home"></i>
+            <span class="dock-label">Home</span>
+        </div>
+        <div class="dock-item" data-label="How it works" onclick="document.getElementById('why-us').scrollIntoView({behavior:'smooth'})">
+            <i data-lucide="zap"></i>
+            <span class="dock-label">Features</span>
+        </div>
+        <div class="dock-item" data-label="Reviews" onclick="document.querySelector('.marquee-container').scrollIntoView({behavior:'smooth'})">
+            <i data-lucide="message-square"></i>
+            <span class="dock-label">Testimonials</span>
+        </div>
+        <div class="dock-item" data-label="Dashboard" onclick="window.location.href='/dashboard.html'">
+            <i data-lucide="layout-dashboard"></i>
+            <span class="dock-label">Dashboard</span>
+        </div>
+    </div>
+
     <script>
+        // Dock Magnification Logic
+        const dock = document.getElementById('main-dock');
+        const dockItems = document.querySelectorAll('.dock-item');
+        
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            
+            dockItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const distance = Math.hypot(mouseX - centerX, mouseY - centerY);
+                const maxDistance = 200;
+                
+                if (distance < maxDistance) {
+                    const magnification = 1 + (1 - distance / maxDistance) * 0.6;
+                    item.style.transform = `scale(${magnification}) translateY(-${(magnification - 1) * 20}px)`;
+                } else {
+                    item.style.transform = `scale(1) translateY(0)`;
+                }
+            });
+        });
+
         lucide.createIcons();
 
         // Phone Chat Logic (Preserved)

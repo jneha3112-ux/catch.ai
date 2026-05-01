@@ -44,6 +44,57 @@
             opacity: 0.3;
             pointer-events: none;
         }
+
+        /* Dock Styles */
+        .dock-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #000;
+            border-radius: 2rem;
+            box-shadow: 8px 8px 0px 0px #000;
+        }
+        .dock-item {
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease-out;
+            position: relative;
+            color: #000;
+        }
+        .dock-item:hover .dock-label {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        .dock-label {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: #000;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 900;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 <body class="bg-[#f4f4f5] font-['Satoshi'] text-[#171e19] antialiased">
@@ -81,18 +132,7 @@
                     </select>
                 </div>
                 
-                <a href="#" class="sidebar-item-active flex items-center gap-3 px-5 py-3.5 rounded-xl group">
-                    <i data-lucide="layout-grid" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-black text-sm tracking-tight">Operator Hub</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-5 py-3.5 text-white/60 hover:bg-white/5 rounded-xl transition-all group">
-                    <i data-lucide="calendar" class="w-5 h-5 group-hover:text-[#ffe17c] transition-all"></i>
-                    <span class="font-bold text-sm">Schedule</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-5 py-3.5 text-white/60 hover:bg-white/5 rounded-xl transition-all group">
-                    <i data-lucide="message-circle" class="w-5 h-5 group-hover:text-[#ffe17c] transition-all"></i>
-                    <span class="font-bold text-sm">Neural Logs</span>
-                </a>
+                <!-- Sidebar links moved to floating dock -->
             </nav>
 
             <div class="p-6 relative z-10">
@@ -234,9 +274,52 @@
         <span class="text-sm font-bold">Inbound Simulation Sent</span>
     </div>
 
-    <script>
-        lucide.createIcons();
+    <!-- Dashboard Dock -->
+    <div class="dock-container" id="dash-dock">
+        <div class="dock-item" data-label="Home" onclick="window.location.href='/'">
+            <i data-lucide="home"></i>
+            <span class="dock-label">Landing</span>
+        </div>
+        <div class="dock-item" data-label="Operator" onclick="location.reload()">
+            <i data-lucide="layout-grid"></i>
+            <span class="dock-label">Hub</span>
+        </div>
+        <div class="dock-item" data-label="Schedule">
+            <i data-lucide="calendar"></i>
+            <span class="dock-label">Schedule</span>
+        </div>
+        <div class="dock-item" data-label="Logs">
+            <i data-lucide="message-circle"></i>
+            <span class="dock-label">Logs</span>
+        </div>
+        <div class="dock-item" data-label="Settings">
+            <i data-lucide="settings"></i>
+            <span class="dock-label">Settings</span>
+        </div>
+    </div>
 
+    <script>
+        // Dock Magnification Logic
+        const dockItems = document.querySelectorAll('.dock-item');
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            dockItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const distance = Math.hypot(mouseX - centerX, mouseY - centerY);
+                const maxDistance = 200;
+                if (distance < maxDistance) {
+                    const magnification = 1 + (1 - distance / maxDistance) * 0.6;
+                    item.style.transform = `scale(${magnification}) translateY(-${(magnification - 1) * 20}px)`;
+                } else {
+                    item.style.transform = `scale(1) translateY(0)`;
+                }
+            });
+        });
+
+        lucide.createIcons();
         const logContainer = document.getElementById('log-container');
         const simulateBtn = document.getElementById('simulate-btn');
         const phoneInput = document.getElementById('phone');
