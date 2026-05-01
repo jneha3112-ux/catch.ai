@@ -159,6 +159,94 @@
         }
         .delay-100 { animation-delay: 100ms !important; }
         .delay-200 { animation-delay: 200ms !important; }
+        /* Creepy Button Styles */
+        :root {
+            --cb-hue: 223deg;
+            --cb-gray1: #f3f4f6;
+            --cb-black: #000;
+            --cb-primary5: #171e19; /* Default charcoal */
+            --cb-primary6: #000;
+            --cb-trans-dur: 0.3s;
+        }
+
+        .creepy-btn {
+            background-color: var(--cb-black);
+            border-radius: 1.25em;
+            color: var(--cb-gray1);
+            cursor: pointer;
+            padding: 0;
+            border: 0;
+            position: relative;
+            display: inline-block;
+            transition: transform 0.2s cubic-bezier(0.3, 0, 0.2, 1);
+        }
+
+        .creepy-btn__cover {
+            background-color: var(--cb-primary5);
+            box-shadow: 0 0 0 0.125em var(--cb-black) inset;
+            padding: 0.75em 1.5em;
+            border-radius: inherit;
+            display: block;
+            position: relative;
+            z-index: 2;
+            transform-origin: 1.25em 50%;
+            transition: background-color var(--cb-trans-dur), transform var(--cb-trans-dur) cubic-bezier(0.65, 0, 0.35, 1);
+            color: white;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .creepy-btn__eyes {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 0.375em;
+            right: 1.25em;
+            bottom: 0.6em;
+            height: 0.75em;
+            z-index: 1;
+            pointer-events: none; 
+        }
+
+        .creepy-btn__eye {
+            animation: cb-eye-blink 4s infinite;
+            background-color: white;
+            border-radius: 50%;
+            overflow: hidden;
+            width: 0.85em;
+            height: 0.85em;
+            position: relative;
+            display: block;
+            border: 1px solid black;
+        }
+
+        .creepy-btn__pupil {
+            background-color: black;
+            border-radius: 50%;
+            display: block;
+            position: absolute;
+            width: 0.45em;
+            height: 0.45em;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .creepy-btn:hover .creepy-btn__cover {
+            background-color: var(--cb-primary6);
+            transform: rotate(-8deg) translateY(-4px);
+            transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1.65);
+        }
+
+        .creepy-btn:active .creepy-btn__cover {
+            transform: rotate(0) translateY(0);
+        }
+
+        @keyframes cb-eye-blink {
+            0%, 92%, 100% { height: 0.85em; }
+            96% { height: 0; }
+        }
     </style>
 </head>
 <body class="bg-[#ffe17c]">
@@ -170,11 +258,11 @@
     <!-- Navigation -->
     <header class="fixed top-8 left-0 w-full z-50 bg-[#ffe17c] brutal-border-b h-20 flex items-center">
         <div class="max-w-7xl mx-auto w-full px-6 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-black brutal-border flex items-center justify-center overflow-hidden">
-                    <img src="assets/logo.png" alt="Catch.ai Logo" class="w-full h-full object-cover">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-black brutal-border flex items-center justify-center overflow-hidden">
+                    <img src="assets/logo.png" alt="Catch.ai Logo" class="w-full h-full object-cover scale-110">
                 </div>
-                <span class="font-heading font-extrabold text-2xl tracking-tighter text-black">Catch.ai</span>
+                <span class="font-heading font-extrabold text-3xl tracking-tighter text-black">Catch.ai</span>
             </div>
             
             <nav class="hidden md:flex items-center gap-8 font-bold text-sm text-black">
@@ -183,8 +271,12 @@
                 <a href="#" class="hover:underline decoration-2 underline-offset-4">Company</a>
             </nav>
 
-            <a href="/dashboard.html" class="bg-black text-white px-6 py-2 rounded-xl text-sm font-bold brutal-border brutal-shadow brutal-btn">
-                Start Free Trial
+            <a href="/dashboard.html" class="creepy-btn">
+                <span class="creepy-btn__eyes">
+                    <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
+                    <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
+                </span>
+                <span class="creepy-btn__cover">Start Free Trial</span>
             </a>
         </div>
     </header>
@@ -212,11 +304,19 @@
                 </p>
 
                 <div class="flex items-center gap-4 pt-4">
-                    <a href="/dashboard.html" class="bg-black text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest brutal-border brutal-shadow-lg brutal-btn">
-                        Get Started Free
+                    <a href="/dashboard.html" class="creepy-btn" style="--cb-hue: 0deg;">
+                        <span class="creepy-btn__eyes">
+                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
+                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
+                        </span>
+                        <span class="creepy-btn__cover" style="padding: 1.25em 2.5em;">Get Started Free</span>
                     </a>
-                    <button class="bg-white text-black px-8 py-4 rounded-xl font-black uppercase tracking-widest brutal-border brutal-shadow brutal-btn">
-                        View Demo
+                    <button class="creepy-btn" style="--cb-primary5: #fff; --cb-primary6: #f3f4f6;">
+                         <span class="creepy-btn__eyes">
+                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
+                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
+                        </span>
+                        <span class="creepy-btn__cover" style="padding: 1.25em 2.5em; color: black;">View Demo</span>
                     </button>
                 </div>
             </div>
@@ -574,6 +674,30 @@
         };
 
         new p5(forceFieldSketch);
+
+        // Creepy Eye Tracking Logic
+        document.addEventListener('mousemove', (e) => {
+            const eyes = document.querySelectorAll('.creepy-btn__eyes');
+            
+            eyes.forEach(eyeGroup => {
+                const rect = eyeGroup.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const dx = e.clientX - centerX;
+                const dy = e.clientY - centerY;
+                const angle = Math.atan2(dy, dx);
+                
+                const distance = Math.min(Math.hypot(dx, dy) / 10, 5); // Cap movement
+                
+                const pupils = eyeGroup.querySelectorAll('.creepy-btn__pupil');
+                pupils.forEach(pupil => {
+                    const x = Math.cos(angle) * distance;
+                    const y = Math.sin(angle) * distance;
+                    pupil.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+                });
+            });
+        });
 
         runChat();
     </script>
