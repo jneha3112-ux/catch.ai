@@ -48,8 +48,8 @@
         /* Premium Minimalist Dock */
         .dock-container {
             position: fixed;
-            top: 2rem;
-            left: 50%;
+            top: 1.25rem;
+            left: calc(50% + 144px); /* Center relative to content (50% + half of sidebar width) */
             transform: translateX(-50%);
             z-index: 1000;
             display: flex;
@@ -108,9 +108,9 @@
         ⚠️ UNDER CONSTRUCTION - COMING SOON ⚠️
     </div>
 
-    <div class="flex h-screen overflow-hidden pt-[28px]">
+    <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="w-72 glass-dark flex flex-col pt-4 relative z-10 overflow-hidden">
+        <aside class="w-72 glass-dark flex flex-col relative z-10 overflow-hidden shrink-0">
             <!-- Grid Distortion Background -->
             <div id="grid-distortion-container"></div>
             
