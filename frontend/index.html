@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <!-- Cabinet Grotesk & Satoshi -->
     <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@500,700&display=swap" rel="stylesheet">
     <style>
@@ -330,6 +331,52 @@
         </div>
     </section>
 
+    <!-- Ecosystem Network Section -->
+    <section class="bg-white py-32 px-6 brutal-border-b relative overflow-hidden" id="ecosystem-section">
+        <div class="max-w-5xl mx-auto text-center mb-20 animate-fade-up">
+            <h2 class="font-heading text-5xl md:text-6xl font-extrabold tracking-tighter">Connects to everything.</h2>
+            <p class="text-xl font-bold text-gray-500 mt-4">The core of your clinical operations.</p>
+        </div>
+        
+        <div class="relative w-full max-w-4xl mx-auto h-[500px] md:h-[600px]" id="network-container">
+            
+            <!-- SVG Lines -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 5;">
+                <line x1="50%" y1="50%" x2="15%" y2="15%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
+                <line x1="50%" y1="50%" x2="85%" y2="15%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
+                <line x1="50%" y1="50%" x2="15%" y2="85%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
+                <line x1="50%" y1="50%" x2="85%" y2="85%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
+            </svg>
+
+            <!-- Outer Shapes -->
+            <div class="absolute top-[15%] left-[15%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#b7c6c2] brutal-border brutal-shadow rounded-2xl flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
+                <i data-lucide="calendar-clock" class="w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                <span class="font-bold text-xs md:text-sm">PMS</span>
+            </div>
+            
+            <div class="absolute top-[15%] left-[85%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#f4f4f5] brutal-border brutal-shadow rounded-full flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
+                <i data-lucide="message-circle" class="w-6 h-6 md:w-8 md:h-8 mb-2 text-green-600"></i>
+                <span class="font-bold text-xs md:text-sm">WhatsApp</span>
+            </div>
+
+            <div class="absolute top-[85%] left-[15%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#171e19] text-white brutal-border brutal-shadow rounded-3xl flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
+                <i data-lucide="phone-call" class="w-6 h-6 md:w-8 md:h-8 mb-2 text-[#ffe17c]"></i>
+                <span class="font-bold text-xs md:text-sm">VoIP</span>
+            </div>
+
+            <div class="absolute top-[85%] left-[85%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#ffe17c] brutal-border brutal-shadow rounded-xl flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
+                <i data-lucide="shield-check" class="w-6 h-6 md:w-8 md:h-8 mb-2"></i>
+                <span class="font-bold text-xs md:text-sm">Insurance</span>
+            </div>
+
+            <!-- Center Shape -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#ffe17c] brutal-border brutal-shadow-lg rounded-full flex flex-col items-center justify-center z-20 network-center brutal-btn cursor-pointer">
+                <i data-lucide="zap" class="w-12 h-12 md:w-16 md:h-16 text-black mb-2 fill-current"></i>
+                <span class="font-heading font-extrabold text-xl md:text-3xl tracking-tighter">Catch.ai</span>
+            </div>
+        </div>
+    </section>
+
     <!-- How It Works -->
     <section class="bg-[#171e19] py-24 px-6 brutal-border-b text-white overflow-hidden">
         <div class="max-w-7xl mx-auto text-center animate-fade-up">
@@ -496,6 +543,38 @@
             btn.addEventListener('mouseup', resetJelly);
             btn.addEventListener('mouseleave', resetJelly);
         });
+
+        // GSAP ScrollTrigger Network Animation
+        gsap.registerPlugin(ScrollTrigger);
+
+        const networkTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#ecosystem-section",
+                start: "top 60%", // Starts when the section reaches 60% of viewport
+                end: "bottom 80%", // Ends when section is near bottom
+                scrub: 1.5 // Smooth scrubbing, takes 1.5 seconds to catch up
+            }
+        });
+
+        // Ensure nodes are scaled out before starting
+        gsap.set(".network-node", { scale: 0, opacity: 0 });
+
+        networkTl.fromTo(".network-center", 
+            { scale: 0.5 }, 
+            { scale: 1.1, duration: 1, ease: "back.out(1.5)" }
+        )
+        .to(".network-line", {
+            strokeDashoffset: 0,
+            duration: 1.5,
+            ease: "power1.inOut"
+        }, "-=0.2")
+        .to(".network-node", {
+            scale: 1,
+            opacity: 1,
+            duration: 1,
+            stagger: 0.2,
+            ease: "elastic.out(1, 0.5)"
+        }, "-=1");
 
         runChat();
     </script>
