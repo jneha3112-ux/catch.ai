@@ -6,6 +6,7 @@
     <title>Catch.ai | AI-Powered Revenue Recovery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <!-- Cabinet Grotesk & Satoshi -->
     <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@500,700&display=swap" rel="stylesheet">
     <style>
@@ -469,6 +470,31 @@
 
         document.querySelectorAll('.animate-fade-up').forEach((el) => {
             observer.observe(el);
+        });
+
+        // Jelly Button Animations
+        document.querySelectorAll('.brutal-btn').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                gsap.to(btn, {
+                    scaleX: 1.05,
+                    scaleY: 0.9,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    transformOrigin: "center bottom"
+                });
+            });
+            
+            const resetJelly = () => {
+                gsap.to(btn, {
+                    scaleX: 1,
+                    scaleY: 1,
+                    duration: 0.8,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            };
+            
+            btn.addEventListener('mouseup', resetJelly);
+            btn.addEventListener('mouseleave', resetJelly);
         });
 
         runChat();
