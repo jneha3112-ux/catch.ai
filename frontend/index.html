@@ -6,58 +6,70 @@
     <title>Catch.ai | AI-Powered Revenue Recovery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Cabinet Grotesk & Satoshi -->
+    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@500,700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #ffe17c;
+            --bg-dark: #171e19;
+            --accent: #b7c6c2;
+        }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #020617;
-            color: #f8fafc;
+            font-family: 'Satoshi', sans-serif;
+            background-color: #fff;
+            color: #000;
             overflow-x: hidden;
         }
-        .glass-nav {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 100px;
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Cabinet Grotesk', sans-serif;
         }
-        .hero-gradient {
-            background: radial-gradient(circle at 80% 20%, rgba(13, 148, 136, 0.2) 0%, transparent 60%);
+        /* Neo-Brutalist Utilities */
+        .brutal-border { border: 2px solid #000; }
+        .brutal-border-b { border-bottom: 2px solid #000; }
+        .brutal-border-y { border-top: 2px solid #000; border-bottom: 2px solid #000; }
+        .brutal-shadow { box-shadow: 4px 4px 0px 0px #000; }
+        .brutal-shadow-lg { box-shadow: 8px 8px 0px 0px #000; }
+        
+        .brutal-btn {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .text-gradient {
-            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .brutal-btn:hover {
+            transform: translate(4px, 4px);
+            box-shadow: none !important;
         }
-        .text-neon {
-            background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(45, 212, 191, 0.3));
+
+        .dot-pattern {
+            background-image: radial-gradient(circle, #000 2px, transparent 2px);
+            background-size: 32px 32px;
+            background-color: var(--primary);
+            opacity: 0.9;
         }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .text-stroke {
+            -webkit-text-stroke: 2px black;
+            color: transparent;
         }
+
+        /* Marquee */
+        .marquee-container {
+            display: flex;
+            width: 200%;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Phone Preservation CSS */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
         }
-        .animate-fade-up {
-            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-        }
-        .delay-100 { animation-delay: 100ms !important; }
-        .delay-200 { animation-delay: 200ms !important; }
-        .delay-300 { animation-delay: 300ms !important; }
-        .delay-400 { animation-delay: 400ms !important; }
-
         .phone-3d-wrapper {
             perspective: 2000px;
             animation: float 6s ease-in-out infinite;
         }
-        
         .phone-frame {
             background: #020617;
             border: 8px solid #1e293b;
@@ -103,6 +115,7 @@
             opacity: 0;
             transform: translateY(10px);
             transition: all 0.4s ease;
+            font-family: 'Satoshi', sans-serif;
         }
         .chat-bubble.visible {
             opacity: 1;
@@ -129,230 +142,279 @@
             33% { content: '..'; }
             66% { content: '...'; }
         }
-        .feature-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
+        
+        /* Scroll Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .feature-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(13, 148, 136, 0.3);
-            transform: translateY(-5px);
+        .animate-fade-up {
+            opacity: 0;
         }
-        .glow-dot {
-            width: 8px;
-            height: 8px;
-            background: #2dd4bf;
-            border-radius: 50%;
-            box-shadow: 0 0 15px #2dd4bf;
+        .animate-fade-up.visible {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        .delay-100 { animation-delay: 100ms !important; }
+        .delay-200 { animation-delay: 200ms !important; }
     </style>
 </head>
-<body class="relative min-h-screen">
-    <!-- Fixed Under Construction Banner -->
-    <div class="fixed top-0 left-0 right-0 bg-red-600 text-white text-[10px] font-black py-1 px-4 text-center tracking-[0.2em] uppercase shadow-lg z-[999]">
+<body class="bg-[#ffe17c]">
+    <!-- Fixed Banner -->
+    <div class="bg-[#171e19] text-white text-[10px] font-black py-1.5 px-4 text-center tracking-[0.2em] uppercase brutal-border-b fixed top-0 w-full z-[999]">
         ⚠️ UNDER CONSTRUCTION - COMING SOON ⚠️
     </div>
 
     <!-- Navigation -->
-    <header class="fixed top-8 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50">
-        <div class="glass-nav px-8 py-3 flex items-center justify-between shadow-2xl">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden bg-teal-500/10 border border-teal-500/20">
-                    <img src="/assets/logo.png" alt="logo" class="w-full h-full object-cover">
+    <header class="fixed top-8 left-0 w-full z-50 bg-[#ffe17c] brutal-border-b h-20 flex items-center">
+        <div class="max-w-7xl mx-auto w-full px-6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-black brutal-border flex items-center justify-center">
+                    <i data-lucide="zap" class="text-[#ffe17c] w-5 h-5 fill-current"></i>
                 </div>
-                <span class="font-extrabold text-lg tracking-tighter">Catch<span class="text-teal-400">.ai</span></span>
+                <span class="font-heading font-extrabold text-2xl tracking-tighter text-black">Catch.ai</span>
             </div>
             
-            <nav class="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                <a href="#" class="hover:text-white transition-all">Platform</a>
-                <a href="#" class="hover:text-white transition-all">ROI Calculator</a>
-                <a href="#" class="hover:text-white transition-all">Company</a>
+            <nav class="hidden md:flex items-center gap-8 font-bold text-sm text-black">
+                <a href="#" class="hover:underline decoration-2 underline-offset-4">Platform</a>
+                <a href="#" class="hover:underline decoration-2 underline-offset-4">ROI Calculator</a>
+                <a href="#" class="hover:underline decoration-2 underline-offset-4">Company</a>
             </nav>
 
-            <div class="flex items-center gap-4">
-                <a href="/dashboard.html" class="text-xs font-bold hover:text-teal-400 transition-all">Login</a>
-                <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-900/20">Get Started</a>
-            </div>
+            <a href="/dashboard.html" class="bg-black text-white px-6 py-2 rounded-xl text-sm font-bold brutal-border brutal-shadow brutal-btn">
+                Start Free Trial
+            </a>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-48 pb-32 px-10 relative overflow-hidden">
-        <div class="hero-gradient absolute top-0 left-0 w-full h-full -z-10"></div>
-        
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div class="space-y-10">
-                <div class="flex items-center gap-3 bg-white/5 border border-white/10 w-fit px-4 py-1.5 rounded-full animate-fade-up">
-                    <span class="glow-dot animate-pulse"></span>
-                    <span class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Neural Revenue Recovery Active</span>
+    <section class="pt-40 pb-20 px-6 relative border-b-2 border-black dot-pattern overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8 z-10 animate-fade-up">
+                <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full brutal-border brutal-shadow-sm font-bold text-xs uppercase tracking-widest">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse brutal-border"></span>
+                    NEW: AI Content Assistant 2.0
                 </div>
                 
-                <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] animate-fade-up delay-100">
-                    Catch every <span class="text-gradient">missed call.</span><br/>
-                    <span class="text-neon">Book instantly.</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-extrabold tracking-tighter leading-[0.9] text-black">
+                    Catch every <br>
+                    <span class="text-stroke">missed call.</span><br>
+                    Book instantly.
                 </h1>
                 
-                <p class="text-slate-400 max-w-xl text-xl font-medium leading-relaxed animate-fade-up delay-200">
+                <p class="text-black/80 max-w-lg text-lg font-bold leading-relaxed">
                     Stop losing 30% of your revenue to unanswered calls. Our AI converts missed leads into booked appointments on WhatsApp in seconds.
                 </p>
 
-                <div class="flex items-center gap-6 animate-fade-up delay-300">
-                    <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-900/40 hover:scale-105 active:scale-95">
+                <div class="flex items-center gap-4 pt-4">
+                    <a href="/dashboard.html" class="bg-black text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest brutal-border brutal-shadow-lg brutal-btn">
                         Get Started Free
                     </a>
-                    <button class="bg-white/5 hover:bg-white/10 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest border border-white/10 transition-all hover:scale-105 active:scale-95">
+                    <button class="bg-white text-black px-8 py-4 rounded-xl font-black uppercase tracking-widest brutal-border brutal-shadow brutal-btn">
                         View Demo
                     </button>
                 </div>
-
-                <div class="flex items-center gap-10 pt-10 border-t border-white/5 animate-fade-up delay-400">
-                    <div>
-                        <p class="text-3xl font-black text-white">30%</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Avg Revenue Lift</p>
-                    </div>
-                    <div>
-                        <p class="text-3xl font-black text-white">5s</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Response Time</p>
-                    </div>
-                    <div>
-                        <p class="text-3xl font-black text-white">24/7</p>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Neural Coverage</p>
-                    </div>
-                </div>
             </div>
 
-            <!-- 3D Phone Mockup -->
-            <div class="flex justify-center lg:justify-end animate-fade-up delay-400 w-full">
+            <!-- 3D Phone Mockup Preserved -->
+            <div class="flex justify-center lg:justify-end animate-fade-up delay-200 z-10 w-full">
                 <div class="phone-3d-wrapper">
                     <div class="phone-frame">
-                    <div class="dynamic-island"></div>
-                    <!-- Status Bar -->
-                    <div class="h-12 flex items-end justify-between px-8 pb-3 text-[10px] font-bold text-white/40 relative z-20">
-                        <span>9:41</span>
-                        <div class="flex gap-1.5">
-                            <i data-lucide="signal" class="w-3 h-3"></i>
-                            <i data-lucide="wifi" class="w-3 h-3"></i>
-                            <i data-lucide="battery" class="w-3 h-3"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Chat Interface -->
-                    <div class="p-4 flex flex-col h-[calc(100%-40px)]">
-                        <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-                            <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white">
-                                <i data-lucide="bot" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-black text-white uppercase tracking-tighter">Catch Neural Agent</p>
-                                <p class="text-[8px] text-teal-400 font-bold uppercase tracking-widest">● Core Active</p>
+                        <div class="dynamic-island"></div>
+                        <!-- Status Bar -->
+                        <div class="h-12 flex items-end justify-between px-8 pb-3 text-[10px] font-bold text-white/40 relative z-20">
+                            <span>9:41</span>
+                            <div class="flex gap-1.5">
+                                <i data-lucide="signal" class="w-3 h-3"></i>
+                                <i data-lucide="wifi" class="w-3 h-3"></i>
+                                <i data-lucide="battery" class="w-3 h-3"></i>
                             </div>
                         </div>
+                        
+                        <!-- Chat Interface -->
+                        <div class="p-4 flex flex-col h-[calc(100%-40px)]">
+                            <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                                <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white">
+                                    <i data-lucide="bot" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-white uppercase tracking-tighter font-heading">Catch Neural Agent</p>
+                                    <p class="text-[8px] text-teal-400 font-bold uppercase tracking-widest">● Core Active</p>
+                                </div>
+                            </div>
 
-                        <div id="chat-window" class="flex-1 flex flex-col gap-2 overflow-y-auto pt-4 no-scrollbar relative z-20">
-                            <!-- Bubbles injected by JS -->
-                        </div>
+                            <div id="chat-window" class="flex-1 flex flex-col gap-2 overflow-y-auto pt-4 no-scrollbar relative z-20">
+                                <!-- Bubbles injected by JS -->
+                            </div>
 
-                        <div class="mt-4 bg-white/5 p-3 rounded-2xl flex items-center justify-between border border-white/5 relative z-20">
-                            <span class="text-[10px] text-slate-500">Neural reply typing...</span>
-                            <i data-lucide="send" class="w-4 h-4 text-teal-500 opacity-30"></i>
+                            <div class="mt-4 bg-white/5 p-3 rounded-2xl flex items-center justify-between border border-white/5 relative z-20 text-white">
+                                <span class="text-[10px] text-slate-500">Neural reply typing...</span>
+                                <i data-lucide="send" class="w-4 h-4 text-teal-500 opacity-30"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Marquee -->
+    <section class="bg-[#171e19] py-4 brutal-border-b overflow-hidden relative">
+        <div class="marquee-container">
+            <div class="flex justify-around items-center w-1/2 text-[#b7c6c2] opacity-50 font-heading font-extrabold text-3xl tracking-widest uppercase">
+                <span>ACME</span>
+                <span>GLOBEX</span>
+                <span>SOYUZ</span>
+                <span>INITECH</span>
+                <span>UMBRELLA</span>
+            </div>
+            <div class="flex justify-around items-center w-1/2 text-[#b7c6c2] opacity-50 font-heading font-extrabold text-3xl tracking-widest uppercase">
+                <span>ACME</span>
+                <span>GLOBEX</span>
+                <span>SOYUZ</span>
+                <span>INITECH</span>
+                <span>UMBRELLA</span>
             </div>
         </div>
     </section>
 
-    <!-- Authority Section -->
-    <section class="py-20 border-y border-white/5 bg-white/2 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-10 animate-fade-up">
-            <p class="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-12">Powering Next-Gen Clinics Globally</p>
-            <div class="flex flex-wrap justify-center items-center gap-16 opacity-40 grayscale contrast-125">
-                <span class="text-2xl font-black tracking-tighter italic">DENTAL.CORE</span>
-                <span class="text-2xl font-black tracking-tighter">MED.SPA</span>
-                <span class="text-2xl font-black tracking-tighter italic">LAW.NODE</span>
-                <span class="text-2xl font-black tracking-tighter">SERVICED.AI</span>
-                <span class="text-2xl font-black tracking-tighter italic">CLINIC.ONE</span>
+    <!-- Problem vs Solution -->
+    <section class="bg-white py-24 px-6 brutal-border-b overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-up">
+            <div class="bg-[#f4f4f5] border-2 border-dashed border-gray-400 p-10 rounded-3xl opacity-70">
+                <h3 class="font-heading text-3xl font-extrabold mb-6">The Old Way</h3>
+                <ul class="space-y-4 font-bold text-gray-600">
+                    <li class="flex items-center gap-3"><i data-lucide="x" class="text-red-500 w-5 h-5"></i> Missed calls go to voicemail</li>
+                    <li class="flex items-center gap-3"><i data-lucide="x" class="text-red-500 w-5 h-5"></i> Patients call your competitor</li>
+                    <li class="flex items-center gap-3"><i data-lucide="x" class="text-red-500 w-5 h-5"></i> Front desk is overwhelmed</li>
+                </ul>
+            </div>
+            <div class="bg-[#ffe17c] brutal-border brutal-shadow-lg p-10 rounded-3xl">
+                <h3 class="font-heading text-3xl font-extrabold mb-6">The Catch.ai Way</h3>
+                <ul class="space-y-4 font-bold text-black">
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="bg-black text-[#ffe17c] rounded-full p-0.5 w-5 h-5 brutal-border"></i> Missed calls receive instant WhatsApp</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="bg-black text-[#ffe17c] rounded-full p-0.5 w-5 h-5 brutal-border"></i> AI books appointments 24/7</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="bg-black text-[#ffe17c] rounded-full p-0.5 w-5 h-5 brutal-border"></i> Revenue automatically recovered</li>
+                </ul>
             </div>
         </div>
     </section>
 
-    <!-- The ROI Section -->
-    <section class="py-40 px-10 overflow-hidden">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div class="glass p-12 rounded-[60px] border border-white/10 space-y-8 animate-fade-up">
-                <h3 class="text-4xl font-black tracking-tight leading-tight">Missed calls are<br/><span class="text-teal-400">missed revenue.</span></h3>
-                <p class="text-slate-400 text-lg leading-relaxed">
-                    Every time your front desk misses a call, that patient goes to your competitor on Google. Catch.ai recovers those leads instantly.
-                </p>
-                <div class="space-y-4 pt-6">
-                    <div class="flex items-center gap-4">
-                        <div class="w-6 h-6 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400">
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                        </div>
-                        <span class="font-bold text-slate-200">Recover up to $15,000/mo in lost leads</span>
+    <!-- Feature Grid -->
+    <section class="bg-[#ffe17c] py-24 px-6 brutal-border-b overflow-hidden">
+        <div class="max-w-7xl mx-auto animate-fade-up">
+            <h2 class="font-heading text-5xl font-extrabold text-center mb-16">Superpowers for your clinic.</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 brutal-border brutal-shadow rounded-2xl group hover:bg-[#b7c6c2] transition-colors">
+                    <div class="w-12 h-12 bg-[#b7c6c2] brutal-border flex items-center justify-center mb-6 group-hover:bg-[#ffe17c]">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-6 h-6 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400">
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                        </div>
-                        <span class="font-bold text-slate-200">Zero human intervention required</span>
+                    <h3 class="font-heading text-2xl font-extrabold mb-3">Instant Capture</h3>
+                    <p class="font-medium text-gray-700">Detects missed calls instantly and triggers the AI workflow before they hang up.</p>
+                </div>
+                <div class="bg-white p-8 brutal-border brutal-shadow rounded-2xl group hover:bg-[#b7c6c2] transition-colors">
+                    <div class="w-12 h-12 bg-[#b7c6c2] brutal-border flex items-center justify-center mb-6 group-hover:bg-[#ffe17c]">
+                        <i data-lucide="calendar-check" class="w-6 h-6"></i>
                     </div>
+                    <h3 class="font-heading text-2xl font-extrabold mb-3">Auto Scheduling</h3>
+                    <p class="font-medium text-gray-700">Integrates with your PMS to find open slots and book appointments autonomously.</p>
                 </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-8 animate-fade-up delay-200">
-                <div class="feature-card p-10 rounded-[40px] text-center">
-                    <p class="text-5xl font-black mb-2">98%</p>
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Capture Rate</p>
-                </div>
-                <div class="feature-card p-10 rounded-[40px] text-center">
-                    <p class="text-5xl font-black mb-2">30s</p>
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Setup Time</p>
-                </div>
-                <div class="feature-card p-10 rounded-[40px] text-center">
-                    <p class="text-5xl font-black mb-2">12x</p>
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">ROI Multiplier</p>
-                </div>
-                <div class="feature-card p-10 rounded-[40px] text-center">
-                    <p class="text-5xl font-black mb-2">0%</p>
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Churn Risk</p>
+                <div class="bg-white p-8 brutal-border brutal-shadow rounded-2xl group hover:bg-[#b7c6c2] transition-colors">
+                    <div class="w-12 h-12 bg-[#b7c6c2] brutal-border flex items-center justify-center mb-6 group-hover:bg-[#ffe17c]">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-extrabold mb-3">Insurance Checks</h3>
+                    <p class="font-medium text-gray-700">Collects insurance info and validates it before the patient even walks in.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="py-40 px-10 bg-white/2">
-        <div class="max-w-3xl mx-auto space-y-12">
-            <div class="text-center">
-                <h2 class="text-4xl font-black tracking-tight">Everything you need to know</h2>
-            </div>
-            <div class="space-y-6">
-                <div class="glass p-8 rounded-3xl border border-white/5">
-                    <h4 class="font-black text-lg mb-3">How does it detect missed calls?</h4>
-                    <p class="text-slate-400 text-sm">We integrate with your existing phone system (VOIP or Analog). The moment a call is dropped, our neural engine triggers the recovery flow.</p>
+    <!-- How It Works -->
+    <section class="bg-[#171e19] py-24 px-6 brutal-border-b text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto text-center animate-fade-up">
+            <h2 class="font-heading text-5xl font-extrabold mb-16">How it works</h2>
+            <div class="flex flex-col md:flex-row justify-between items-center relative">
+                <!-- Line -->
+                <div class="hidden md:block absolute top-1/2 left-0 w-full h-[2px] bg-[#272727] z-0"></div>
+                
+                <!-- Steps -->
+                <div class="flex flex-col items-center bg-[#171e19] p-4 z-10">
+                    <div class="w-16 h-16 rounded-full border-4 border-[#b7c6c2] bg-[#171e19] flex items-center justify-center font-heading font-extrabold text-2xl mb-4 text-[#b7c6c2]">1</div>
+                    <h4 class="font-heading text-xl font-bold">Call Missed</h4>
                 </div>
-                <div class="glass p-8 rounded-3xl border border-white/5">
-                    <h4 class="font-black text-lg mb-3">Does it work with my booking software?</h4>
-                    <p class="text-slate-400 text-sm">Yes. We connect with all major clinical management platforms to check real-time availability and book slots.</p>
+                <div class="flex flex-col items-center bg-[#171e19] p-4 z-10">
+                    <div class="w-16 h-16 rounded-full border-4 border-[#ffe17c] bg-[#171e19] flex items-center justify-center font-heading font-extrabold text-2xl mb-4 text-[#ffe17c]">2</div>
+                    <h4 class="font-heading text-xl font-bold">AI Engages</h4>
+                </div>
+                <div class="flex flex-col items-center bg-[#171e19] p-4 z-10">
+                    <div class="w-16 h-16 rounded-full border-4 border-white bg-[#171e19] flex items-center justify-center font-heading font-extrabold text-2xl mb-4 text-white">3</div>
+                    <h4 class="font-heading text-xl font-bold">Patient Booked</h4>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="py-20 px-10 border-t border-white/5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-            <div class="flex items-center gap-2">
-                <span class="font-extrabold text-xl tracking-tighter">Catch<span class="text-teal-400">.ai</span></span>
+    <!-- Personas -->
+    <section class="bg-white py-24 px-6 brutal-border-b overflow-hidden">
+        <div class="max-w-7xl mx-auto animate-fade-up">
+            <h2 class="font-heading text-5xl font-extrabold mb-16 text-center">Built for everyone.</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-[#b7c6c2] brutal-border p-8 rounded-3xl relative overflow-hidden">
+                    <div class="bg-white px-3 py-1 text-xs font-bold uppercase brutal-border rounded-full inline-block mb-12">Clinic Owner</div>
+                    <h3 class="font-heading text-3xl font-extrabold mb-4">Focus on growth, not phones.</h3>
+                </div>
+                <div class="bg-[#ffe17c] brutal-border brutal-shadow-lg p-8 rounded-3xl relative overflow-hidden transform md:-translate-y-4">
+                    <div class="bg-white px-3 py-1 text-xs font-bold uppercase brutal-border rounded-full inline-block mb-12">Front Desk</div>
+                    <h3 class="font-heading text-3xl font-extrabold mb-4">Eliminate the daily chaos.</h3>
+                </div>
+                <div class="bg-[#272727] text-white brutal-border p-8 rounded-3xl relative overflow-hidden">
+                    <div class="bg-white text-black px-3 py-1 text-xs font-bold uppercase brutal-border rounded-full inline-block mb-12">Patients</div>
+                    <h3 class="font-heading text-3xl font-extrabold mb-4">Book instantly, no waiting.</h3>
+                </div>
             </div>
-            <p class="text-slate-600 text-xs font-bold uppercase tracking-widest">© 2026 Neural Revenue Systems. All Rights Reserved.</p>
-            <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                <a href="#" class="hover:text-white">Privacy</a>
-                <a href="#" class="hover:text-white">Terms</a>
-                <a href="#" class="hover:text-white">Security</a>
+        </div>
+    </section>
+
+    <!-- Final CTA & Footer -->
+    <section class="bg-[#ffe17c] py-32 px-6 brutal-border-b dot-pattern text-center overflow-hidden">
+        <div class="max-w-3xl mx-auto animate-fade-up">
+            <h2 class="font-heading text-6xl md:text-7xl font-extrabold tracking-tighter mb-8 text-black">Ready to recover your revenue?</h2>
+            <a href="/dashboard.html" class="inline-block bg-black text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-lg brutal-border brutal-shadow-lg brutal-btn">
+                Start Free Trial
+            </a>
+        </div>
+    </section>
+
+    <footer class="bg-[#171e19] text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 bg-black brutal-border border-white flex items-center justify-center">
+                        <i data-lucide="zap" class="text-[#ffe17c] w-4 h-4 fill-current"></i>
+                    </div>
+                    <span class="font-heading font-extrabold text-xl tracking-tighter">Catch.ai</span>
+                </div>
+                <p class="text-sm font-medium text-gray-400 max-w-sm">Automating the front desk for the modern clinic.</p>
+                <div class="flex gap-4 mt-6">
+                    <a href="#" class="w-10 h-10 bg-[#272727] border border-gray-600 flex items-center justify-center hover:bg-[#ffe17c] hover:text-black transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                    <a href="#" class="w-10 h-10 bg-[#272727] border border-gray-600 flex items-center justify-center hover:bg-[#ffe17c] hover:text-black transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-heading font-bold text-lg mb-4 text-[#ffe17c]">Product</h4>
+                <ul class="space-y-2 text-sm text-gray-400 font-medium">
+                    <li><a href="#" class="hover:text-white">Features</a></li>
+                    <li><a href="#" class="hover:text-white">Pricing</a></li>
+                    <li><a href="#" class="hover:text-white">Case Studies</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-heading font-bold text-lg mb-4 text-[#ffe17c]">Company</h4>
+                <ul class="space-y-2 text-sm text-gray-400 font-medium">
+                    <li><a href="#" class="hover:text-white">About Us</a></li>
+                    <li><a href="#" class="hover:text-white">Careers</a></li>
+                    <li><a href="#" class="hover:text-white">Contact</a></li>
+                </ul>
             </div>
         </div>
     </footer>
@@ -360,6 +422,7 @@
     <script>
         lucide.createIcons();
 
+        // Phone Chat Logic (Preserved)
         const chatWindow = document.getElementById('chat-window');
         const script = [
             { type: 'user', text: 'Hi, I missed a call from you.' },
