@@ -331,48 +331,61 @@
         </div>
     </section>
 
-    <!-- Ecosystem Network Section -->
-    <section class="bg-white py-32 px-6 brutal-border-b relative overflow-hidden" id="ecosystem-section">
-        <div class="max-w-5xl mx-auto text-center mb-20 animate-fade-up">
-            <h2 class="font-heading text-5xl md:text-6xl font-extrabold tracking-tighter">Connects to everything.</h2>
-            <p class="text-xl font-bold text-gray-500 mt-4">The core of your clinical operations.</p>
-        </div>
-        
-        <div class="relative w-full max-w-4xl mx-auto h-[500px] md:h-[600px]" id="network-container">
+    <!-- Core Processor Section (Dark Scrollytelling) -->
+    <section class="bg-[#0a0a0a] h-screen relative overflow-hidden text-white brutal-border-b" id="core-section" style="background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div class="relative w-full h-full max-w-6xl mx-auto flex items-center justify-center" id="core-container">
             
+            <!-- Concentric Rings -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-[#eab308]/20 core-ring opacity-0 z-0 pointer-events-none"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full border border-[#eab308]/10 core-ring opacity-0 z-0 pointer-events-none"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] rounded-full border border-[#eab308]/5 core-ring opacity-0 z-0 pointer-events-none"></div>
+
             <!-- SVG Lines -->
-            <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 5;">
-                <line x1="50%" y1="50%" x2="15%" y2="15%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
-                <line x1="50%" y1="50%" x2="85%" y2="15%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
-                <line x1="50%" y1="50%" x2="15%" y2="85%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
-                <line x1="50%" y1="50%" x2="85%" y2="85%" class="network-line" stroke="black" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
+            <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                <!-- To Top (Data Ingest) -->
+                <line x1="50%" y1="50%" x2="50%" y2="20%" class="core-line" stroke="#eab308" stroke-width="2" stroke-dasharray="1000" stroke-dashoffset="1000" />
+                <!-- To Left (Security) -->
+                <line x1="50%" y1="50%" x2="20%" y2="55%" class="core-line" stroke="#eab308" stroke-width="2" stroke-dasharray="1000" stroke-dashoffset="1000" />
+                <!-- To Right (Network) -->
+                <line x1="50%" y1="50%" x2="80%" y2="55%" class="core-line" stroke="#eab308" stroke-width="2" stroke-dasharray="1000" stroke-dashoffset="1000" />
             </svg>
 
-            <!-- Outer Shapes -->
-            <div class="absolute top-[15%] left-[15%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#b7c6c2] brutal-border brutal-shadow rounded-2xl flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
-                <i data-lucide="calendar-clock" class="w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                <span class="font-bold text-xs md:text-sm">PMS</span>
-            </div>
-            
-            <div class="absolute top-[15%] left-[85%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#f4f4f5] brutal-border brutal-shadow rounded-full flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
-                <i data-lucide="message-circle" class="w-6 h-6 md:w-8 md:h-8 mb-2 text-green-600"></i>
-                <span class="font-bold text-xs md:text-sm">WhatsApp</span>
+            <!-- Outer Cards -->
+            <!-- Data Ingest (Top) -->
+            <div class="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 bg-[#141414] border border-white/5 shadow-2xl rounded-sm flex flex-col items-center justify-center z-10 core-node" id="node-data">
+                <i data-lucide="database" class="w-8 h-8 mb-4 text-gray-300"></i>
+                <span class="font-heading font-extrabold text-[11px] tracking-widest text-gray-300">DATA INGEST</span>
+                <span class="text-[10px] text-gray-500 mt-2">Stream processing</span>
             </div>
 
-            <div class="absolute top-[85%] left-[15%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#171e19] text-white brutal-border brutal-shadow rounded-3xl flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
-                <i data-lucide="phone-call" class="w-6 h-6 md:w-8 md:h-8 mb-2 text-[#ffe17c]"></i>
-                <span class="font-bold text-xs md:text-sm">VoIP</span>
+            <!-- Security (Left) -->
+            <div class="absolute top-[55%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-44 h-44 bg-[#141414] border border-white/5 shadow-2xl rounded-sm flex flex-col items-center justify-center z-10 core-node" id="node-security">
+                <i data-lucide="shield" class="w-8 h-8 mb-4 text-gray-300"></i>
+                <span class="font-heading font-extrabold text-[11px] tracking-widest text-gray-300">SECURITY</span>
+                <span class="text-[10px] text-gray-500 mt-2">Firewall Active</span>
             </div>
 
-            <div class="absolute top-[85%] left-[85%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 bg-[#ffe17c] brutal-border brutal-shadow rounded-xl flex flex-col items-center justify-center z-10 network-node brutal-btn cursor-pointer">
-                <i data-lucide="shield-check" class="w-6 h-6 md:w-8 md:h-8 mb-2"></i>
-                <span class="font-bold text-xs md:text-sm">Insurance</span>
+            <!-- Network (Right) -->
+            <div class="absolute top-[55%] left-[80%] -translate-x-1/2 -translate-y-1/2 w-44 h-44 bg-[#141414] border border-white/5 shadow-2xl rounded-sm flex flex-col items-center justify-center z-10 core-node" id="node-network">
+                <i data-lucide="globe" class="w-8 h-8 mb-4 text-gray-300"></i>
+                <span class="font-heading font-extrabold text-[11px] tracking-widest text-gray-300">NETWORK</span>
+                <span class="text-[10px] text-gray-500 mt-2">Global Uplink</span>
             </div>
 
-            <!-- Center Shape -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 bg-[#ffe17c] brutal-border brutal-shadow-lg rounded-full flex flex-col items-center justify-center z-20 network-center brutal-btn cursor-pointer">
-                <i data-lucide="zap" class="w-12 h-12 md:w-16 md:h-16 text-black mb-2 fill-current"></i>
-                <span class="font-heading font-extrabold text-xl md:text-3xl tracking-tighter">Catch.ai</span>
+            <!-- Center Shape (Core Processor) -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-b from-[#2a220a] to-[#0a0802] border border-[#eab308]/40 rounded-[40px] flex flex-col items-center justify-center z-20 transition-shadow duration-1000" id="core-center">
+                <!-- Inner dotted ring -->
+                <div class="absolute inset-2 border border-dashed border-[#eab308]/30 rounded-[32px] core-inner-ring"></div>
+                
+                <i data-lucide="cpu" class="w-16 h-16 text-[#eab308] mb-4"></i>
+                <span class="font-heading font-extrabold text-sm tracking-[0.2em] text-[#eab308]">CORE PROCESSOR</span>
+                <span class="text-[10px] text-[#eab308]/60 mt-2">Central Neural Unit</span>
+            </div>
+
+            <!-- Initialize Sequence text at bottom -->
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-50" id="init-text">
+                <span class="text-[10px] tracking-[0.2em] mb-4 text-gray-400">INITIALIZE SEQUENCE</span>
+                <div class="w-[1px] h-16 bg-gradient-to-b from-gray-500 to-transparent"></div>
             </div>
         </div>
     </section>
@@ -544,37 +557,49 @@
             btn.addEventListener('mouseleave', resetJelly);
         });
 
-        // GSAP ScrollTrigger Network Animation
+        // GSAP ScrollTrigger Core Processor Animation
         gsap.registerPlugin(ScrollTrigger);
 
-        const networkTl = gsap.timeline({
+        const coreTl = gsap.timeline({
             scrollTrigger: {
-                trigger: "#ecosystem-section",
-                start: "top 60%", // Starts when the section reaches 60% of viewport
-                end: "bottom 80%", // Ends when section is near bottom
-                scrub: 1.5 // Smooth scrubbing, takes 1.5 seconds to catch up
+                trigger: "#core-section",
+                start: "top top", // Pin section when it hits top
+                end: "+=1500", // Scroll for 1500px to play animation
+                scrub: 1, // Smooth scrubbing
+                pin: true
             }
         });
 
-        // Ensure nodes are scaled out before starting
-        gsap.set(".network-node", { scale: 0, opacity: 0 });
+        // Initial scatter positions (Before Scroll)
+        gsap.set("#core-center", { x: 200, y: -80 });
+        gsap.set("#node-data", { x: -150, y: -50 });
+        gsap.set("#node-security", { x: -150, y: 150 });
+        gsap.set("#node-network", { x: 100, y: 150 });
 
-        networkTl.fromTo(".network-center", 
-            { scale: 0.5 }, 
-            { scale: 1.1, duration: 1, ease: "back.out(1.5)" }
-        )
-        .to(".network-line", {
+        // Animation sequence
+        coreTl.to("#init-text", { opacity: 0, y: -20, duration: 0.5 }) // Hide init text
+        .to(["#core-center", "#node-data", "#node-security", "#node-network"], {
+            x: 0,
+            y: 0,
+            duration: 1.5,
+            ease: "power3.inOut"
+        }, "-=0.2")
+        .add(() => {
+            // Trigger glow shadow on center when snapping
+            document.getElementById('core-center').classList.add('shadow-[0_0_80px_rgba(234,179,8,0.3)]');
+        }, "-=0.5")
+        .to(".core-ring", {
+            opacity: 1,
+            scale: 1.2,
+            stagger: 0.2,
+            duration: 1.5,
+            ease: "power2.out"
+        }, "-=0.5")
+        .to(".core-line", {
             strokeDashoffset: 0,
             duration: 1.5,
-            ease: "power1.inOut"
-        }, "-=0.2")
-        .to(".network-node", {
-            scale: 1,
-            opacity: 1,
-            duration: 1,
-            stagger: 0.2,
-            ease: "elastic.out(1, 0.5)"
-        }, "-=1");
+            ease: "power2.inOut"
+        }, "-=1.0");
 
         runChat();
     </script>
