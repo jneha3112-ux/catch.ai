@@ -192,7 +192,7 @@
     <!-- Hero Section -->
     <section class="pt-40 pb-20 px-6 relative border-b-2 border-black overflow-hidden bg-[#ffe17c]" id="hero-section">
         <!-- Force Field Canvas Container -->
-        <div id="force-field-container" class="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-multiply"></div>
+        <div id="force-field-container" class="absolute inset-0 z-0 pointer-events-none"></div>
         
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div class="space-y-8 z-10 animate-fade-up">
@@ -542,8 +542,9 @@
             p.draw = () => {
                 p.clear();
                 p.noStroke();
-                p.fill(0); // Black particles on yellow bg
+                p.fill(23, 30, 25); // Charcoal color from our palette
 
+                // Use p.mouseX/Y directly which reads global coordinates
                 magnifierX = p.lerp(magnifierX, p.mouseX, 0.1);
                 magnifierY = p.lerp(magnifierY, p.mouseY, 0.1);
 
@@ -564,7 +565,7 @@
 
                     let displaySize = pt.size;
                     if (dist < magnifierRadius) {
-                        displaySize *= p.map(dist, 0, magnifierRadius, 2, 1);
+                        displaySize *= p.map(dist, 0, magnifierRadius, 2.5, 1);
                     }
 
                     p.ellipse(pt.pos.x, pt.pos.y, displaySize, displaySize);
