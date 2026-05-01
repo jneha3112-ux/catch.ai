@@ -45,25 +45,26 @@
             pointer-events: none;
         }
 
-        /* Dock Styles */
+        /* Dock Styles Refined */
         .dock-container {
             position: fixed;
-            bottom: 2rem;
+            top: 2rem;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
             display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid #000;
-            border-radius: 2rem;
-            box-shadow: 8px 8px 0px 0px #000;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 2px solid #000;
+            border-radius: 5rem;
+            box-shadow: 6px 6px 0px 0px #000;
         }
         .dock-item {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             background: #fff;
             border: 2px solid #000;
             border-radius: 50%;
@@ -71,23 +72,23 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.15s cubic-bezier(0.2, 0, 0.2, 1);
             position: relative;
             color: #000;
         }
         .dock-item:hover .dock-label {
             opacity: 1;
-            transform: translateX(-50%) translateY(-10px);
+            transform: translateX(-50%) translateY(10px);
         }
         .dock-label {
             position: absolute;
-            top: -40px;
+            bottom: -35px;
             left: 50%;
             transform: translateX(-50%) translateY(0);
             background: #000;
             color: #fff;
             padding: 4px 12px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 10px;
             font-weight: 900;
             white-space: nowrap;
@@ -311,8 +312,8 @@
                 const distance = Math.hypot(mouseX - centerX, mouseY - centerY);
                 const maxDistance = 200;
                 if (distance < maxDistance) {
-                    const magnification = 1 + (1 - distance / maxDistance) * 0.6;
-                    item.style.transform = `scale(${magnification}) translateY(-${(magnification - 1) * 20}px)`;
+                    const magnification = 1 + (1 - distance / maxDistance) * 0.5;
+                    item.style.transform = `scale(${magnification}) translateY(${(magnification - 1) * 10}px)`;
                 } else {
                     item.style.transform = `scale(1) translateY(0)`;
                 }
