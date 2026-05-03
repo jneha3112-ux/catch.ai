@@ -550,6 +550,62 @@
         </div>
     </section>
 
+    <!-- Visual Explanation: WhatsApp Flow -->
+    <section class="py-32 px-10 bg-slate-50 overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div class="reveal-left">
+                <div class="inline-block bg-[#ffe17c] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">Step 01: Capture</div>
+                <h2 class="text-5xl md:text-7xl font-heading font-extrabold tracking-tighter text-black mb-8 leading-none uppercase">The AI Agent <br><span class="text-stroke">takes the wheel.</span></h2>
+                <p class="text-xl font-bold text-slate-600 leading-relaxed mb-10 italic">When a call is missed, Catch immediately texts the lead on WhatsApp. It checks your real-time availability and secures the booking without a human ever picking up the phone.</p>
+                <ul class="space-y-6">
+                    <li class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center shrink-0 text-white shadow-lg"><i data-lucide="check" class="w-4 h-4"></i></div>
+                        <div>
+                            <p class="font-black text-black uppercase text-sm">Instant Response</p>
+                            <p class="text-slate-500 font-bold text-sm">Responds within 3 seconds of a missed call.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center shrink-0 text-white shadow-lg"><i data-lucide="check" class="w-4 h-4"></i></div>
+                        <div>
+                            <p class="font-black text-black uppercase text-sm">Neural Triage</p>
+                            <p class="text-slate-500 font-bold text-sm">Qualifies patients based on urgency and revenue potential.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="relative reveal-right p-8">
+                <div class="absolute -inset-4 bg-[#ffe17c]/20 blur-3xl rounded-full"></div>
+                <img src="ai_booking_flow_mockup_1777824343503.png" alt="AI Booking Flow" class="relative rounded-[40px] shadow-[30px_30px_60px_-15px_rgba(0,0,0,0.1)] border-4 border-white transform hover:scale-105 transition-transform duration-700">
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Explanation: Analytics -->
+    <section class="py-32 px-10 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div class="relative order-2 lg:order-1 reveal-left p-8">
+                <div class="absolute -inset-4 bg-teal-100/30 blur-3xl rounded-full"></div>
+                <img src="dashboard_analytics_mockup_1777824395743.png" alt="Analytics Dashboard" class="relative rounded-[40px] shadow-[30px_30px_60px_-15px_rgba(0,0,0,0.1)] border-4 border-white transform hover:rotate-2 hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="order-1 lg:order-2 reveal-right">
+                <div class="inline-block bg-[#b7c6c2] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">Step 02: Scale</div>
+                <h2 class="text-5xl md:text-7xl font-heading font-extrabold tracking-tighter text-black mb-8 leading-none uppercase">Visualizing <br><span class="text-stroke">your ROI.</span></h2>
+                <p class="text-xl font-bold text-slate-600 leading-relaxed mb-10 italic">Stop guessing where your leads went. Our Neural Dashboard tracks every recovered dollar. You see the profit growth while your staff focuses on the patients in the building.</p>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-slate-50 p-6 rounded-3xl border-2 border-black/5 shadow-sm hover:shadow-xl transition-all">
+                        <p class="text-4xl font-black text-black">100%</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Capture Rate</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-3xl border-2 border-black/5 shadow-sm hover:shadow-xl transition-all">
+                        <p class="text-4xl font-black text-black">8.5x</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Average ROI</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Personas -->
     <section class="bg-white py-24 px-6 brutal-border-b overflow-hidden">
         <div class="max-w-7xl mx-auto animate-fade-up">
@@ -980,6 +1036,34 @@
         });
 
         lucide.createIcons();
+
+        // Reveal Left
+        gsap.utils.toArray(".reveal-left").forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 85%"
+                },
+                x: -100,
+                opacity: 0,
+                duration: 1.2,
+                ease: "power4.out"
+            });
+        });
+
+        // Reveal Right
+        gsap.utils.toArray(".reveal-right").forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 85%"
+                },
+                x: 100,
+                opacity: 0,
+                duration: 1.2,
+                ease: "power4.out"
+            });
+        });
 
         // Phone Chat Logic (Preserved)
         const chatWindow = document.getElementById('chat-window');
