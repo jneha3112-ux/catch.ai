@@ -719,21 +719,30 @@
     </section>
 
     <!-- Personas -->
-    <section class="bg-white py-24 px-6 brutal-border-b overflow-hidden">
-        <div class="max-w-7xl mx-auto animate-fade-up">
-            <h2 class="font-heading text-5xl font-extrabold mb-16 text-center">Built for everyone.</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-[#b7c6c2] brutal-border p-8 rounded-3xl relative overflow-hidden">
-                    <div class="bg-white px-3 py-1 text-xs font-bold uppercase brutal-border rounded-full inline-block mb-12">Clinic Owner</div>
-                    <h3 class="font-heading text-3xl font-extrabold mb-4">Focus on growth, not phones.</h3>
+    <section class="bg-white py-32 px-6 brutal-border-b overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-24">
+                <h2 class="font-heading text-6xl md:text-8xl font-extrabold tracking-tighter uppercase mb-4">Built for <span class="text-stroke">everyone.</span></h2>
+                <p class="text-xl font-bold text-slate-400">Tailored experiences for every stakeholder in your clinic.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="group bg-[#b7c6c2] brutal-border p-12 rounded-[3rem] relative overflow-hidden transition-all duration-500 hover:translate-y-[-10px]">
+                    <div class="bg-white px-4 py-1 text-[10px] font-black uppercase brutal-border rounded-full inline-block mb-16 relative z-10">Clinic Owner</div>
+                    <h3 class="font-heading text-4xl font-extrabold mb-6 relative z-10 leading-none">Focus on growth, <br>not phones.</h3>
+                    <p class="text-black/60 font-bold relative z-10">Reclaim your time and watch your revenue grow while the AI handles the administrative heavy lifting.</p>
+                    <i data-lucide="trending-up" class="absolute -right-10 -bottom-10 w-48 h-48 text-black/5 transform group-hover:scale-110 transition-transform"></i>
                 </div>
-                <div class="bg-[#ffe17c] brutal-border brutal-shadow-lg p-8 rounded-3xl relative overflow-hidden transform md:-translate-y-4">
-                    <div class="bg-white px-3 py-1 text-xs font-bold uppercase brutal-border rounded-full inline-block mb-12">Front Desk</div>
-                    <h3 class="font-heading text-3xl font-extrabold mb-4">Eliminate the daily chaos.</h3>
+                <div class="group bg-[#ffe17c] brutal-border brutal-shadow-lg p-12 rounded-[3rem] relative overflow-hidden transform md:-translate-y-8 transition-all duration-500 hover:translate-y-[-18px]">
+                    <div class="bg-white px-4 py-1 text-[10px] font-black uppercase brutal-border rounded-full inline-block mb-16 relative z-10">Front Desk</div>
+                    <h3 class="font-heading text-4xl font-extrabold mb-6 relative z-10 leading-none">Eliminate the <br>daily chaos.</h3>
+                    <p class="text-black/60 font-bold relative z-10">No more juggling three lines at once. Catch takes the overflow so you can focus on the patients in the room.</p>
+                    <i data-lucide="smile" class="absolute -right-10 -bottom-10 w-48 h-48 text-black/5 transform group-hover:scale-110 transition-transform"></i>
                 </div>
-                <div class="bg-[#272727] text-white brutal-border p-8 rounded-3xl relative overflow-hidden">
-                    <div class="bg-white text-black px-3 py-1 text-xs font-bold uppercase brutal-border rounded-full inline-block mb-12">Patients</div>
-                    <h3 class="font-heading text-3xl font-extrabold mb-4">Book instantly, no waiting.</h3>
+                <div class="group bg-[#272727] text-white brutal-border p-12 rounded-[3rem] relative overflow-hidden transition-all duration-500 hover:translate-y-[-10px]">
+                    <div class="bg-white text-black px-4 py-1 text-[10px] font-black uppercase brutal-border rounded-full inline-block mb-16 relative z-10">Patients</div>
+                    <h3 class="font-heading text-4xl font-extrabold mb-6 relative z-10 leading-none">Book instantly, <br>no waiting.</h3>
+                    <p class="text-white/40 font-bold relative z-10">Patients get the immediate response they want on the platform they use every day: WhatsApp.</p>
+                    <i data-lucide="message-square" class="absolute -right-10 -bottom-10 w-48 h-48 text-white/5 transform group-hover:scale-110 transition-transform"></i>
                 </div>
             </div>
         </div>
@@ -885,81 +894,78 @@
             </div>
         </div>
     </section>
+
     <!-- Pricing Section -->
-    <section class="py-32 px-10 bg-white" id="pricing">
-        <div class="max-w-7xl mx-auto text-center mb-20">
-            <h2 class="font-heading font-extrabold text-5xl md:text-7xl mb-6 text-black tracking-tighter">Value-Based Pricing.</h2>
-            <p class="text-xl font-bold text-slate-500 max-w-2xl mx-auto italic">Recover one missed lead, and the service pays for itself 10x over.</p>
-        </div>
+    <section class="py-32 px-10 bg-[#fafafa] relative overflow-hidden" id="pricing">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-20 items-center mb-32">
+                <div class="lg:col-span-5 reveal-left">
+                    <h2 class="font-heading font-extrabold text-6xl md:text-8xl mb-8 text-black tracking-tighter uppercase leading-none">Value-Based <br><span class="text-stroke">Pricing.</span></h2>
+                    <p class="text-xl font-bold text-slate-500 max-w-2xl italic mb-12">Recover one missed lead, and the service pays for itself 10x over. Simple, transparent, and built for scale.</p>
+                    <img src="pricing_visual.png" alt="ROI Visual" class="w-full rounded-[48px] shadow-2xl border-4 border-white transform -rotate-3 hover:rotate-0 transition-transform duration-700">
+                </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            <!-- Starter -->
-            <div class="bg-slate-50/50 p-12 rounded-[48px] border-2 border-slate-100 flex flex-col hover:border-slate-300 transition-all group">
-                <div class="mb-8">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">Starter</span>
-                    <h3 class="text-5xl font-heading font-extrabold mt-6 text-black">$199<span class="text-lg text-slate-400 font-bold">/mo</span></h3>
-                </div>
-                <ul class="space-y-4 mb-12 flex-1">
-                    <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Missed Call Text-Back
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Basic Triage Logic
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Email Summaries
-                    </li>
-                </ul>
-                <button class="brutal-btn w-full py-5 rounded-3xl bg-white border-2 border-slate-200 font-black text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all">Get Started</button>
-            </div>
+                <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 reveal-right">
+                    <!-- Starter -->
+                    <div class="bg-white p-10 rounded-[48px] border-2 border-black flex flex-col shadow-xl hover:shadow-2xl transition-all group">
+                        <div class="mb-8">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-100 shadow-sm">Starter</span>
+                            <h3 class="text-5xl font-heading font-extrabold mt-6 text-black">$199<span class="text-lg text-slate-400 font-bold">/mo</span></h3>
+                        </div>
+                        <ul class="space-y-4 mb-12 flex-1">
+                            <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Missed Call Text-Back
+                            </li>
+                            <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Basic Triage Logic
+                            </li>
+                            <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Email Summaries
+                            </li>
+                        </ul>
+                        <button class="brutal-btn w-full py-5 rounded-3xl bg-white border-2 border-black font-black text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all">Get Started</button>
+                    </div>
 
-            <!-- Pro -->
-            <div class="bg-black p-12 rounded-[48px] border-2 border-black flex flex-col shadow-2xl relative overflow-hidden transform md:-translate-y-4">
-                <div class="absolute top-8 right-8">
-                    <span class="text-[9px] font-black text-black bg-[#ffe17c] px-4 py-2 rounded-full uppercase tracking-widest">Most Popular</span>
-                </div>
-                <div class="mb-8">
-                    <span class="text-[10px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-sm">Pro (Full Neural)</span>
-                    <h3 class="text-5xl font-heading font-extrabold mt-6 text-white">$499<span class="text-lg text-white/40 font-bold">/mo</span></h3>
-                </div>
-                <ul class="space-y-4 mb-12 flex-1">
-                    <li class="flex items-center gap-3 text-sm font-bold text-white/80">
-                        <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Direct PMS Booking
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-white/80">
-                        <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Insurance Verification AI
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-white/80">
-                        <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> 24/7 Global Neural Hub
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-white/80">
-                        <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Custom Voice Responses
-                    </li>
-                </ul>
-                <button class="brutal-btn w-full py-5 rounded-3xl bg-[#ffe17c] text-black font-black text-sm uppercase tracking-widest hover:brightness-110 transition-all">Go Neural</button>
-            </div>
+                    <!-- Pro -->
+                    <div class="bg-black p-10 rounded-[48px] border-2 border-black flex flex-col shadow-[20px_20px_0px_0px_#ffe17c] relative overflow-hidden group">
+                        <div class="absolute top-4 right-4">
+                            <span class="text-[8px] font-black text-black bg-[#ffe17c] px-3 py-1 rounded-full uppercase tracking-widest">Most Popular</span>
+                        </div>
+                        <div class="mb-8 text-white">
+                            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-sm">Pro (Full Neural)</span>
+                            <h3 class="text-5xl font-heading font-extrabold mt-6">$499<span class="text-lg text-white/40 font-bold">/mo</span></h3>
+                        </div>
+                        <ul class="space-y-4 mb-12 flex-1 text-white/80">
+                            <li class="flex items-center gap-3 text-sm font-bold">
+                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Direct PMS Booking
+                            </li>
+                            <li class="flex items-center gap-3 text-sm font-bold">
+                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Insurance Verification AI
+                            </li>
+                            <li class="flex items-center gap-3 text-sm font-bold">
+                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> 24/7 Global Neural Hub
+                            </li>
+                            <li class="flex items-center gap-3 text-sm font-bold">
+                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Custom Voice Responses
+                            </li>
+                        </ul>
+                        <button class="brutal-btn w-full py-5 rounded-3xl bg-[#ffe17c] text-black font-black text-sm uppercase tracking-widest hover:brightness-110 transition-all">Go Neural</button>
+                    </div>
 
-            <!-- Enterprise -->
-            <div class="bg-slate-50/50 p-12 rounded-[48px] border-2 border-slate-100 flex flex-col hover:border-slate-300 transition-all">
-                <div class="mb-8">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">Enterprise</span>
-                    <h3 class="text-5xl font-heading font-extrabold mt-6 text-black">Custom</h3>
+                    <!-- Enterprise -->
+                    <div class="md:col-span-2 bg-white p-10 rounded-[48px] border-2 border-black flex flex-col md:flex-row justify-between items-center group">
+                        <div class="mb-8 md:mb-0">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-100 shadow-sm">Enterprise</span>
+                            <h3 class="text-5xl font-heading font-extrabold mt-6 text-black">Custom Pricing</h3>
+                            <p class="text-sm font-bold text-slate-400 mt-2">Multi-location control & dedicated neural support.</p>
+                        </div>
+                        <button class="brutal-btn px-10 py-5 rounded-3xl bg-black text-white font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all">Talk to Sales</button>
+                    </div>
                 </div>
-                <ul class="space-y-4 mb-12 flex-1">
-                    <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Multi-Location Control
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Custom API Access
-                    </li>
-                    <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
-                        <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Dedicated Neural Support
-                    </li>
-                </ul>
-                <button class="brutal-btn w-full py-5 rounded-3xl bg-white border-2 border-slate-200 font-black text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all">Talk to Sales</button>
             </div>
         </div>
     </section>
+
     <!-- Final CTA & Footer -->
     <section class="bg-[#ffe17c] py-32 px-6 brutal-border-b dot-pattern text-center overflow-hidden">
         <div class="max-w-3xl mx-auto animate-fade-up">
