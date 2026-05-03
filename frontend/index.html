@@ -290,13 +290,8 @@
 
         @media (max-width: 768px) {
             .dock-container {
-                bottom: 1.5rem;
-                padding: 8px 16px;
-                gap: 8px;
-            }
-            .dock-item {
-                width: 40px;
-                height: 40px;
+                bottom: 20px;
+                padding: 10px 15px;
             }
             .dock-label { display: none !important; }
         }
@@ -412,6 +407,9 @@
             border-radius: 2rem;
             padding: 2.5rem;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             transition: all 0.3s ease;
         }
         .review-card-dark:hover {
