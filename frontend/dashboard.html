@@ -64,10 +64,38 @@
         }
 
         @media (max-width: 1024px) {
-            aside { display: none; }
+            .flex.h-screen {
+                flex-direction: column;
+                height: auto;
+                overflow-y: auto;
+            }
+            aside { 
+                width: 100%;
+                height: auto;
+                shrink: 0;
+            }
+            main {
+                width: 100%;
+                height: auto;
+                overflow: visible;
+            }
+            .dock-container {
+                bottom: 1rem;
+                width: 90%;
+                justify-content: space-around;
+            }
         }
 
         @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+                height: auto;
+                flex-direction: column;
+                text-align: center;
+            }
+            .grid-cols-4 {
+                grid-cols: 1 !important;
+            }
             .dock-item {
                 width: 38px;
                 height: 38px;
@@ -198,7 +226,7 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
                 <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="bg-white p-6 rounded-[32px] brutal-border brutal-shadow">
                         <p class="text-[9px] font-black text-black/40 uppercase tracking-[0.2em] mb-3">Lead Recovery</p>
                         <div class="flex items-end gap-2">
