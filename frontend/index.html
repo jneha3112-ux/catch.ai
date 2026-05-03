@@ -397,6 +397,34 @@
             border: 3px solid #000;
             z-index: 20;
         }
+
+        /* Review Marquee Fixes */
+        .marquee-wrapper {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+            width: max-content;
+        }
+        .review-card-dark {
+            width: 450px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .review-card-dark:hover {
+            border-color: #ffe17c;
+            transform: translateY(-5px);
+        }
+        .marquee-anim-1 { animation: marquee-scroll 40s linear infinite; }
+        .marquee-anim-2 { animation: marquee-scroll 35s linear infinite reverse; }
+        
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-50% - 1rem)); }
+        }
     </style>
 </head>
 <body class="bg-[#ffe17c]">
@@ -812,86 +840,200 @@
     </section>
 
     <!-- Social Proof / Reviews -->
-    <section class="bg-[#171e19] py-32 px-6 brutal-border-b overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-20 animate-fade-up">
-                <h2 class="font-heading text-5xl md:text-6xl font-extrabold text-white mb-6">Trusted by leading clinics</h2>
-                <p class="text-[#ffe17c] font-bold tracking-widest uppercase">Verified Performance Metrics</p>
+    <section class="bg-[#171e19] py-32 brutal-border-b overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 mb-16">
+            <div class="text-center animate-fade-up">
+                <h2 class="font-heading text-6xl md:text-8xl font-extrabold text-white mb-6 uppercase tracking-tighter leading-none">Trusted by <br><span class="text-stroke">leading clinics.</span></h2>
+                <p class="text-[#ffe17c] font-black tracking-[0.3em] uppercase text-xs">Verified Performance Metrics</p>
             </div>
+        </div>
 
-            <div class="marquee-container">
-                <div class="marquee-track" id="testimonial-track">
+        <div class="space-y-8">
+            <!-- Row 1 -->
+            <div class="marquee-container overflow-hidden">
+                <div class="marquee-wrapper marquee-anim-1">
                     <!-- Review 1 -->
-                    <div class="bg-white brutal-border p-8 rounded-[2rem] relative testimonial-card shadow-[8px_8px_0px_0px_#ffe17c]">
+                    <div class="review-card-dark">
                         <div class="flex gap-1 mb-6 text-[#ffe17c]">
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
                         </div>
-                        <p class="text-xl font-bold text-black mb-8 italic">"Catch recovered $14,000 in missed cleanings in our first month. It paid for itself in 48 hours."</p>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-[#b7c6c2] brutal-border flex items-center justify-center font-black text-black">DR</div>
-                            <div>
-                                <p class="font-heading font-extrabold text-black">Dr. Aris Romas</p>
-                                <p class="text-xs font-bold text-gray-500 uppercase">Smile Design Dental</p>
+                        <p class="text-xl font-bold text-white mb-8 italic">"The patient qualification is perfect. Our high-intent leads have tripled in 30 days."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">DR</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Dr. David Chen</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Lead Dentist @ BrightSmile</p>
+                                </div>
                             </div>
+                            <div class="bg-blue-500/10 text-blue-400 text-[9px] font-black px-3 py-1 rounded-full border border-blue-500/20 uppercase tracking-widest">92% Qual Rate</div>
                         </div>
-                        <div class="absolute top-4 right-4 bg-green-100 text-green-700 text-[10px] font-black px-2 py-1 rounded-full border border-green-200">+22% ROI</div>
                     </div>
-
                     <!-- Review 2 -->
-                    <div class="bg-white brutal-border p-8 rounded-[2rem] relative testimonial-card shadow-[8px_8px_0px_0px_#b7c6c2]">
+                    <div class="review-card-dark">
                         <div class="flex gap-1 mb-6 text-[#ffe17c]">
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
                         </div>
-                        <p class="text-xl font-bold text-black mb-8 italic">"Our front desk is finally happy. They don't have to chase leads anymore—the leads book themselves."</p>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-[#ffe17c] brutal-border flex items-center justify-center font-black text-black">JS</div>
-                            <div>
-                                <p class="font-heading font-extrabold text-black">Julie Smith</p>
-                                <p class="text-xs font-bold text-gray-500 uppercase">Office Manager, Metro Dental</p>
+                        <p class="text-xl font-bold text-white mb-8 italic">"Simple, elegant, and powerful. It handled 400+ inquiries this week sans manual input."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">ER</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Elena Rodriguez</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Ops Director @ GlowMed</p>
+                                </div>
                             </div>
+                            <div class="bg-teal-500/10 text-teal-400 text-[9px] font-black px-3 py-1 rounded-full border border-teal-500/20 uppercase tracking-widest">15hr Saved/Wk</div>
                         </div>
-                        <div class="absolute top-4 right-4 bg-green-100 text-green-700 text-[10px] font-black px-2 py-1 rounded-full border border-green-200">12 hrs/wk saved</div>
                     </div>
-
-                    <!-- Review 3 -->
-                    <div class="bg-white brutal-border p-8 rounded-[2rem] relative testimonial-card shadow-[8px_8px_0px_0px_#171e19]">
+                    <!-- Duplicate for loop -->
+                    <div class="review-card-dark">
                         <div class="flex gap-1 mb-6 text-[#ffe17c]">
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
                         </div>
-                        <p class="text-xl font-bold text-black mb-8 italic">"The ROI-based triage is a game changer. It prioritizes emergencies over checkups perfectly."</p>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-[#272727] text-white brutal-border flex items-center justify-center font-black">MK</div>
-                            <div>
-                                <p class="font-heading font-extrabold text-black text-black">Mark K.</p>
-                                <p class="text-xs font-bold text-gray-500 uppercase">Director, Peak Orthodontics</p>
+                        <p class="text-xl font-bold text-white mb-8 italic">"The follow-up system is a total gamechanger. We recovered 4 lost deals in the first week."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">TV</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Thomas Vance</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Founder @ Vance Cons.</p>
+                                </div>
                             </div>
+                            <div class="bg-indigo-500/10 text-indigo-400 text-[9px] font-black px-3 py-1 rounded-full border border-indigo-500/20 uppercase tracking-widest">4.5x ROAS</div>
                         </div>
-                        <div class="absolute top-4 right-4 bg-green-100 text-green-700 text-[10px] font-black px-2 py-1 rounded-full border border-green-200">+310 Lead Score</div>
+                    </div>
+                    <!-- Review 1 clone -->
+                    <div class="review-card-dark">
+                        <div class="flex gap-1 mb-6 text-[#ffe17c]">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="text-xl font-bold text-white mb-8 italic">"The patient qualification is perfect. Our high-intent leads have tripled in 30 days."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">DR</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Dr. David Chen</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Lead Dentist @ BrightSmile</p>
+                                </div>
+                            </div>
+                            <div class="bg-blue-500/10 text-blue-400 text-[9px] font-black px-3 py-1 rounded-full border border-blue-500/20 uppercase tracking-widest">92% Qual Rate</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-20 text-center">
-                <a href="/dashboard.html" class="brutal-btn creepy-btn" style="--cb-hue: 45deg;">
-                    <span class="creepy-btn__eyes">
-                        <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                        <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                    </span>
-                    <span class="creepy-btn__cover" style="padding: 1.25em 3em; background-color: #ffe17c; color: black; border: 2px solid black;">Join 50+ Clinics</span>
-                </a>
+            <!-- Row 2 -->
+            <div class="marquee-container overflow-hidden">
+                <div class="marquee-wrapper marquee-anim-2">
+                    <!-- Review 4 -->
+                    <div class="review-card-dark">
+                        <div class="flex gap-1 mb-6 text-[#ffe17c]">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="text-xl font-bold text-white mb-8 italic">"The ROI was clear within 48 hours. Best software investment we have made this year."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">SL</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Sophia Loren</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Marketing Dir @ Aesthetix</p>
+                                </div>
+                            </div>
+                            <div class="bg-purple-500/10 text-purple-400 text-[9px] font-black px-3 py-1 rounded-full border border-purple-500/20 uppercase tracking-widest">12x ROI</div>
+                        </div>
+                    </div>
+                    <!-- Review 5 -->
+                    <div class="review-card-dark">
+                        <div class="flex gap-1 mb-6 text-[#ffe17c]">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="text-xl font-bold text-white mb-8 italic">"Finally, an AI that understands intent. Our conversion rate hit record highs in March."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">MT</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Mike Thompson</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Principal @ Urban Realty</p>
+                                </div>
+                            </div>
+                            <div class="bg-orange-500/10 text-orange-400 text-[9px] font-black px-3 py-1 rounded-full border border-orange-500/20 uppercase tracking-widest">$850K Pipe Value</div>
+                        </div>
+                    </div>
+                    <!-- Duplicate -->
+                    <div class="review-card-dark">
+                        <div class="flex gap-1 mb-6 text-[#ffe17c]">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="text-xl font-bold text-white mb-8 italic">"Our human agents now only talk to verified, high-intent buyers. It is a dream."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">RB</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Robert Blake</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Sales VP @ Nexus Real Estate</p>
+                                </div>
+                            </div>
+                            <div class="bg-red-500/10 text-red-400 text-[9px] font-black px-3 py-1 rounded-full border border-red-500/20 uppercase tracking-widest">0.4s Reply Time</div>
+                        </div>
+                    </div>
+                    <!-- Clone -->
+                    <div class="review-card-dark">
+                        <div class="flex gap-1 mb-6 text-[#ffe17c]">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="text-xl font-bold text-white mb-8 italic">"The ROI was clear within 48 hours. Best software investment we have made this year."</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center font-black text-white text-xs">SL</div>
+                                <div>
+                                    <p class="font-heading font-extrabold text-white text-sm">Sophia Loren</p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Marketing Dir @ Aesthetix</p>
+                                </div>
+                            </div>
+                            <div class="bg-purple-500/10 text-purple-400 text-[9px] font-black px-3 py-1 rounded-full border border-purple-500/20 uppercase tracking-widest">12x ROI</div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="mt-24 text-center">
+            <a href="/dashboard.html" class="inline-block bg-[#ffe17c] text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-lg brutal-border brutal-shadow-lg brutal-btn hover:translate-x-1 hover:translate-y-1 transition-all">
+                Join 50+ Clinics
+            </a>
         </div>
     </section>
 
