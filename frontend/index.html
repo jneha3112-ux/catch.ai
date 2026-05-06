@@ -490,29 +490,26 @@
             100% { transform: translateX(calc(-50% - 1rem)); }
         }
 
-        /* ── Burst-Through Intro ── */
-        #zoom-wrapper {
-            position: relative;
-            width: 100%;
-            /* height set by GSAP pin */
-        }
-
-        /* The intro image sits as a fixed overlay ABOVE the hero */
+        /* ═══════════════════════════════════
+           BURST-THROUGH INTRO — FIXED OVERLAY
+           Sits at z-index:1000, covers 100vw/100vh.
+           A scroll spacer provides scroll distance.
+           GSAP zooms the img then fades the overlay,
+           revealing the website already underneath.
+        ═══════════════════════════════════ */
         #intro-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            position: fixed;
+            inset: 0;
+            width: 100vw;
             height: 100vh;
-            z-index: 20;
+            z-index: 1000;
             overflow: hidden;
-            pointer-events: none;
+            background: #050505;
         }
 
         #intro-img {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -521,30 +518,28 @@
             will-change: transform;
         }
 
-        /* Ghost text on intro */
         #intro-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 21;
+            z-index: 2;
             font-family: 'Playfair Display', serif;
             font-size: clamp(3rem, 10vw, 9rem);
             font-weight: 400;
-            color: rgba(255,255,255,0.18);
+            color: rgba(255,255,255,0.15);
             letter-spacing: -0.04em;
             white-space: nowrap;
-            text-align: center;
             pointer-events: none;
+            text-align: center;
         }
 
-        /* Scroll hint arrow */
-        .scroll-hint {
+        #scroll-hint {
             position: absolute;
             bottom: 2.5rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 22;
+            z-index: 3;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -554,13 +549,20 @@
             font-family: 'Inter', sans-serif;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            animation: bounce 2s infinite;
+            animation: bounce 2s ease-in-out infinite;
             pointer-events: none;
         }
-        .scroll-hint svg { width: 20px; height: 20px; }
+        #scroll-hint svg { width: 18px; height: 18px; }
         @keyframes bounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50%       { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* The spacer creates scroll distance for the intro animation */
+        #intro-spacer {
+            height: 250vh;
+            width: 100%;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -568,8 +570,8 @@
     <!-- Global Noise Overlay -->
     <div class="noise-overlay"></div>
 
-    <!-- Navigation -->
-    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-8">
+    <!-- Navigation (above intro overlay) -->
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-[2000] transition-all duration-500 py-8">
         <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <a href="#" id="nav-logo-link" class="text-3xl font-bold tracking-tighter font-serif text-white">
@@ -583,30 +585,34 @@
         </div>
     </nav>
 
-    <!-- ════════════════════════════════════════
-         BURST-THROUGH INTRO
-         #intro-overlay sits ON TOP of the hero.
-         GSAP zooms the image until it dissolves,
-         revealing the Catch.ai hero already beneath.
-    ════════════════════════════════════════ -->
-    <div id="zoom-wrapper">
-
-        <!-- INTRO OVERLAY (on top, z-index 20) -->
-        <div id="intro-overlay">
-            <img id="intro-img"
-                 src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp"
-                 alt="Intro">
-            <div id="intro-text">Catch.ai</div>
-            <div class="scroll-hint">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12l7 7 7-7"/>
-                </svg>
-                Scroll to enter
-            </div>
+    <!-- ═══════════════════════════════════════
+         FIXED INTRO OVERLAY (z-index: 1000)
+         Covers full viewport. GSAP zooms+fades it
+         as user scrolls through #intro-spacer.
+    ═══════════════════════════════════════ -->
+    <div id="intro-overlay">
+        <img id="intro-img"
+             src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp"
+             alt="Intro">
+        <div id="intro-text">Catch.ai</div>
+        <div id="scroll-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+            Scroll to enter
         </div>
+    </div>
 
-        <!-- HERO SECTION (underneath, always visible) -->
-        <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
+    <!-- Scroll spacer: 250vh of scroll distance for intro animation -->
+    <div id="intro-spacer"></div>
+
+    <!-- ═══════════════════════════════════════
+         ACTUAL WEBSITE (sits below the spacer)
+         Revealed as intro fades out.
+    ═══════════════════════════════════════ -->
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
         <!-- Background Atmosphere -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <div class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-screen">
@@ -699,7 +705,6 @@
                 </div>
             </div>
     </section>
-    </div><!-- /#zoom-wrapper -->
 
     <!-- Social Proof Marquee -->
     <section class="bg-[#050505] py-8 border-y border-white/5 overflow-hidden relative">
@@ -1686,37 +1691,37 @@
                 x: gsap.utils.unitize(x => parseFloat(x) % trackWidth)
             }
         });
-        // ── Burst-Through Intro Animation ──
-        // The #intro-overlay is on top (z-index 20).
-        // We pin #zoom-wrapper, zoom the image to 8x,
-        // then fade the overlay out so the hero beneath is revealed.
+        // \u2500\u2500 BURST-THROUGH INTRO \u2500\u2500
+        // #intro-overlay is position:fixed (z-index:1000), fully covers screen.
+        // #intro-spacer (250vh tall) provides the scroll distance.
+        // As user scrolls through the spacer, the image zooms in,
+        // then the overlay fades revealing the website beneath.
         gsap.timeline({
             scrollTrigger: {
-                trigger: "#zoom-wrapper",
+                trigger: "#intro-spacer",
                 start: "top top",
-                end: "+=150%",
-                pin: true,
-                scrub: 1,
-                anticipatePin: 1
+                end: "bottom top",
+                scrub: 1
             }
         })
-        // Phase 1 (0 → 0.6): zoom the image in hard
+        // Zoom image from 1x → 8x (burst-through feel)
         .to("#intro-img", {
             scale: 8,
             ease: "power2.in"
         }, 0)
-        // Fade the ghost text and scroll hint out early
-        .to(["#intro-text", ".scroll-hint"], {
+        // Fade ghost text and scroll hint out quickly
+        .to(["#intro-text", "#scroll-hint"], {
             opacity: 0,
-            duration: 0.3,
             ease: "power1.in"
         }, 0)
-        // Phase 2 (0.6 → 1.0): dissolve the entire overlay
-        // revealing the hero that's already sitting beneath
+        // Dissolve entire overlay at 55% — WEBSITE IS REVEALED
         .to("#intro-overlay", {
             opacity: 0,
-            ease: "power2.out"
-        }, 0.5);
+            ease: "power2.out",
+            onComplete: () => {
+                document.getElementById("intro-overlay").style.display = "none";
+            }
+        }, 0.55);
     </script>
 </body>
 </html>
