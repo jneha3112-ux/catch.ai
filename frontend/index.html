@@ -490,24 +490,29 @@
             100% { transform: translateX(calc(-50% - 1rem)); }
         }
 
-        /* ═══════════════════════════════════
-           BURST-THROUGH INTRO — FIXED OVERLAY
-           Sits at z-index:1000, covers 100vw/100vh.
-           A scroll spacer provides scroll distance.
-           GSAP zooms the img then fades the overlay,
-           revealing the website already underneath.
-        ═══════════════════════════════════ */
-        #intro-overlay {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
+        /* ══════════════════════════════════════
+           INTRO — GSAP PIN WRAPPER
+           .intro-wrapper is pinned by GSAP.
+           .intro-img-container sits on top (z:2).
+           GSAP zooms the image + fades it out.
+        ══════════════════════════════════════ */
+        .intro-wrapper {
+            position: relative;
+            width: 100%;
             height: 100vh;
-            z-index: 1000;
             overflow: hidden;
-            background: #050505;
         }
 
-        #intro-img {
+        /* Intro image on top */
+        .intro-img-container {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            perspective: 500px;
+            overflow: hidden;
+        }
+
+        .intro-img-container img {
             position: absolute;
             inset: 0;
             width: 100%;
@@ -518,12 +523,13 @@
             will-change: transform;
         }
 
-        #intro-text {
+        /* Ghost text + hint inside intro image layer */
+        .intro-label {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 2;
+            z-index: 11;
             font-family: 'Playfair Display', serif;
             font-size: clamp(3rem, 10vw, 9rem);
             font-weight: 400;
@@ -531,38 +537,36 @@
             letter-spacing: -0.04em;
             white-space: nowrap;
             pointer-events: none;
-            text-align: center;
         }
 
-        #scroll-hint {
+        .intro-scroll-hint {
             position: absolute;
             bottom: 2.5rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 3;
+            z-index: 11;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0.5rem;
             color: rgba(255,255,255,0.5);
             font-size: 10px;
-            font-family: 'Inter', sans-serif;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             animation: bounce 2s ease-in-out infinite;
             pointer-events: none;
         }
-        #scroll-hint svg { width: 18px; height: 18px; }
+        .intro-scroll-hint svg { width: 18px; height: 18px; }
         @keyframes bounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50%       { transform: translateX(-50%) translateY(8px); }
         }
 
-        /* The spacer creates scroll distance for the intro animation */
-        #intro-spacer {
-            height: 250vh;
-            width: 100%;
-            pointer-events: none;
+        /* Hero section sits INSIDE the wrapper, behind the image */
+        .intro-hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
         }
     </style>
 </head>
@@ -585,33 +589,35 @@
         </div>
     </nav>
 
-    <!-- ═══════════════════════════════════════
-         FIXED INTRO OVERLAY (z-index: 1000)
-         Covers full viewport. GSAP zooms+fades it
-         as user scrolls through #intro-spacer.
-    ═══════════════════════════════════════ -->
-    <div id="intro-overlay">
-        <img id="intro-img"
-             src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp"
-             alt="Intro">
-        <div id="intro-text">Catch.ai</div>
-        <div id="scroll-hint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
-            Scroll to enter
+    <!-- ══════════════════════════════════════
+         INTRO SECTION — GSAP PINNED WRAPPER
+         GSAP pins this wrapper.
+         .intro-img-container (z:10) is on TOP.
+         GSAP zooms image to 3x + fades it out
+         revealing the dark hero bg beneath.
+    ══════════════════════════════════════ -->
+    <div class="intro-wrapper" id="intro-wrapper">
+
+        <!-- TOP LAYER: Intro image -->
+        <div class="intro-img-container" id="intro-img-container">
+            <img id="intro-img"
+                 src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp"
+                 alt="Intro">
+            <div class="intro-label">Catch.ai</div>
+            <div class="intro-scroll-hint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+                Scroll to enter
+            </div>
         </div>
+
+        <!-- BEHIND LAYER: Hero dark background (visible as image fades) -->
+        <div class="intro-hero-bg bg-[#050505]"></div>
+
     </div>
 
-    <!-- Scroll spacer: 250vh of scroll distance for intro animation -->
-    <div id="intro-spacer"></div>
-
-    <!-- ═══════════════════════════════════════
-         ACTUAL WEBSITE (sits below the spacer)
-         Revealed as intro fades out.
-    ═══════════════════════════════════════ -->
-
-    <!-- Hero Section -->
+    <!-- ACTUAL HERO SECTION (after pin releases) -->
     <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
         <!-- Background Atmosphere -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
@@ -1696,52 +1702,46 @@
         // ══════════════════════════════════════════
         //  BURST-THROUGH INTRO — Native Scroll Driver
         //  No GSAP ScrollTrigger needed.
-        //  The fixed #intro-overlay covers everything.
-        //  We read window.scrollY and drive scale/opacity
-        //  directly from the JS scroll event.
-        // ══════════════════════════════════════════
-        (function initIntro() {
-            const overlay  = document.getElementById('intro-overlay');
-            const img      = document.getElementById('intro-img');
-            const text     = document.getElementById('intro-text');
-            const hint     = document.getElementById('scroll-hint');
-            const spacer   = document.getElementById('intro-spacer');
-
-            if (!overlay || !img || !spacer) return;
-
-            function updateIntro() {
-                const scrollY    = window.scrollY;
-                const spacerH    = spacer.offsetHeight; // 250vh in px
-                const progress   = Math.min(scrollY / spacerH, 1); // 0 → 1
-
-                // --- Image zoom: scale 1 → 8 ---
-                const scale = 1 + progress * 7;
-                img.style.transform = 'scale(' + scale + ')';
-
-                // --- Fade out text & hint in first 30% ---
-                const textOpacity = Math.max(0, 1 - progress / 0.3);
-                text.style.opacity = textOpacity;
-                hint.style.opacity = textOpacity;
-
-                // --- Fade out whole overlay from 55% → 100% ---
-                if (progress > 0.55) {
-                    const fadeP = (progress - 0.55) / 0.45;
-                    overlay.style.opacity = Math.max(0, 1 - fadeP);
-                } else {
-                    overlay.style.opacity = 1;
+        // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+        //  INTRO: GSAP PIN on .intro-wrapper
+        //  The wrapper is pinned at the top.
+        //  GSAP zooms the image (scale 1\u21923, z 0\u2192350)
+        //  then fades the image container out,
+        //  revealing the dark bg beneath.
+        //  Pin releases and normal scroll resumes.
+        // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+        if (document.getElementById('intro-wrapper')) {
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#intro-wrapper',
+                    start: 'top top',
+                    end: '+=200%',
+                    pin: true,
+                    scrub: 1,
+                    anticipatePin: 1
                 }
-
-                // --- Remove from DOM once fully done ---
-                if (progress >= 1) {
-                    overlay.style.display = 'none';
-                    window.removeEventListener('scroll', updateIntro);
-                }
-            }
-
-            // Run once on load in case page was already scrolled
-            updateIntro();
-            window.addEventListener('scroll', updateIntro, { passive: true });
-        })();
+            })
+            // Phase 1 (0\u21920.7): zoom + z-push
+            .to('#intro-img', {
+                scale: 3,
+                z: 350,
+                transformOrigin: 'center center',
+                ease: 'power2.inOut',
+                duration: 0.7
+            }, 0)
+            // Fade label + hint out early
+            .to(['.intro-label', '.intro-scroll-hint'], {
+                opacity: 0,
+                ease: 'power1.in',
+                duration: 0.3
+            }, 0)
+            // Phase 2 (0.5\u21921.0): dissolve the image container
+            .to('#intro-img-container', {
+                opacity: 0,
+                ease: 'power2.out',
+                duration: 0.5
+            }, 0.5);
+        }
     </script>
 </body>
 </html>
