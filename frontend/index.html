@@ -1691,37 +1691,57 @@
                 x: gsap.utils.unitize(x => parseFloat(x) % trackWidth)
             }
         });
-        // \u2500\u2500 BURST-THROUGH INTRO \u2500\u2500
-        // #intro-overlay is position:fixed (z-index:1000), fully covers screen.
-        // #intro-spacer (250vh tall) provides the scroll distance.
-        // As user scrolls through the spacer, the image zooms in,
-        // then the overlay fades revealing the website beneath.
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: "#intro-spacer",
-                start: "top top",
-                end: "bottom top",
-                scrub: 1
+        });
+
+        // ══════════════════════════════════════════
+        //  BURST-THROUGH INTRO — Native Scroll Driver
+        //  No GSAP ScrollTrigger needed.
+        //  The fixed #intro-overlay covers everything.
+        //  We read window.scrollY and drive scale/opacity
+        //  directly from the JS scroll event.
+        // ══════════════════════════════════════════
+        (function initIntro() {
+            const overlay  = document.getElementById('intro-overlay');
+            const img      = document.getElementById('intro-img');
+            const text     = document.getElementById('intro-text');
+            const hint     = document.getElementById('scroll-hint');
+            const spacer   = document.getElementById('intro-spacer');
+
+            if (!overlay || !img || !spacer) return;
+
+            function updateIntro() {
+                const scrollY    = window.scrollY;
+                const spacerH    = spacer.offsetHeight; // 250vh in px
+                const progress   = Math.min(scrollY / spacerH, 1); // 0 → 1
+
+                // --- Image zoom: scale 1 → 8 ---
+                const scale = 1 + progress * 7;
+                img.style.transform = 'scale(' + scale + ')';
+
+                // --- Fade out text & hint in first 30% ---
+                const textOpacity = Math.max(0, 1 - progress / 0.3);
+                text.style.opacity = textOpacity;
+                hint.style.opacity = textOpacity;
+
+                // --- Fade out whole overlay from 55% → 100% ---
+                if (progress > 0.55) {
+                    const fadeP = (progress - 0.55) / 0.45;
+                    overlay.style.opacity = Math.max(0, 1 - fadeP);
+                } else {
+                    overlay.style.opacity = 1;
+                }
+
+                // --- Remove from DOM once fully done ---
+                if (progress >= 1) {
+                    overlay.style.display = 'none';
+                    window.removeEventListener('scroll', updateIntro);
+                }
             }
-        })
-        // Zoom image from 1x → 8x (burst-through feel)
-        .to("#intro-img", {
-            scale: 8,
-            ease: "power2.in"
-        }, 0)
-        // Fade ghost text and scroll hint out quickly
-        .to(["#intro-text", "#scroll-hint"], {
-            opacity: 0,
-            ease: "power1.in"
-        }, 0)
-        // Dissolve entire overlay at 55% — WEBSITE IS REVEALED
-        .to("#intro-overlay", {
-            opacity: 0,
-            ease: "power2.out",
-            onComplete: () => {
-                document.getElementById("intro-overlay").style.display = "none";
-            }
-        }, 0.55);
+
+            // Run once on load in case page was already scrolled
+            updateIntro();
+            window.addEventListener('scroll', updateIntro, { passive: true });
+        })();
     </script>
 </body>
 </html>
