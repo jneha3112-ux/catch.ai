@@ -491,36 +491,70 @@
         }
 
         /* Intro Zoom Animation Styles */
-        .wrapper,
-        .content {
+        .intro-section {
             position: relative;
             width: 100%;
-            z-index: 1;
-        }
-
-        .content {
-            overflow-x: hidden;
-        }
-
-        .image-container {
-            width: 100%;
             height: 100vh;
+            overflow: hidden;
+            perspective: 500px;
+            background: #050505;
+        }
+
+        .intro-section img {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 2;
-            perspective: 500px;
-            overflow: hidden;
-        }
-
-        .image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: center center;
-            opacity: 0.8;
-            filter: brightness(0.6) contrast(1.2);
+            will-change: transform;
+            transform-origin: center center;
+        }
+
+        .intro-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .intro-overlay .intro-label {
+            font-family: 'Playfair Display', serif;
+            color: rgba(255,255,255,0.15);
+            font-size: clamp(3rem, 10vw, 9rem);
+            font-weight: 400;
+            letter-spacing: -0.04em;
+            text-align: center;
+            line-height: 1;
+            text-shadow: 0 0 60px rgba(255,69,0,0.2);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255,255,255,0.4);
+            font-size: 10px;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            animation: bounce 2s infinite;
+        }
+        .scroll-hint svg { width: 20px; height: 20px; opacity: 0.5; }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
         }
     </style>
 </head>
@@ -543,14 +577,20 @@
         </div>
     </nav>
 
-    <!-- Intro Zoom Wrapper -->
-    <div class="wrapper">
-        <div class="image-container">
-            <img src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp" alt="Intro Landscape">
+    <!-- Cinematic Intro Section -->
+    <div class="intro-section" id="intro-section">
+        <img src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp" id="intro-img" alt="Intro">
+        <div class="intro-overlay">
+            <div class="intro-label">Catch.ai</div>
         </div>
-        <div class="content">
-            <!-- Hero Section -->
-            <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
+        <div class="scroll-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            Scroll to enter
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
         <!-- Background Atmosphere -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <div class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-screen">
@@ -642,10 +682,7 @@
                     </div>
                 </div>
             </div>
-        </div>
     </section>
-        </div> <!-- End .content -->
-    </div> <!-- End .wrapper -->
 
     <!-- Social Proof Marquee -->
     <section class="bg-[#050505] py-8 border-y border-white/5 overflow-hidden relative">
@@ -1632,30 +1669,34 @@
                 x: gsap.utils.unitize(x => parseFloat(x) % trackWidth)
             }
         });
-        // Intro Zoom GSAP Animation
+        // Cinematic Intro Zoom-In Animation
         gsap.timeline({
             scrollTrigger: {
-                trigger: ".wrapper",
+                trigger: "#intro-section",
                 start: "top top",
-                end: "+=150%",
+                end: "+=120%",
                 pin: true,
-                scrub: true
+                scrub: 1.5,
+                anticipatePin: 1
             }
         })
-        .to(".image-container img", {
-            scale: 3, /* Zoom deeply */
-            z: 400,
-            opacity: 0, /* Fade out so Catch.ai hero is revealed */
-            transformOrigin: "center center",
-            ease: "power1.inOut"
-        })
-        .to(".image-container", {
-            pointerEvents: "none"
-        }, "<")
-        .fromTo("#hero-section", 
-            { scale: 0.9, opacity: 0 },
-            { scale: 1, opacity: 1, ease: "power1.inOut" },
-        "<");
+        .to("#intro-img", {
+            scale: 2.5,
+            ease: "power2.inOut"
+        }, 0)
+        .to(".intro-overlay .intro-label", {
+            opacity: 0,
+            y: -40,
+            ease: "power2.in"
+        }, 0)
+        .to(".scroll-hint", {
+            opacity: 0,
+            ease: "power2.in"
+        }, 0)
+        .to("#intro-section", {
+            opacity: 0,
+            ease: "power2.inOut"
+        }, 0.6);
     </script>
 </body>
 </html>
