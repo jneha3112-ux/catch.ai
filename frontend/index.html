@@ -490,83 +490,85 @@
             100% { transform: translateX(calc(-50% - 1rem)); }
         }
 
-        /* ══════════════════════════════════════
-           INTRO — GSAP PIN WRAPPER
-           .intro-wrapper is pinned by GSAP.
-           .intro-img-container sits on top (z:2).
-           GSAP zooms the image + fades it out.
-        ══════════════════════════════════════ */
-        .intro-wrapper {
+        /* =========================================
+           USER'S EXACT INTRO STRUCTURE
+           .wrapper pins via GSAP
+           .image-container (z:2) zooms toward viewer
+           .section.hero sits behind as the website
+        ========================================= */
+        .wrapper,
+        .content {
             position: relative;
             width: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            overflow-x: hidden;
+        }
+
+        .content .section {
+            width: 100%;
             height: 100vh;
+        }
+
+        /* Catch.ai hero — dark bg, full content behind the overlay */
+        .content .section.hero {
+            background-color: #050505;
+            position: relative;
             overflow: hidden;
         }
 
-        /* Intro image on top */
-        .intro-img-container {
+        .image-container {
+            width: 100%;
+            height: 100vh;
             position: absolute;
-            inset: 0;
-            z-index: 10;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
             perspective: 500px;
             overflow: hidden;
         }
 
-        .intro-img-container img {
-            position: absolute;
-            inset: 0;
+        .image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: center center;
-            transform-origin: center center;
-            will-change: transform;
         }
 
-        /* Ghost text + hint inside intro image layer */
-        .intro-label {
+        /* Catch.ai branding on the intro overlay */
+        .intro-brand {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 11;
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 10vw, 9rem);
-            font-weight: 400;
-            color: rgba(255,255,255,0.15);
-            letter-spacing: -0.04em;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        .intro-scroll-hint {
-            position: absolute;
-            bottom: 2.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 11;
+            inset: 0;
+            z-index: 3;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
-            color: rgba(255,255,255,0.5);
-            font-size: 10px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            animation: bounce 2s ease-in-out infinite;
+            justify-content: center;
             pointer-events: none;
         }
-        .intro-scroll-hint svg { width: 18px; height: 18px; }
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50%       { transform: translateX(-50%) translateY(8px); }
+        .intro-brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 400;
+            color: rgba(255,255,255,0.12);
+            letter-spacing: -0.04em;
+            white-space: nowrap;
         }
-
-        /* Hero section sits INSIDE the wrapper, behind the image */
-        .intro-hero-bg {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
+        .intro-brand-hint {
+            margin-top: 2rem;
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            font-family: 'Inter', sans-serif;
+            animation: hintBounce 2s ease-in-out infinite;
+        }
+        @keyframes hintBounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(6px); }
         }
     </style>
 </head>
@@ -589,128 +591,115 @@
         </div>
     </nav>
 
-    <!-- ══════════════════════════════════════
-         INTRO SECTION — GSAP PINNED WRAPPER
-         GSAP pins this wrapper.
-         .intro-img-container (z:10) is on TOP.
-         GSAP zooms image to 3x + fades it out
-         revealing the dark hero bg beneath.
-    ══════════════════════════════════════ -->
-    <div class="intro-wrapper" id="intro-wrapper">
+    <!-- =========================================
+         EXACT STRUCTURE FROM USER
+         .wrapper = GSAP pin container
+         .content > .section.hero = actual website behind
+         .image-container = webflow image zooms on top
+    ========================================= -->
+    <div class="wrapper">
+        <div class="content">
+            <section class="section hero" id="hero-section">
 
-        <!-- TOP LAYER: Intro image -->
-        <div class="intro-img-container" id="intro-img-container">
-            <img id="intro-img"
-                 src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp"
-                 alt="Intro">
-            <div class="intro-label">Catch.ai</div>
-            <div class="intro-scroll-hint">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12l7 7 7-7"/>
-                </svg>
-                Scroll to enter
-            </div>
-        </div>
-
-        <!-- BEHIND LAYER: Hero dark background (visible as image fades) -->
-        <div class="intro-hero-bg bg-[#050505]"></div>
-
-    </div>
-
-    <!-- ACTUAL HERO SECTION (after pin releases) -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
-        <!-- Background Atmosphere -->
-        <div class="absolute inset-0 z-0 pointer-events-none select-none">
-            <div class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-screen">
-                <img src="https://framerusercontent.com/images/9zvwRJAavKKacVyhFCwHyXW1U.png?width=1536&height=1024" alt="Atmosphere" class="w-full h-full object-cover object-center opacity-80">
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505] z-10"></div>
-        </div>
-
-        <!-- Floating Surrealist Elements -->
-        <div class="absolute -left-[10%] top-[10%] md:left-[-5%] md:top-[5%] w-[50vw] md:w-[40vw] max-w-[800px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-left hidden lg:block">
-             <img src="https://framerusercontent.com/images/KNhiA5A2ykNYqNkj04Hk6BVg5A.png?width=1540&height=1320" alt="Hand Reaching" class="w-full h-auto object-contain">
-        </div>
-
-        <div class="absolute -right-[10%] bottom-[0%] md:right-[-5%] md:bottom-[-5%] w-[45vw] md:w-[35vw] max-w-[700px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-right hidden lg:block">
-             <img src="https://framerusercontent.com/images/X89VFCABCEjjZ4oLGa3PjbOmsA.png?width=1542&height=1002" alt="Hand Receiving" class="w-full h-auto object-contain">
-        </div>
-
-        <!-- Force Field Canvas Container -->
-        <div id="force-field-container" class="absolute inset-0 z-0 pointer-events-none opacity-20"></div>
-        
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-            <div class="space-y-8 z-10 animate-fade-up">
-                <div class="inline-flex items-center gap-2 border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full font-medium text-xs text-white/80 uppercase tracking-widest hover:bg-white/10 transition-colors duration-300">
-                    <span class="w-2 h-2 bg-[#FF4500] rounded-full animate-pulse shadow-[0_0_8px_#FF4500]"></span>
-                    NEW: AI Content Assistant 2.0
-                </div>
-                
-                <h1 class="hero-title text-6xl md:text-8xl font-medium leading-[1.1] tracking-tight text-[#ffe0e0] mix-blend-overlay font-serif" style="text-shadow: 0 0 12px rgba(255,255,255,0.71);">
-                    Catch every <br>
-                    <span class="italic font-light text-[#ffe0e0]">missed call.</span><br>
-                    Book instantly.
-                </h1>
-                
-                <p class="hero-sub text-base md:text-lg text-[#ffe0e0]/90 max-w-lg mb-16 font-light tracking-wide leading-relaxed mix-blend-overlay" style="text-shadow: 0 0 12px rgba(255,255,255,0.71);">
-                    Stop losing 30% of your revenue to unanswered calls. Our AI converts missed leads into booked appointments on WhatsApp in seconds.
-                </p>
-
-                <div class="flex items-center gap-6 pt-4">
-                    <div class="relative group cursor-pointer">
-                        <div class="absolute inset-0 bg-[#FF4500]/20 blur-xl rounded-full opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-                        <a href="/dashboard.html" class="relative border border-white/20 bg-white/5 backdrop-blur-sm px-8 py-4 rounded-full flex items-center gap-3 text-sm text-white uppercase tracking-widest hover:bg-white/10 transition-colors duration-300 font-bold">
-                            Get Started Free
-                        </a>
+                <!-- Background Atmosphere -->
+                <div class="absolute inset-0 z-0 pointer-events-none select-none">
+                    <div class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-screen">
+                        <img src="https://framerusercontent.com/images/9zvwRJAavKKacVyhFCwHyXW1U.png?width=1536&height=1024" alt="Atmosphere" class="w-full h-full object-cover object-center opacity-80">
                     </div>
-                    <button class="text-sm text-white/60 uppercase tracking-widest hover:text-white transition-colors duration-300 font-medium underline underline-offset-4 decoration-white/20 hover:decoration-white">
-                        View Demo
-                    </button>
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505] z-10"></div>
                 </div>
-            </div>
 
-            <!-- 3D Phone Mockup Preserved & Enhanced -->
-            <div class="flex justify-center lg:justify-end animate-fade-up delay-200 z-10 w-full">
-                <div class="phone-3d-wrapper">
-                    <div class="phone-frame">
-                        <div class="phone-screen">
-                            <div class="dynamic-island"></div>
-                            <!-- Status Bar -->
-                            <div class="h-12 flex items-end justify-between px-8 pb-3 text-[10px] font-bold text-white/40 relative z-20">
-                                <span>9:41</span>
-                                <div class="flex gap-1.5">
-                                    <i data-lucide="signal" class="w-3 h-3"></i>
-                                    <i data-lucide="wifi" class="w-3 h-3"></i>
-                                    <i data-lucide="battery" class="w-3 h-3"></i>
-                                </div>
+                <!-- Floating Surrealist Hands -->
+                <div class="absolute -left-[10%] top-[10%] md:left-[-5%] md:top-[5%] w-[50vw] md:w-[40vw] max-w-[800px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-left hidden lg:block">
+                     <img src="https://framerusercontent.com/images/KNhiA5A2ykNYqNkj04Hk6BVg5A.png?width=1540&height=1320" alt="Hand Reaching" class="w-full h-auto object-contain">
+                </div>
+                <div class="absolute -right-[10%] bottom-[0%] md:right-[-5%] md:bottom-[-5%] w-[45vw] md:w-[35vw] max-w-[700px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-right hidden lg:block">
+                     <img src="https://framerusercontent.com/images/X89VFCABCEjjZ4oLGa3PjbOmsA.png?width=1542&height=1002" alt="Hand Receiving" class="w-full h-auto object-contain">
+                </div>
+
+                <!-- Force Field Canvas -->
+                <div id="force-field-container" class="absolute inset-0 z-0 pointer-events-none opacity-20"></div>
+
+                <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 px-6 h-full">
+                    <div class="space-y-8 z-10 animate-fade-up">
+                        <div class="inline-flex items-center gap-2 border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full font-medium text-xs text-white/80 uppercase tracking-widest hover:bg-white/10 transition-colors duration-300">
+                            <span class="w-2 h-2 bg-[#FF4500] rounded-full animate-pulse shadow-[0_0_8px_#FF4500]"></span>
+                            NEW: AI Content Assistant 2.0
+                        </div>
+                        <h1 class="hero-title text-6xl md:text-8xl font-medium leading-[1.1] tracking-tight text-[#ffe0e0] mix-blend-overlay font-serif" style="text-shadow: 0 0 12px rgba(255,255,255,0.71);">
+                            Catch every <br>
+                            <span class="italic font-light text-[#ffe0e0]">missed call.</span><br>
+                            Book instantly.
+                        </h1>
+                        <p class="hero-sub text-base md:text-lg text-[#ffe0e0]/90 max-w-lg mb-16 font-light tracking-wide leading-relaxed mix-blend-overlay" style="text-shadow: 0 0 12px rgba(255,255,255,0.71);">
+                            Stop losing 30% of your revenue to unanswered calls. Our AI converts missed leads into booked appointments on WhatsApp in seconds.
+                        </p>
+                        <div class="flex items-center gap-6 pt-4">
+                            <div class="relative group cursor-pointer">
+                                <div class="absolute inset-0 bg-[#FF4500]/20 blur-xl rounded-full opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                                <a href="/dashboard.html" class="relative border border-white/20 bg-white/5 backdrop-blur-sm px-8 py-4 rounded-full flex items-center gap-3 text-sm text-white uppercase tracking-widest hover:bg-white/10 transition-colors duration-300 font-bold">
+                                    Get Started Free
+                                </a>
                             </div>
-                            
-                            <!-- Chat Interface -->
-                            <div class="p-4 flex flex-col h-[calc(100%-40px)]">
-                                <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-                                    <div class="w-8 h-8 rounded-full bg-[#FF4500] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,69,0,0.5)]">
-                                        <i data-lucide="bot" class="w-5 h-5"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-white uppercase tracking-tighter">Catch Neural Agent</p>
-                                        <p class="text-[8px] text-[#FF4500] font-bold uppercase tracking-widest">● Core Active</p>
-                                    </div>
-                                </div>
+                            <button class="text-sm text-white/60 uppercase tracking-widest hover:text-white transition-colors duration-300 font-medium underline underline-offset-4 decoration-white/20 hover:decoration-white">
+                                View Demo
+                            </button>
+                        </div>
+                    </div>
 
-                                <div id="chat-window" class="flex-1 flex flex-col gap-2 overflow-y-auto pt-4 no-scrollbar relative z-20">
-                                    <!-- Bubbles injected by JS -->
-                                </div>
-
-                                <div class="mt-4 bg-white/5 p-3 rounded-2xl flex items-center justify-between border border-white/5 relative z-20 text-white">
-                                    <span class="text-[10px] text-white/50 font-light">Neural reply typing...</span>
-                                    <i data-lucide="send" class="w-4 h-4 text-[#FF4500] opacity-50"></i>
+                    <!-- 3D Phone Mockup -->
+                    <div class="flex justify-center lg:justify-end animate-fade-up delay-200 z-10 w-full">
+                        <div class="phone-3d-wrapper">
+                            <div class="phone-frame">
+                                <div class="phone-screen">
+                                    <div class="dynamic-island"></div>
+                                    <div class="h-12 flex items-end justify-between px-8 pb-3 text-[10px] font-bold text-white/40 relative z-20">
+                                        <span>9:41</span>
+                                        <div class="flex gap-1.5">
+                                            <i data-lucide="signal" class="w-3 h-3"></i>
+                                            <i data-lucide="wifi" class="w-3 h-3"></i>
+                                            <i data-lucide="battery" class="w-3 h-3"></i>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 flex flex-col h-[calc(100%-40px)]">
+                                        <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                                            <div class="w-8 h-8 rounded-full bg-[#FF4500] flex items-center justify-center text-white shadow-[0_0_15px_rgba(255,69,0,0.5)]">
+                                                <i data-lucide="bot" class="w-5 h-5"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-[10px] font-bold text-white uppercase tracking-tighter">Catch Neural Agent</p>
+                                                <p class="text-[8px] text-[#FF4500] font-bold uppercase tracking-widest">● Core Active</p>
+                                            </div>
+                                        </div>
+                                        <div id="chat-window" class="flex-1 flex flex-col gap-2 overflow-y-auto pt-4 no-scrollbar relative z-20">
+                                            <!-- Bubbles injected by JS -->
+                                        </div>
+                                        <div class="mt-4 bg-white/5 p-3 rounded-2xl flex items-center justify-between border border-white/5 relative z-20 text-white">
+                                            <span class="text-[10px] text-white/50 font-light">Neural reply typing...</span>
+                                            <i data-lucide="send" class="w-4 h-4 text-[#FF4500] opacity-50"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+            </section>
+        </div>
+
+        <!-- IMAGE CONTAINER: zooms toward viewer on scroll (z-index:2, on top) -->
+        <div class="image-container">
+            <!-- Webflow portal image = the "window" that zooms -->
+            <img src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp" alt="Intro portal">
+            <!-- Catch.ai branding overlay on the image -->
+            <div class="intro-brand">
+                <div class="intro-brand-name">Catch.ai</div>
+                <div class="intro-brand-hint">↓ &nbsp; scroll to enter &nbsp; ↓</div>
             </div>
-    </section>
+        </div>
+
+    </div><!-- /.wrapper -->
 
     <!-- Social Proof Marquee -->
     <section class="bg-[#050505] py-8 border-y border-white/5 overflow-hidden relative">
@@ -1703,45 +1692,36 @@
         //  BURST-THROUGH INTRO — Native Scroll Driver
         //  No GSAP ScrollTrigger needed.
         // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-        //  INTRO: GSAP PIN on .intro-wrapper
-        //  The wrapper is pinned at the top.
-        //  GSAP zooms the image (scale 1\u21923, z 0\u2192350)
-        //  then fades the image container out,
-        //  revealing the dark bg beneath.
-        //  Pin releases and normal scroll resumes.
-        // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-        if (document.getElementById('intro-wrapper')) {
+        // USER'S EXACT GSAP CODE — adapted for Catch.ai
+        window.addEventListener("load", () => {
             gsap.timeline({
                 scrollTrigger: {
-                    trigger: '#intro-wrapper',
-                    start: 'top top',
-                    end: '+=200%',
+                    trigger: ".wrapper",
+                    start: "top top",
+                    end: "+=150%",
                     pin: true,
-                    scrub: 1,
-                    anticipatePin: 1
+                    scrub: true
                 }
             })
-            // Phase 1 (0\u21920.7): zoom + z-push
-            .to('#intro-img', {
-                scale: 3,
+            // Zoom the intro image toward the viewer (fly-through)
+            .to(".image-container img", {
+                scale: 2,
                 z: 350,
-                transformOrigin: 'center center',
-                ease: 'power2.inOut',
-                duration: 0.7
-            }, 0)
-            // Fade label + hint out early
-            .to(['.intro-label', '.intro-scroll-hint'], {
+                transformOrigin: "center center",
+                ease: "power1.inOut"
+            })
+            // Scale the hero section behind it (parallax depth)
+            .to(".section.hero", {
+                scale: 1.1,
+                transformOrigin: "center center",
+                ease: "power1.inOut"
+            }, "<")
+            // Fade the image container out at the end — website revealed
+            .to(".image-container", {
                 opacity: 0,
-                ease: 'power1.in',
-                duration: 0.3
-            }, 0)
-            // Phase 2 (0.5\u21921.0): dissolve the image container
-            .to('#intro-img-container', {
-                opacity: 0,
-                ease: 'power2.out',
-                duration: 0.5
-            }, 0.5);
-        }
+                ease: "power1.inOut"
+            }, "<");
+        });
     </script>
 </body>
 </html>
