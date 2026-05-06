@@ -489,6 +489,39 @@
             0% { transform: translateX(0); }
             100% { transform: translateX(calc(-50% - 1rem)); }
         }
+
+        /* Intro Zoom Animation Styles */
+        .wrapper,
+        .content {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            overflow-x: hidden;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            perspective: 500px;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            opacity: 0.8;
+            filter: brightness(0.6) contrast(1.2);
+        }
     </style>
 </head>
 <body class="bg-[#050505]">
@@ -510,8 +543,14 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
+    <!-- Intro Zoom Wrapper -->
+    <div class="wrapper">
+        <div class="image-container">
+            <img src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp" alt="Intro Landscape">
+        </div>
+        <div class="content">
+            <!-- Hero Section -->
+            <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
         <!-- Background Atmosphere -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
             <div class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-screen">
@@ -605,6 +644,8 @@
             </div>
         </div>
     </section>
+        </div> <!-- End .content -->
+    </div> <!-- End .wrapper -->
 
     <!-- Social Proof Marquee -->
     <section class="bg-[#050505] py-8 border-y border-white/5 overflow-hidden relative">
@@ -1591,8 +1632,30 @@
                 x: gsap.utils.unitize(x => parseFloat(x) % trackWidth)
             }
         });
-
-        runChat();
+        // Intro Zoom GSAP Animation
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: ".wrapper",
+                start: "top top",
+                end: "+=150%",
+                pin: true,
+                scrub: true
+            }
+        })
+        .to(".image-container img", {
+            scale: 3, /* Zoom deeply */
+            z: 400,
+            opacity: 0, /* Fade out so Catch.ai hero is revealed */
+            transformOrigin: "center center",
+            ease: "power1.inOut"
+        })
+        .to(".image-container", {
+            pointerEvents: "none"
+        }, "<")
+        .fromTo("#hero-section", 
+            { scale: 0.9, opacity: 0 },
+            { scale: 1, opacity: 1, ease: "power1.inOut" },
+        "<");
     </script>
 </body>
 </html>
