@@ -10,22 +10,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <script src="https://unpkg.com/framer-motion@11.0.0/dist/framer-motion.js"></script>
-    <!-- Cabinet Grotesk & Satoshi -->
-    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@500,700&display=swap" rel="stylesheet">
+    <!-- Inter & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <style>
         :root {
-            --primary: #ffe17c;
-            --bg-dark: #171e19;
-            --accent: #b7c6c2;
+            --bg: #050505;
+            --accent: #FF4500;
+            --card: #111111;
+            /* Legacy mapping for smooth transition */
+            --primary: #FF4500; 
+            --bg-dark: #050505;
+            --accent-old: #b7c6c2;
         }
         body {
-            font-family: 'Satoshi', sans-serif;
-            background-color: #fff;
-            color: #000;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: white;
             overflow-x: hidden;
+            margin: 0;
         }
         h1, h2, h3, h4, h5, h6, .font-heading {
-            font-family: 'Cabinet Grotesk', sans-serif;
+            font-family: 'Playfair Display', serif;
+        }
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        ::selection {
+            background-color: var(--accent);
+            color: white;
         }
         /* Neo-Brutalist Utilities */
         .brutal-border { border: 2px solid #000; }
@@ -53,6 +66,39 @@
             -webkit-text-stroke: 2px black;
             color: transparent;
         }
+
+        /* Superdesign Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @keyframes float-hand-left {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        @keyframes float-hand-right {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(20px) rotate(-2deg); }
+        }
+        .animate-float-left { animation: float-hand-left 12s ease-in-out infinite; }
+        .animate-float-right { animation: float-hand-right 14s ease-in-out infinite; }
+        
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0.05;
+            mix-blend-mode: overlay;
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        }
+        .parallax-card-up { transform: translateY(var(--scroll-offset-up, 0px)); }
+        .parallax-card-down { transform: translateY(var(--scroll-offset-down, 0px)); }
 
         /* Marquee */
         .marquee-container {
@@ -425,72 +471,73 @@
         }
     </style>
 </head>
-<body class="bg-[#ffe17c]">
-    <!-- Fixed Banner -->
-    <div class="bg-[#171e19] text-white text-[10px] font-black py-1.5 px-4 text-center tracking-[0.2em] uppercase brutal-border-b fixed top-0 w-full z-[999]">
-        ⚠️ UNDER CONSTRUCTION - COMING SOON ⚠️
-    </div>
+<body class="bg-[#050505]">
+    <!-- Global Noise Overlay -->
+    <div class="noise-overlay"></div>
 
     <!-- Navigation -->
-    <header class="fixed top-8 left-0 w-full z-50 bg-[#ffe17c] brutal-border-b h-20 flex items-center">
-        <div class="max-w-7xl mx-auto w-full px-6 flex items-center justify-between">
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-8">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-black brutal-border flex items-center justify-center overflow-hidden">
-                    <img src="assets/logo.png" alt="Catch.ai Logo" class="w-full h-full object-cover scale-110">
-                </div>
-                <span class="font-heading font-extrabold text-3xl tracking-tighter text-black">Catch.ai</span>
+                <a href="#" id="nav-logo-link" class="text-3xl font-bold tracking-tighter font-serif text-white">
+                    Catch.ai
+                </a>
             </div>
             
-            <div class="hidden md:flex items-center gap-8 font-bold text-sm text-black">
-                <!-- Links removed in favor of Dock -->
-            </div>
-
-            <a href="/dashboard.html" class="creepy-btn">
-                <span class="creepy-btn__eyes">
-                    <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                    <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                </span>
-                <span class="creepy-btn__cover">Start Free Trial</span>
+            <a href="/dashboard.html" class="inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium bg-[#FF4500] text-white hover:scale-105 hover:bg-orange-600 transition-all duration-300">
+                Start Free Trial
             </a>
         </div>
-    </header>
+    </nav>
 
     <!-- Hero Section -->
-    <section class="pt-40 pb-20 px-6 relative border-b-2 border-black overflow-hidden bg-[#ffe17c]" id="hero-section">
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20 bg-[#050505]" id="hero-section">
+        <!-- Background Atmosphere -->
+        <div class="absolute inset-0 z-0 pointer-events-none select-none">
+            <div class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-screen">
+                <img src="https://framerusercontent.com/images/9zvwRJAavKKacVyhFCwHyXW1U.png?width=1536&height=1024" alt="Atmosphere" class="w-full h-full object-cover object-center opacity-80">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505] z-10"></div>
+        </div>
+
+        <!-- Floating Surrealist Elements -->
+        <div class="absolute -left-[10%] top-[10%] md:left-[-5%] md:top-[5%] w-[50vw] md:w-[40vw] max-w-[800px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-left hidden lg:block">
+             <img src="https://framerusercontent.com/images/KNhiA5A2ykNYqNkj04Hk6BVg5A.png?width=1540&height=1320" alt="Hand Reaching" class="w-full h-auto object-contain">
+        </div>
+
+        <div class="absolute -right-[10%] bottom-[0%] md:right-[-5%] md:bottom-[-5%] w-[45vw] md:w-[35vw] max-w-[700px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-right hidden lg:block">
+             <img src="https://framerusercontent.com/images/X89VFCABCEjjZ4oLGa3PjbOmsA.png?width=1542&height=1002" alt="Hand Receiving" class="w-full h-auto object-contain">
+        </div>
+
         <!-- Force Field Canvas Container -->
-        <div id="force-field-container" class="absolute inset-0 z-0 pointer-events-none"></div>
+        <div id="force-field-container" class="absolute inset-0 z-0 pointer-events-none opacity-20"></div>
         
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div class="space-y-8 z-10 animate-fade-up">
-                <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full brutal-border brutal-shadow-sm font-bold text-xs uppercase tracking-widest">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse brutal-border"></span>
+                <div class="inline-flex items-center gap-2 border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full font-medium text-xs text-white/80 uppercase tracking-widest hover:bg-white/10 transition-colors duration-300">
+                    <span class="w-2 h-2 bg-[#FF4500] rounded-full animate-pulse shadow-[0_0_8px_#FF4500]"></span>
                     NEW: AI Content Assistant 2.0
                 </div>
                 
-                <h1 class="hero-title text-6xl md:text-8xl font-heading font-extrabold tracking-tighter leading-[0.9] text-black">
+                <h1 class="hero-title text-6xl md:text-8xl font-medium leading-[1.1] tracking-tight text-[#ffe0e0] mix-blend-overlay font-serif" style="text-shadow: 0 0 12px rgba(255,255,255,0.71);">
                     Catch every <br>
-                    <span class="text-stroke">missed call.</span><br>
+                    <span class="italic font-light text-[#ffe0e0]">missed call.</span><br>
                     Book instantly.
                 </h1>
                 
-                <p class="hero-sub text-black/80 max-w-lg text-lg font-bold leading-relaxed">
+                <p class="hero-sub text-base md:text-lg text-[#ffe0e0]/90 max-w-lg mb-16 font-light tracking-wide leading-relaxed mix-blend-overlay" style="text-shadow: 0 0 12px rgba(255,255,255,0.71);">
                     Stop losing 30% of your revenue to unanswered calls. Our AI converts missed leads into booked appointments on WhatsApp in seconds.
                 </p>
 
-                <div class="flex items-center gap-4 pt-4">
-                    <a href="/dashboard.html" class="brutal-btn creepy-btn" style="--cb-hue: 0deg;">
-                        <span class="creepy-btn__eyes">
-                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                        </span>
-                        <span class="creepy-btn__cover" style="padding: 1.25em 2.5em;">Get Started Free</span>
-                    </a>
-                    <button class="brutal-btn creepy-btn" style="--cb-primary5: #fff; --cb-primary6: #f3f4f6;">
-                         <span class="creepy-btn__eyes">
-                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                            <span class="creepy-btn__eye"><span class="creepy-btn__pupil"></span></span>
-                        </span>
-                        <span class="creepy-btn__cover" style="padding: 1.25em 2.5em; color: black;">View Demo</span>
+                <div class="flex items-center gap-6 pt-4">
+                    <div class="relative group cursor-pointer">
+                        <div class="absolute inset-0 bg-[#FF4500]/20 blur-xl rounded-full opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                        <a href="/dashboard.html" class="relative border border-white/20 bg-white/5 backdrop-blur-sm px-8 py-4 rounded-full flex items-center gap-3 text-sm text-white uppercase tracking-widest hover:bg-white/10 transition-colors duration-300 font-bold">
+                            Get Started Free
+                        </a>
+                    </div>
+                    <button class="text-sm text-white/60 uppercase tracking-widest hover:text-white transition-colors duration-300 font-medium underline underline-offset-4 decoration-white/20 hover:decoration-white">
+                        View Demo
                     </button>
                 </div>
             </div>
@@ -538,16 +585,16 @@
     </section>
 
     <!-- Social Proof Marquee -->
-    <section class="bg-[#171e19] py-4 brutal-border-b overflow-hidden relative">
+    <section class="bg-[#050505] py-8 border-y border-white/5 overflow-hidden relative">
         <div class="marquee-container">
-            <div class="flex justify-around items-center w-1/2 text-[#b7c6c2] opacity-50 font-heading font-extrabold text-3xl tracking-widest uppercase">
+            <div class="flex justify-around items-center min-w-full text-white/20 font-serif text-3xl tracking-widest uppercase gap-20 px-10">
                 <span>ACME</span>
                 <span>GLOBEX</span>
                 <span>SOYUZ</span>
                 <span>INITECH</span>
                 <span>UMBRELLA</span>
             </div>
-            <div class="flex justify-around items-center w-1/2 text-[#b7c6c2] opacity-50 font-heading font-extrabold text-3xl tracking-widest uppercase">
+            <div class="flex justify-around items-center min-w-full text-white/20 font-serif text-3xl tracking-widest uppercase gap-20 px-10">
                 <span>ACME</span>
                 <span>GLOBEX</span>
                 <span>SOYUZ</span>
@@ -558,45 +605,45 @@
     </section>
 
     <!-- The Comparison Section -->
-    <section class="py-32 px-6 bg-white relative overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-                <div class="comparison-vs font-black">VS</div>
+    <section class="py-32 px-6 bg-[#050505] relative overflow-hidden">
+        <div class="max-w-7xl mx-auto z-10 relative">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FF4500] w-16 h-16 rounded-full flex items-center justify-center font-bold text-white z-20 border-4 border-[#050505]">VS</div>
                 
                 <!-- Old Way -->
-                <div class="bg-slate-100 p-16 rounded-[48px] border-2 border-dashed border-slate-300">
-                    <h3 class="font-heading text-4xl font-extrabold mb-10 text-slate-400 uppercase tracking-tighter">The Old Way</h3>
+                <div class="bg-[#111] p-16 rounded-3xl border border-white/10 parallax-card-down">
+                    <h3 class="font-serif text-4xl mb-10 text-white/40 tracking-tight">The Old Way</h3>
                     <ul class="space-y-8">
                         <li class="flex items-center gap-6 opacity-50">
-                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-400 border border-slate-200"><i data-lucide="phone-off"></i></div>
-                            <span class="text-xl font-bold text-slate-500">Missed calls go to voicemail</span>
+                            <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-white/40"><i data-lucide="phone-off"></i></div>
+                            <span class="text-xl font-light text-white/50">Missed calls go to voicemail</span>
                         </li>
                         <li class="flex items-center gap-6 opacity-50">
-                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-400 border border-slate-200"><i data-lucide="users"></i></div>
-                            <span class="text-xl font-bold text-slate-500">Patients call your competitor</span>
+                            <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-white/40"><i data-lucide="users"></i></div>
+                            <span class="text-xl font-light text-white/50">Patients call your competitor</span>
                         </li>
                         <li class="flex items-center gap-6 opacity-50">
-                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-400 border border-slate-200"><i data-lucide="alert-circle"></i></div>
-                            <span class="text-xl font-bold text-slate-500">Front desk is overwhelmed</span>
+                            <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-white/40"><i data-lucide="alert-circle"></i></div>
+                            <span class="text-xl font-light text-white/50">Front desk is overwhelmed</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Catch Way -->
-                <div class="bg-black p-16 rounded-[48px] border-2 border-black shadow-[20px_20px_0px_0px_#ffe17c]">
-                    <h3 class="font-heading text-4xl font-extrabold mb-10 text-[#ffe17c] uppercase tracking-tighter">The Catch Way</h3>
+                <div class="bg-[#FF4500] p-16 rounded-3xl border border-[#FF4500]/50 shadow-[0_20px_50px_rgba(255,69,0,0.15)] parallax-card-up md:mt-24">
+                    <h3 class="font-serif text-4xl mb-10 text-white tracking-tight">The Catch Way</h3>
                     <ul class="space-y-8">
                         <li class="flex items-center gap-6">
-                            <div class="w-12 h-12 bg-[#ffe17c] rounded-2xl flex items-center justify-center text-black shadow-lg"><i data-lucide="zap"></i></div>
-                            <span class="text-xl font-bold text-white">Missed calls get instant WhatsApp</span>
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white"><i data-lucide="zap"></i></div>
+                            <span class="text-xl font-medium text-white">Missed calls get instant WhatsApp</span>
                         </li>
                         <li class="flex items-center gap-6">
-                            <div class="w-12 h-12 bg-[#ffe17c] rounded-2xl flex items-center justify-center text-black shadow-lg"><i data-lucide="calendar-check"></i></div>
-                            <span class="text-xl font-bold text-white">AI books appointments 24/7</span>
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white"><i data-lucide="calendar-check"></i></div>
+                            <span class="text-xl font-medium text-white">AI books appointments 24/7</span>
                         </li>
                         <li class="flex items-center gap-6">
-                            <div class="w-12 h-12 bg-[#ffe17c] rounded-2xl flex items-center justify-center text-black shadow-lg"><i data-lucide="trending-up"></i></div>
-                            <span class="text-xl font-bold text-white">Revenue automatically recovered</span>
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white"><i data-lucide="trending-up"></i></div>
+                            <span class="text-xl font-medium text-white">Revenue automatically recovered</span>
                         </li>
                     </ul>
                 </div>
@@ -605,83 +652,95 @@
     </section>
 
     <!-- Bento Superpowers Section -->
-    <section class="py-32 px-6 bg-[#f4f4f5]" id="features">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="font-heading text-6xl md:text-8xl font-extrabold tracking-tighter text-center mb-24 uppercase">Superpowers <br><span class="text-stroke">for your clinic.</span></h2>
+    <section class="py-40 px-6 bg-[#050505] relative overflow-hidden" id="features">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <h2 class="font-serif text-5xl md:text-7xl text-center mb-32 text-white">
+                Define your <br><span class="italic text-[#FF4500]">Superpowers</span>
+            </h2>
             
-            <div class="bento-grid">
-                <!-- Large Card -->
-                <div class="bento-card col-span-3 lg:col-span-2 row-span-1 bg-[#ffe17c]">
-                    <div class="w-16 h-16 bg-black rounded-3xl flex items-center justify-center text-[#ffe17c] mb-8 shadow-xl">
-                        <i data-lucide="zap" class="w-8 h-8"></i>
-                    </div>
-                    <h3 class="text-4xl font-heading font-extrabold mb-4 uppercase tracking-tighter">Instant Capture</h3>
-                    <p class="text-lg font-bold text-black/60 leading-relaxed">Detects missed calls instantly and triggers the AI workflow before they even hang up. No lead left behind.</p>
-                </div>
-
-                <!-- Small Card 1 -->
-                <div class="bento-card col-span-3 lg:col-span-1 row-span-1 bg-white">
-                    <div class="w-12 h-12 bg-[#b7c6c2] rounded-2xl flex items-center justify-center text-black mb-6">
-                        <i data-lucide="calendar" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-2xl font-heading font-extrabold mb-3 uppercase">Auto Scheduling</h3>
-                    <p class="text-sm font-bold text-slate-500">Integrates with your PMS to find open slots and book appointments autonomously.</p>
-                </div>
-
-                <!-- Small Card 2 -->
-                <div class="bento-card col-span-3 lg:col-span-1 row-span-1 bg-black text-white">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-black mb-6">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-2xl font-heading font-extrabold mb-3 uppercase">Insurance Checks</h3>
-                    <p class="text-sm font-bold text-white/40">Collects and validates insurance info before the patient even walks in.</p>
-                </div>
-
-                <!-- Wide Card -->
-                <div class="bento-card col-span-3 lg:col-span-2 row-span-1 bg-[#b7c6c2]">
-                    <div class="flex flex-col md:flex-row gap-10 items-center">
-                        <div class="shrink-0 w-24 h-24 bg-white rounded-[40px] flex items-center justify-center text-black border-4 border-black shadow-xl">
-                            <i data-lucide="brain-circuit" class="w-12 h-12"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- Large Card / Red -->
+                <div class="parallax-card-down">
+                    <div class="bg-[#FF4500] rounded-3xl p-8 md:p-12 aspect-[4/5] flex flex-col justify-between shadow-2xl hover:shadow-[0_20px_50px_rgba(255,69,0,0.3)] transition-all duration-500 group cursor-pointer">
+                        <div class="flex justify-between items-start">
+                            <div class="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
+                                <i data-lucide="zap" class="text-black w-6 h-6"></i>
+                            </div>
+                            <span class="text-black font-medium text-sm border border-black/20 px-3 py-1 rounded-full">01</span>
                         </div>
                         <div>
-                            <h3 class="text-3xl font-heading font-extrabold mb-2 uppercase">Neural Logic Engine</h3>
-                            <p class="text-lg font-bold text-black/50">Customized triage models that think like your best office manager.</p>
+                            <h3 class="text-4xl md:text-5xl text-black mb-4 leading-none tracking-tight font-serif">Instant <br>Capture</h3>
+                            <p class="text-black/70 text-lg leading-snug">Detects missed calls instantly and triggers the AI workflow before they hang up.</p>
+                        </div>
+                        <div class="w-full h-px bg-black/10 mt-8"></div>
+                    </div>
+                </div>
+
+                <!-- Small Cards Column -->
+                <div class="parallax-card-up md:mt-24 space-y-8">
+                    <!-- Small Card 1 -->
+                    <div class="bg-[#111] border border-white/10 rounded-3xl p-8 md:p-12 flex flex-col justify-between shadow-2xl group cursor-pointer hover:border-[#FF4500]/50 transition-all duration-500">
+                        <div class="flex justify-between items-start mb-16">
+                            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                                <i data-lucide="calendar" class="text-white w-6 h-6"></i>
+                            </div>
+                            <span class="text-white/50 font-medium text-sm border border-white/10 px-3 py-1 rounded-full">02</span>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl text-white mb-4 leading-none tracking-tight font-serif">Auto Scheduling</h3>
+                            <p class="text-gray-400 text-base leading-snug">Integrates with your PMS to find open slots and book appointments autonomously.</p>
+                        </div>
+                    </div>
+
+                    <!-- Small Card 2 -->
+                    <div class="bg-[#111] border border-white/10 rounded-3xl p-8 md:p-12 flex flex-col justify-between shadow-2xl group cursor-pointer hover:border-[#FF4500]/50 transition-all duration-500">
+                        <div class="flex justify-between items-start mb-16">
+                            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                                <i data-lucide="brain-circuit" class="text-white w-6 h-6"></i>
+                            </div>
+                            <span class="text-white/50 font-medium text-sm border border-white/10 px-3 py-1 rounded-full">03</span>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl text-white mb-4 leading-none tracking-tight font-serif">Neural Engine</h3>
+                            <p class="text-gray-400 text-base leading-snug">Customized triage models that think like your best office manager.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Background Pattern -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] opacity-10 pointer-events-none" style="background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 40px 40px;"></div>
     </section>
 
     <!-- How it Works: The Path -->
-    <section class="py-32 px-6 bg-white overflow-hidden">
+    <section class="py-32 px-6 bg-[#050505] overflow-hidden">
         <div class="max-w-7xl mx-auto text-center relative">
-            <h2 class="font-heading text-6xl font-extrabold mb-32 uppercase tracking-tighter">How it <span class="text-stroke">works.</span></h2>
+            <h2 class="font-serif text-5xl md:text-7xl font-extrabold mb-32 uppercase tracking-tighter text-white">How it <span class="italic text-white/50 font-light">works.</span></h2>
             
             <div class="relative flex flex-col md:flex-row justify-between items-center px-10 gap-20">
-                <div class="path-line hidden md:block"></div>
+                <div class="path-line hidden md:block" style="border-top-color: rgba(255,255,255,0.1);"></div>
                 
-                <div class="flex flex-col items-center gap-6 reveal-up relative z-10 bg-white p-4">
-                    <div class="step-node"><i data-lucide="phone-missed" class="w-8 h-8 text-slate-400"></i></div>
+                <div class="flex flex-col items-center gap-6 reveal-up relative z-10 bg-[#050505] p-4">
+                    <div class="step-node bg-[#111] border-white/10"><i data-lucide="phone-missed" class="w-8 h-8 text-white/40"></i></div>
                     <div>
-                        <span class="text-[10px] font-black bg-black text-white px-3 py-1 rounded-full uppercase mb-2 inline-block">01</span>
-                        <h4 class="font-heading font-extrabold text-xl uppercase">Call Missed</h4>
+                        <span class="text-[10px] font-medium border border-white/20 text-white/50 px-3 py-1 rounded-full uppercase mb-2 inline-block">01</span>
+                        <h4 class="font-serif font-medium text-xl uppercase text-white">Call Missed</h4>
                     </div>
                 </div>
 
-                <div class="flex flex-col items-center gap-6 reveal-up relative z-10 bg-white p-4" style="transition-delay: 200ms;">
-                    <div class="step-node border-[#ffe17c] bg-black text-[#ffe17c] shadow-[#ffe17c]"><i data-lucide="bot" class="w-8 h-8"></i></div>
+                <div class="flex flex-col items-center gap-6 reveal-up relative z-10 bg-[#050505] p-4" style="transition-delay: 200ms;">
+                    <div class="step-node border-[#FF4500] bg-[#FF4500]/10 text-[#FF4500] shadow-[0_0_20px_rgba(255,69,0,0.3)]"><i data-lucide="bot" class="w-8 h-8"></i></div>
                     <div>
-                        <span class="text-[10px] font-black bg-[#ffe17c] text-black px-3 py-1 rounded-full uppercase mb-2 inline-block">02</span>
-                        <h4 class="font-heading font-extrabold text-xl uppercase text-black bg-[#ffe17c] px-2 py-1">AI Engages</h4>
+                        <span class="text-[10px] font-bold bg-[#FF4500] text-white px-3 py-1 rounded-full uppercase mb-2 inline-block">02</span>
+                        <h4 class="font-serif font-bold text-xl uppercase text-white bg-white/5 backdrop-blur-md px-2 py-1 rounded border border-white/10">AI Engages</h4>
                     </div>
                 </div>
 
-                <div class="flex flex-col items-center gap-6 reveal-up relative z-10 bg-white p-4" style="transition-delay: 400ms;">
-                    <div class="step-node border-green-500"><i data-lucide="calendar-check" class="w-8 h-8 text-green-500"></i></div>
+                <div class="flex flex-col items-center gap-6 reveal-up relative z-10 bg-[#050505] p-4" style="transition-delay: 400ms;">
+                    <div class="step-node border-white/10 bg-[#111]"><i data-lucide="calendar-check" class="w-8 h-8 text-green-500"></i></div>
                     <div>
-                        <span class="text-[10px] font-black bg-green-500 text-white px-3 py-1 rounded-full uppercase mb-2 inline-block">03</span>
-                        <h4 class="font-heading font-extrabold text-xl uppercase">Patient Booked</h4>
+                        <span class="text-[10px] font-medium border border-white/20 text-white/50 px-3 py-1 rounded-full uppercase mb-2 inline-block">03</span>
+                        <h4 class="font-serif font-medium text-xl uppercase text-white">Patient Booked</h4>
                     </div>
                 </div>
             </div>
@@ -689,55 +748,55 @@
     </section>
 
     <!-- Visual Explanation: WhatsApp Flow -->
-    <section class="py-32 px-10 bg-slate-50 overflow-hidden">
+    <section class="py-32 px-10 bg-[#050505] overflow-hidden border-t border-white/5">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div class="reveal-left">
-                <div class="inline-block bg-[#ffe17c] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">Step 01: Capture</div>
-                <h2 class="text-5xl md:text-7xl font-heading font-extrabold tracking-tighter text-black mb-8 leading-none uppercase">The AI Agent <br><span class="text-stroke">takes the wheel.</span></h2>
-                <p class="text-xl font-bold text-slate-600 leading-relaxed mb-10 italic">When a call is missed, Catch immediately texts the lead on WhatsApp. It checks your real-time availability and secures the booking without a human ever picking up the phone.</p>
+                <div class="inline-block bg-[#FF4500] px-4 py-2 rounded-full text-[10px] font-bold text-white uppercase tracking-widest mb-6">Step 01: Capture</div>
+                <h2 class="text-5xl md:text-7xl font-serif text-white mb-8 leading-none tracking-tight">The AI Agent <br><span class="italic font-light text-white/50">takes the wheel.</span></h2>
+                <p class="text-xl font-light text-white/60 leading-relaxed mb-10">When a call is missed, Catch immediately texts the lead on WhatsApp. It checks your real-time availability and secures the booking without a human ever picking up the phone.</p>
                 <ul class="space-y-6">
                     <li class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center shrink-0 text-white shadow-lg"><i data-lucide="check" class="w-4 h-4"></i></div>
+                        <div class="w-8 h-8 rounded-full bg-[#111] border border-white/10 flex items-center justify-center shrink-0 text-white shadow-lg"><i data-lucide="check" class="w-4 h-4"></i></div>
                         <div>
-                            <p class="font-black text-black uppercase text-sm">Instant Response</p>
-                            <p class="text-slate-500 font-bold text-sm">Responds within 3 seconds of a missed call.</p>
+                            <p class="font-bold text-white text-sm">Instant Response</p>
+                            <p class="text-white/50 font-light text-sm">Responds within 3 seconds of a missed call.</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center shrink-0 text-white shadow-lg"><i data-lucide="check" class="w-4 h-4"></i></div>
+                        <div class="w-8 h-8 rounded-full bg-[#111] border border-white/10 flex items-center justify-center shrink-0 text-white shadow-lg"><i data-lucide="check" class="w-4 h-4"></i></div>
                         <div>
-                            <p class="font-black text-black uppercase text-sm">Neural Triage</p>
-                            <p class="text-slate-500 font-bold text-sm">Qualifies patients based on urgency and revenue potential.</p>
+                            <p class="font-bold text-white text-sm">Neural Triage</p>
+                            <p class="text-white/50 font-light text-sm">Qualifies patients based on urgency and revenue potential.</p>
                         </div>
                     </li>
                 </ul>
             </div>
             <div class="relative reveal-right p-8">
-                <div class="absolute -inset-4 bg-[#ffe17c]/20 blur-3xl rounded-full"></div>
-                <img src="ai_booking_flow.png" alt="AI Booking Flow" class="relative rounded-[40px] shadow-[30px_30px_60px_-15px_rgba(0,0,0,0.1)] border-4 border-white transform hover:scale-105 transition-transform duration-700">
+                <div class="absolute -inset-4 bg-[#FF4500]/10 blur-3xl rounded-full"></div>
+                <img src="ai_booking_flow.png" alt="AI Booking Flow" class="relative rounded-[40px] shadow-[0_20px_50px_rgba(255,69,0,0.1)] border border-white/10 transform hover:scale-105 transition-transform duration-700">
             </div>
         </div>
     </section>
 
     <!-- Visual Explanation: Analytics -->
-    <section class="py-32 px-10 bg-white overflow-hidden">
+    <section class="py-32 px-10 bg-[#050505] overflow-hidden">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div class="relative order-2 lg:order-1 reveal-left p-8">
-                <div class="absolute -inset-4 bg-teal-100/30 blur-3xl rounded-full"></div>
-                <img src="dashboard_analytics.png" alt="Analytics Dashboard" class="relative rounded-[40px] shadow-[30px_30px_60px_-15px_rgba(0,0,0,0.1)] border-4 border-white transform hover:rotate-2 hover:scale-105 transition-transform duration-700">
+                <div class="absolute -inset-4 bg-white/5 blur-3xl rounded-full"></div>
+                <img src="dashboard_analytics.png" alt="Analytics Dashboard" class="relative rounded-[40px] shadow-[0_20px_50px_rgba(255,255,255,0.05)] border border-white/10 transform hover:rotate-2 hover:scale-105 transition-transform duration-700">
             </div>
             <div class="order-1 lg:order-2 reveal-right">
-                <div class="inline-block bg-[#b7c6c2] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">Step 02: Scale</div>
-                <h2 class="text-5xl md:text-7xl font-heading font-extrabold tracking-tighter text-black mb-8 leading-none uppercase">Visualizing <br><span class="text-stroke">your ROI.</span></h2>
-                <p class="text-xl font-bold text-slate-600 leading-relaxed mb-10 italic">Stop guessing where your leads went. Our Neural Dashboard tracks every recovered dollar. You see the profit growth while your staff focuses on the patients in the building.</p>
+                <div class="inline-block bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold text-white uppercase tracking-widest mb-6">Step 02: Scale</div>
+                <h2 class="text-5xl md:text-7xl font-serif text-white mb-8 leading-none tracking-tight">Visualizing <br><span class="italic font-light text-white/50">your ROI.</span></h2>
+                <p class="text-xl font-light text-white/60 leading-relaxed mb-10">Stop guessing where your leads went. Our Neural Dashboard tracks every recovered dollar. You see the profit growth while your staff focuses on the patients in the building.</p>
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-slate-50 p-6 rounded-3xl border-2 border-black/5 shadow-sm hover:shadow-xl transition-all">
-                        <p class="text-4xl font-black text-black">100%</p>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Capture Rate</p>
+                    <div class="bg-[#111] p-6 rounded-3xl border border-white/5 shadow-sm hover:border-white/20 transition-all">
+                        <p class="text-4xl font-serif text-white">100%</p>
+                        <p class="text-[10px] font-medium text-white/40 uppercase tracking-widest">Capture Rate</p>
                     </div>
-                    <div class="bg-slate-50 p-6 rounded-3xl border-2 border-black/5 shadow-sm hover:shadow-xl transition-all">
-                        <p class="text-4xl font-black text-black">8.5x</p>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Average ROI</p>
+                    <div class="bg-[#111] p-6 rounded-3xl border border-white/5 shadow-sm hover:border-white/20 transition-all">
+                        <p class="text-4xl font-serif text-white">8.5x</p>
+                        <p class="text-[10px] font-medium text-white/40 uppercase tracking-widest">Average ROI</p>
                     </div>
                 </div>
             </div>
@@ -745,29 +804,29 @@
     </section>
 
     <!-- Personas -->
-    <section class="bg-white py-32 px-6 brutal-border-b overflow-hidden">
+    <section class="bg-[#050505] py-32 px-6 border-y border-white/5 overflow-hidden">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-24">
-                <h2 class="font-heading text-6xl md:text-8xl font-extrabold tracking-tighter uppercase mb-4">Built for <span class="text-stroke">everyone.</span></h2>
-                <p class="text-xl font-bold text-slate-400">Tailored experiences for every stakeholder in your clinic.</p>
+                <h2 class="font-serif text-5xl md:text-7xl text-white tracking-tight mb-4">Built for <span class="italic text-white/50">everyone.</span></h2>
+                <p class="text-xl font-light text-white/40">Tailored experiences for every stakeholder in your clinic.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="group bg-[#b7c6c2] brutal-border p-12 rounded-[3rem] relative overflow-hidden transition-all duration-500 hover:translate-y-[-10px]">
-                    <div class="bg-white px-4 py-1 text-[10px] font-black uppercase brutal-border rounded-full inline-block mb-16 relative z-10">Clinic Owner</div>
-                    <h3 class="font-heading text-4xl font-extrabold mb-6 relative z-10 leading-none">Focus on growth, <br>not phones.</h3>
-                    <p class="text-black/60 font-bold relative z-10">Reclaim your time and watch your revenue grow while the AI handles the administrative heavy lifting.</p>
-                    <i data-lucide="trending-up" class="absolute -right-10 -bottom-10 w-48 h-48 text-black/5 transform group-hover:scale-110 transition-transform"></i>
+                <div class="group bg-[#111] border border-white/10 p-12 rounded-[3rem] relative overflow-hidden transition-all duration-500 hover:border-white/30">
+                    <div class="border border-white/20 text-white/60 px-4 py-1 text-[10px] font-bold uppercase rounded-full inline-block mb-16 relative z-10">Clinic Owner</div>
+                    <h3 class="font-serif text-3xl text-white mb-6 relative z-10 leading-none tracking-tight">Focus on growth, <br>not phones.</h3>
+                    <p class="text-white/50 font-light relative z-10">Reclaim your time and watch your revenue grow while the AI handles the administrative heavy lifting.</p>
+                    <i data-lucide="trending-up" class="absolute -right-10 -bottom-10 w-48 h-48 text-white/5 transform group-hover:scale-110 transition-transform"></i>
                 </div>
-                <div class="group bg-[#ffe17c] brutal-border brutal-shadow-lg p-12 rounded-[3rem] relative overflow-hidden transform md:-translate-y-8 transition-all duration-500 hover:translate-y-[-18px]">
-                    <div class="bg-white px-4 py-1 text-[10px] font-black uppercase brutal-border rounded-full inline-block mb-16 relative z-10">Front Desk</div>
-                    <h3 class="font-heading text-4xl font-extrabold mb-6 relative z-10 leading-none">Eliminate the <br>daily chaos.</h3>
-                    <p class="text-black/60 font-bold relative z-10">No more juggling three lines at once. Catch takes the overflow so you can focus on the patients in the room.</p>
-                    <i data-lucide="smile" class="absolute -right-10 -bottom-10 w-48 h-48 text-black/5 transform group-hover:scale-110 transition-transform"></i>
+                <div class="group bg-[#FF4500] border border-[#FF4500]/50 p-12 rounded-[3rem] relative overflow-hidden transform md:-translate-y-8 transition-all duration-500 hover:translate-y-[-18px] shadow-[0_20px_50px_rgba(255,69,0,0.15)]">
+                    <div class="bg-white/20 backdrop-blur-md text-white px-4 py-1 text-[10px] font-bold uppercase rounded-full inline-block mb-16 relative z-10">Front Desk</div>
+                    <h3 class="font-serif text-3xl text-white mb-6 relative z-10 leading-none tracking-tight">Eliminate the <br>daily chaos.</h3>
+                    <p class="text-white/80 font-light relative z-10">No more juggling three lines at once. Catch takes the overflow so you can focus on the patients in the room.</p>
+                    <i data-lucide="smile" class="absolute -right-10 -bottom-10 w-48 h-48 text-white/10 transform group-hover:scale-110 transition-transform"></i>
                 </div>
-                <div class="group bg-[#272727] text-white brutal-border p-12 rounded-[3rem] relative overflow-hidden transition-all duration-500 hover:translate-y-[-10px]">
-                    <div class="bg-white text-black px-4 py-1 text-[10px] font-black uppercase brutal-border rounded-full inline-block mb-16 relative z-10">Patients</div>
-                    <h3 class="font-heading text-4xl font-extrabold mb-6 relative z-10 leading-none">Book instantly, <br>no waiting.</h3>
-                    <p class="text-white/40 font-bold relative z-10">Patients get the immediate response they want on the platform they use every day: WhatsApp.</p>
+                <div class="group bg-[#111] text-white border border-white/10 p-12 rounded-[3rem] relative overflow-hidden transition-all duration-500 hover:border-white/30">
+                    <div class="border border-white/20 text-white/60 px-4 py-1 text-[10px] font-bold uppercase rounded-full inline-block mb-16 relative z-10">Patients</div>
+                    <h3 class="font-serif text-3xl text-white mb-6 relative z-10 leading-none tracking-tight">Book instantly, <br>no waiting.</h3>
+                    <p class="text-white/50 font-light relative z-10">Patients get the immediate response they want on the platform they use every day: WhatsApp.</p>
                     <i data-lucide="message-square" class="absolute -right-10 -bottom-10 w-48 h-48 text-white/5 transform group-hover:scale-110 transition-transform"></i>
                 </div>
             </div>
@@ -775,60 +834,60 @@
     </section>
 
     <!-- Why Choose Us (Bento Grid) -->
-    <section class="bg-white py-24 px-6 brutal-border-b overflow-hidden" id="why-us">
-        <div class="max-w-7xl mx-auto">
-            <div class="mb-16 animate-fade-up">
-                <h2 class="font-heading text-5xl md:text-7xl font-extrabold tracking-tighter text-black">Why clinics trust <br><span class="text-stroke">Catch.ai</span></h2>
+    <section class="bg-[#050505] py-24 px-6 overflow-hidden" id="why-us">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="mb-24 animate-fade-up text-center">
+                <h2 class="font-serif text-5xl md:text-7xl tracking-tight text-white">Why clinics trust <br><span class="italic text-[#FF4500]">Catch.ai</span></h2>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
                 <!-- Big Feature -->
-                <div class="md:col-span-8 bg-[#ffe17c] brutal-border p-10 rounded-[2rem] relative overflow-hidden group">
+                <div class="md:col-span-8 bg-[#FF4500] border border-[#FF4500]/50 p-12 rounded-3xl relative overflow-hidden group shadow-[0_20px_50px_rgba(255,69,0,0.15)] parallax-card-down">
                     <div class="relative z-10">
-                        <div class="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-8">
-                            <i data-lucide="line-chart" class="text-[#ffe17c] w-8 h-8"></i>
+                        <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8">
+                            <i data-lucide="line-chart" class="text-white w-8 h-8"></i>
                         </div>
-                        <h3 class="font-heading text-4xl font-extrabold mb-4">30% Revenue Recovery</h3>
-                        <p class="text-black/70 font-bold text-lg max-w-xl">Our neural agent identifies high-value procedures from missed calls and prioritizes them for instant booking.</p>
+                        <h3 class="font-serif text-4xl mb-4 text-white">30% Revenue Recovery</h3>
+                        <p class="text-white/80 font-light text-lg max-w-xl">Our neural agent identifies high-value procedures from missed calls and prioritizes them for instant booking.</p>
                     </div>
-                    <i data-lucide="trending-up" class="absolute -right-8 -bottom-8 w-64 h-64 text-black/5 transform -rotate-12 group-hover:rotate-0 transition-transform duration-700"></i>
+                    <i data-lucide="trending-up" class="absolute -right-8 -bottom-8 w-64 h-64 text-white/10 transform -rotate-12 group-hover:rotate-0 transition-transform duration-700"></i>
                 </div>
 
                 <!-- Small Feature -->
-                <div class="md:col-span-4 bg-white brutal-border p-10 rounded-[2rem] flex flex-col justify-between hover:bg-[#b7c6c2] transition-colors duration-500">
+                <div class="md:col-span-4 bg-[#111] border border-white/10 p-12 rounded-3xl flex flex-col justify-between hover:border-white/30 transition-colors duration-500 parallax-card-up">
                     <div>
-                        <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center mb-6">
+                        <div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6">
                             <i data-lucide="zap" class="text-white w-6 h-6"></i>
                         </div>
-                        <h3 class="font-heading text-2xl font-extrabold mb-2">24/7 Coverage</h3>
-                        <p class="text-black/60 font-bold text-sm">Weekends, holidays, or lunch breaks. Catch never sleeps.</p>
+                        <h3 class="font-serif text-2xl mb-2 text-white">24/7 Coverage</h3>
+                        <p class="text-white/50 font-light text-sm leading-relaxed">Weekends, holidays, or lunch breaks. Catch never sleeps.</p>
                     </div>
                 </div>
 
                 <!-- Another Small Feature -->
-                <div class="md:col-span-4 bg-[#171e19] text-white brutal-border p-10 rounded-[2rem] flex flex-col justify-between">
+                <div class="md:col-span-4 bg-[#111] border border-white/10 p-12 rounded-3xl flex flex-col justify-between hover:border-white/30 transition-colors duration-500 parallax-card-down">
                     <div>
-                        <div class="w-12 h-12 bg-[#ffe17c] rounded-xl flex items-center justify-center mb-6">
-                            <i data-lucide="lock" class="text-black w-6 h-6"></i>
+                        <div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="lock" class="text-[#FF4500] w-6 h-6"></i>
                         </div>
-                        <h3 class="font-heading text-2xl font-extrabold mb-2">HIPAA Secure</h3>
-                        <p class="text-white/60 font-bold text-sm">Enterprise-grade encryption for all patient data.</p>
+                        <h3 class="font-serif text-2xl mb-2 text-white">HIPAA Secure</h3>
+                        <p class="text-white/50 font-light text-sm leading-relaxed">Enterprise-grade encryption for all patient data.</p>
                     </div>
                 </div>
 
                 <!-- Another Big Feature -->
-                <div class="md:col-span-8 bg-[#f4f4f5] brutal-border p-10 rounded-[2rem] relative overflow-hidden">
+                <div class="md:col-span-8 bg-[#111] border border-white/10 p-12 rounded-3xl relative overflow-hidden hover:border-white/30 transition-colors duration-500 parallax-card-up">
                     <div class="flex flex-col md:flex-row gap-10 items-center">
                         <div class="flex-1">
-                            <h3 class="font-heading text-3xl font-extrabold mb-4">Seamless PMS Integration</h3>
-                            <p class="text-black/70 font-bold">Direct two-way sync with Dentrix, Open Dental, and more. No manual entry required.</p>
+                            <h3 class="font-serif text-3xl mb-4 text-white">Seamless PMS Integration</h3>
+                            <p class="text-white/50 font-light leading-relaxed">Direct two-way sync with Dentrix, Open Dental, and more. No manual entry required.</p>
                         </div>
                         <div class="flex gap-4">
-                            <div class="w-16 h-16 bg-white brutal-border rounded-xl flex items-center justify-center shadow-sm">
-                                <i data-lucide="refresh-cw" class="w-8 h-8 text-blue-500"></i>
+                            <div class="w-16 h-16 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                                <i data-lucide="refresh-cw" class="w-8 h-8 text-white/40"></i>
                             </div>
-                            <div class="w-16 h-16 bg-white brutal-border rounded-xl flex items-center justify-center shadow-sm">
-                                <i data-lucide="calendar" class="w-8 h-8 text-green-500"></i>
+                            <div class="w-16 h-16 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                                <i data-lucide="calendar" class="w-8 h-8 text-white/40"></i>
                             </div>
                         </div>
                     </div>
@@ -838,11 +897,11 @@
     </section>
 
     <!-- Social Proof / Reviews -->
-    <section class="bg-[#171e19] py-32 brutal-border-b overflow-hidden">
+    <section class="bg-[#050505] py-32 border-y border-white/5 overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 mb-16">
             <div class="text-center animate-fade-up">
-                <h2 class="font-heading text-6xl md:text-8xl font-extrabold text-white mb-6 uppercase tracking-tighter leading-none">Trusted by <br><span class="text-stroke">leading clinics.</span></h2>
-                <p class="text-[#ffe17c] font-black tracking-[0.3em] uppercase text-xs">Verified Performance Metrics</p>
+                <h2 class="font-serif text-5xl md:text-7xl text-white mb-6 tracking-tight leading-none">Trusted by <br><span class="italic text-white/50">leading clinics.</span></h2>
+                <p class="text-[#FF4500] font-bold tracking-widest uppercase text-xs">Verified Performance Metrics</p>
             </div>
         </div>
 
@@ -1029,77 +1088,77 @@
         </div>
 
         <div class="mt-24 text-center">
-            <a href="/dashboard.html" class="inline-block bg-[#ffe17c] text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-lg brutal-border brutal-shadow-lg brutal-btn hover:translate-x-1 hover:translate-y-1 transition-all">
+            <a href="/dashboard.html" class="inline-block bg-[#FF4500] text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,69,0,0.3)]">
                 Join 50+ Clinics
             </a>
         </div>
     </section>
 
     <!-- Pricing Section -->
-    <section class="py-32 px-10 bg-[#fafafa] relative overflow-hidden" id="pricing">
-        <div class="max-w-7xl mx-auto">
+    <section class="py-32 px-10 bg-[#050505] relative overflow-hidden" id="pricing">
+        <div class="max-w-7xl mx-auto z-10 relative">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-20 items-center mb-32">
                 <div class="lg:col-span-5 reveal-left">
-                    <h2 class="font-heading font-extrabold text-6xl md:text-8xl mb-8 text-black tracking-tighter uppercase leading-none">Value-Based <br><span class="text-stroke">Pricing.</span></h2>
-                    <p class="text-xl font-bold text-slate-500 max-w-2xl italic mb-12">Recover one missed lead, and the service pays for itself 10x over. Simple, transparent, and built for scale.</p>
-                    <img src="pricing_visual.png" alt="ROI Visual" class="w-full rounded-[48px] shadow-2xl border-4 border-white transform -rotate-3 hover:rotate-0 transition-transform duration-700">
+                    <h2 class="font-serif text-6xl md:text-8xl mb-8 text-white tracking-tight leading-none">Value-Based <br><span class="italic text-white/50">Pricing.</span></h2>
+                    <p class="text-xl font-light text-white/60 max-w-2xl mb-12">Recover one missed lead, and the service pays for itself 10x over. Simple, transparent, and built for scale.</p>
+                    <img src="pricing_visual.png" alt="ROI Visual" class="w-full rounded-[48px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 transform -rotate-3 hover:rotate-0 transition-transform duration-700">
                 </div>
 
                 <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 reveal-right">
                     <!-- Starter -->
-                    <div class="bg-white p-10 rounded-[48px] border-2 border-black flex flex-col shadow-xl hover:shadow-2xl transition-all group">
+                    <div class="bg-[#111] p-10 rounded-[3rem] border border-white/10 flex flex-col hover:border-white/30 transition-all group parallax-card-down">
                         <div class="mb-8">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-100 shadow-sm">Starter</span>
-                            <h3 class="text-5xl font-heading font-extrabold mt-6 text-black">$199<span class="text-lg text-slate-400 font-bold">/mo</span></h3>
+                            <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10">Starter</span>
+                            <h3 class="text-5xl font-serif mt-6 text-white">$199<span class="text-lg text-white/40 font-light">/mo</span></h3>
                         </div>
                         <ul class="space-y-4 mb-12 flex-1">
-                            <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                            <li class="flex items-center gap-3 text-sm font-light text-white/60">
                                 <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Missed Call Text-Back
                             </li>
-                            <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                            <li class="flex items-center gap-3 text-sm font-light text-white/60">
                                 <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Basic Triage Logic
                             </li>
-                            <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                            <li class="flex items-center gap-3 text-sm font-light text-white/60">
                                 <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Email Summaries
                             </li>
                         </ul>
-                        <button class="brutal-btn w-full py-5 rounded-3xl bg-white border-2 border-black font-black text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all">Get Started</button>
+                        <button class="w-full py-5 rounded-full bg-white/10 border border-white/20 text-white font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all">Get Started</button>
                     </div>
 
                     <!-- Pro -->
-                    <div class="bg-black p-10 rounded-[48px] border-2 border-black flex flex-col shadow-[20px_20px_0px_0px_#ffe17c] relative overflow-hidden group">
+                    <div class="bg-[#FF4500] p-10 rounded-[3rem] border border-[#FF4500]/50 flex flex-col shadow-[0_20px_50px_rgba(255,69,0,0.15)] relative overflow-hidden group parallax-card-up md:mt-16">
                         <div class="absolute top-4 right-4">
-                            <span class="text-[8px] font-black text-black bg-[#ffe17c] px-3 py-1 rounded-full uppercase tracking-widest">Most Popular</span>
+                            <span class="text-[8px] font-bold text-[#FF4500] bg-white px-3 py-1 rounded-full uppercase tracking-widest">Most Popular</span>
                         </div>
                         <div class="mb-8 text-white">
-                            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-sm">Pro (Full Neural)</span>
-                            <h3 class="text-5xl font-heading font-extrabold mt-6">$499<span class="text-lg text-white/40 font-bold">/mo</span></h3>
+                            <span class="text-[10px] font-bold text-white uppercase tracking-widest bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">Pro (Full Neural)</span>
+                            <h3 class="text-5xl font-serif mt-6">$499<span class="text-lg text-white/60 font-light">/mo</span></h3>
                         </div>
-                        <ul class="space-y-4 mb-12 flex-1 text-white/80">
-                            <li class="flex items-center gap-3 text-sm font-bold">
-                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Direct PMS Booking
+                        <ul class="space-y-4 mb-12 flex-1 text-white/90">
+                            <li class="flex items-center gap-3 text-sm font-light">
+                                <i data-lucide="zap" class="w-5 h-5 text-white"></i> Direct PMS Booking
                             </li>
-                            <li class="flex items-center gap-3 text-sm font-bold">
-                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Insurance Verification AI
+                            <li class="flex items-center gap-3 text-sm font-light">
+                                <i data-lucide="zap" class="w-5 h-5 text-white"></i> Insurance Verification AI
                             </li>
-                            <li class="flex items-center gap-3 text-sm font-bold">
-                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> 24/7 Global Neural Hub
+                            <li class="flex items-center gap-3 text-sm font-light">
+                                <i data-lucide="zap" class="w-5 h-5 text-white"></i> 24/7 Global Neural Hub
                             </li>
-                            <li class="flex items-center gap-3 text-sm font-bold">
-                                <i data-lucide="zap" class="w-5 h-5 text-[#ffe17c]"></i> Custom Voice Responses
+                            <li class="flex items-center gap-3 text-sm font-light">
+                                <i data-lucide="zap" class="w-5 h-5 text-white"></i> Custom Voice Responses
                             </li>
                         </ul>
-                        <button class="brutal-btn w-full py-5 rounded-3xl bg-[#ffe17c] text-black font-black text-sm uppercase tracking-widest hover:brightness-110 transition-all">Go Neural</button>
+                        <button class="w-full py-5 rounded-full bg-white text-[#FF4500] font-bold text-sm uppercase tracking-widest hover:bg-white/90 transition-all">Go Neural</button>
                     </div>
 
                     <!-- Enterprise -->
-                    <div class="md:col-span-2 bg-white p-10 rounded-[48px] border-2 border-black flex flex-col md:flex-row justify-between items-center group">
+                    <div class="md:col-span-2 bg-[#111] p-10 rounded-[3rem] border border-white/10 flex flex-col md:flex-row justify-between items-center group hover:border-white/30 transition-all">
                         <div class="mb-8 md:mb-0">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-100 shadow-sm">Enterprise</span>
-                            <h3 class="text-5xl font-heading font-extrabold mt-6 text-black">Custom Pricing</h3>
-                            <p class="text-sm font-bold text-slate-400 mt-2">Multi-location control & dedicated neural support.</p>
+                            <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10">Enterprise</span>
+                            <h3 class="text-5xl font-serif mt-6 text-white">Custom Pricing</h3>
+                            <p class="text-sm font-light text-white/50 mt-2">Multi-location control & dedicated neural support.</p>
                         </div>
-                        <button class="brutal-btn px-10 py-5 rounded-3xl bg-black text-white font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all">Talk to Sales</button>
+                        <button class="px-10 py-5 rounded-full bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-white/80 transition-all">Talk to Sales</button>
                     </div>
                 </div>
             </div>
@@ -1107,36 +1166,34 @@
     </section>
 
     <!-- Final CTA & Footer -->
-    <section class="bg-[#ffe17c] py-32 px-6 brutal-border-b dot-pattern text-center overflow-hidden">
-        <div class="max-w-3xl mx-auto animate-fade-up">
-            <h2 class="font-heading text-6xl md:text-7xl font-extrabold tracking-tighter mb-8 text-black">Ready to recover your revenue?</h2>
-            <a href="/dashboard.html" class="inline-block bg-black text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-lg brutal-border brutal-shadow-lg brutal-btn">
+    <section class="bg-[#FF4500] py-32 px-6 text-center overflow-hidden border-y border-white/5 relative">
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+        <div class="max-w-3xl mx-auto animate-fade-up relative z-10">
+            <h2 class="font-serif text-6xl md:text-7xl mb-8 text-white tracking-tight">Ready to recover your <span class="italic text-white/80">revenue?</span></h2>
+            <a href="/dashboard.html" class="inline-block bg-white text-[#FF4500] px-10 py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform duration-300 shadow-2xl">
                 Start Free Trial
             </a>
         </div>
     </section>
 
-    <footer class="bg-[#171e19] text-white py-16 px-6">
+    <footer class="bg-[#050505] text-white py-16 px-6 relative z-10">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="col-span-1 md:col-span-2">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 bg-black brutal-border border-white flex items-center justify-center overflow-hidden">
-                        <img src="assets/logo.png" alt="Catch.ai Logo" class="w-full h-full object-cover">
-                    </div>
-                    <span class="font-heading font-extrabold text-xl tracking-tighter">Catch.ai</span>
+                    <span class="font-serif font-bold text-2xl tracking-tighter">Catch.ai</span>
                 </div>
-                <p class="text-sm font-medium text-gray-400 max-w-sm">Automating the front desk for the modern clinic.</p>
+                <p class="text-sm font-light text-white/40 max-w-sm">Automating the front desk for the modern clinic with elegant, highly-performant AI workflows.</p>
                 <div class="flex gap-4 mt-6">
-                    <a href="#" class="w-10 h-10 bg-[#272727] border border-gray-600 flex items-center justify-center hover:bg-[#ffe17c] hover:text-black transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
-                    <a href="#" class="w-10 h-10 bg-[#272727] border border-gray-600 flex items-center justify-center hover:bg-[#ffe17c] hover:text-black transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#FF4500] hover:border-[#FF4500] transition-colors duration-300"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#FF4500] hover:border-[#FF4500] transition-colors duration-300"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
                 </div>
             </div>
             <div>
-                <h4 class="font-heading font-bold text-lg mb-4 text-[#ffe17c]">Product</h4>
-                <ul class="space-y-2 text-sm text-gray-400 font-medium">
-                    <li><a href="#" class="hover:text-white">Features</a></li>
-                    <li><a href="#" class="hover:text-white">Pricing</a></li>
-                    <li><a href="#" class="hover:text-white">Case Studies</a></li>
+                <h4 class="font-bold text-sm mb-4 text-[#FF4500] uppercase tracking-widest">Product</h4>
+                <ul class="space-y-2 text-sm text-white/50 font-light">
+                    <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Case Studies</a></li>
                 </ul>
             </div>
             <div>
