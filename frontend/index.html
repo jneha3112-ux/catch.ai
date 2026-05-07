@@ -1894,17 +1894,19 @@
 
         // Testimonial Marquee Animation
         const track = document.getElementById('testimonial-track');
-        const trackWidth = track.scrollWidth / 2; // Since we duplicated items
-        
-        gsap.to(track, {
-            x: -trackWidth,
-            duration: 40,
-            ease: "none",
-            repeat: -1,
-            modifiers: {
-                x: gsap.utils.unitize(x => parseFloat(x) % trackWidth)
-            }
-        });
+        if (track) {
+            const trackWidth = track.scrollWidth / 2; // Since we duplicated items
+            
+            gsap.to(track, {
+                x: -trackWidth,
+                duration: 40,
+                ease: "none",
+                repeat: -1,
+                modifiers: {
+                    x: gsap.utils.unitize(x => parseFloat(x) % trackWidth)
+                }
+            });
+        }
 
         // ═══ GLASS CLOCK ═══
         (function initClock() {
@@ -1976,36 +1978,34 @@
         (function() {
             if (typeof Lenis === 'undefined') return;
             const lenis = new Lenis({
-                duration: 1.4,
-                easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                duration: 2.5, // Extra smooth duration
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 orientation: 'vertical',
                 smoothWheel: true,
+                wheelMultiplier: 1,
                 touchMultiplier: 2
             });
-            // Connect Lenis to GSAP ticker for ScrollTrigger sync
             lenis.on('scroll', ScrollTrigger.update);
             gsap.ticker.add(time => lenis.raf(time * 1000));
             gsap.ticker.lagSmoothing(0);
 
-            // data-speed parallax on ALL elements with that attribute
+            // Advanced data-speed parallax (mimics ScrollSmoother)
             gsap.utils.toArray('[data-speed]').forEach(el => {
                 const speed = parseFloat(el.getAttribute('data-speed'));
                 if (isNaN(speed)) return;
-                const factor = (1 - speed) * 150;
-                gsap.fromTo(el,
-                    { y: -factor },
-                    {
-                        y: factor,
-                        ease: 'none',
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top bottom',
-                            end: 'bottom top',
-                            scrub: true,
-                            invalidateOnRefresh: true
-                        }
+                
+                // Calculate y movement based on speed ratio
+                gsap.to(el, {
+                    y: () => (1 - speed) * (window.innerHeight / 2),
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 1.2, // Gives it that buttery "lag" follow-through
+                        invalidateOnRefresh: true
                     }
-                );
+                });
             });
 
             // Smooth reveal on scroll for all .reveal, .how-step, .super-card
