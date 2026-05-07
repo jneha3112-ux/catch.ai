@@ -1694,33 +1694,44 @@
         // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
         // USER'S EXACT GSAP CODE — adapted for Catch.ai
         window.addEventListener("load", () => {
-            gsap.timeline({
+            const introTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: ".wrapper",
                     start: "top top",
-                    end: "+=150%",
+                    end: "+=250%", // Longer scroll distance for a smooth fly-through
                     pin: true,
-                    scrub: true
+                    scrub: 1.5 // Smooth scrubbing
                 }
-            })
-            // Zoom the intro image toward the viewer (fly-through)
-            .to(".image-container img", {
-                scale: 2,
-                z: 350,
+            });
+
+            // 1. Zoom the image MASSIVELY to simulate flying into the window
+            introTl.to(".image-container img", {
+                scale: 25, // Extreme scale to fly through the portal
                 transformOrigin: "center center",
-                ease: "power1.inOut"
-            })
-            // Scale the hero section behind it (parallax depth)
-            .to(".section.hero", {
-                scale: 1.1,
+                ease: "power3.in" // Accelerates as you get closer
+            }, 0)
+            
+            // 2. Hide the Catch.ai overlay text early so it doesn't get huge
+            .to(".intro-brand", {
+                opacity: 0,
+                ease: "power1.in",
+                duration: 0.1
+            }, 0)
+
+            // 3. Scale the hero section up from a smaller size (parallax depth)
+            .from(".section.hero", {
+                scale: 0.8,
+                opacity: 0.2,
                 transformOrigin: "center center",
-                ease: "power1.inOut"
-            }, "<")
-            // Fade the image container out at the end — website revealed
+                ease: "power2.inOut"
+            }, 0)
+
+            // 4. Fade out the image container at the very end to reveal the crisp website
             .to(".image-container", {
                 opacity: 0,
+                duration: 0.2, // Quick fade at the end
                 ease: "power1.inOut"
-            }, "<");
+            }, "-=0.2");
         });
     </script>
 </body>
