@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <script src="https://unpkg.com/framer-motion@11.0.0/dist/framer-motion.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
     <!-- Inter & Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
@@ -700,10 +701,10 @@
         </div>
 
         <!-- Floating Surrealist Hands -->
-        <div class="absolute -left-[10%] top-[10%] md:left-[-5%] md:top-[5%] w-[50vw] md:w-[40vw] max-w-[800px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-left hidden lg:block">
+        <div data-speed="0.85" class="absolute -left-[10%] top-[10%] md:left-[-5%] md:top-[5%] w-[50vw] md:w-[40vw] max-w-[800px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-left hidden lg:block">
              <img src="https://framerusercontent.com/images/KNhiA5A2ykNYqNkj04Hk6BVg5A.png?width=1540&height=1320" alt="Hand Reaching" class="w-full h-auto object-contain">
         </div>
-        <div class="absolute -right-[10%] bottom-[0%] md:right-[-5%] md:bottom-[-5%] w-[45vw] md:w-[35vw] max-w-[700px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-right hidden lg:block">
+        <div data-speed="1.15" class="absolute -right-[10%] bottom-[0%] md:right-[-5%] md:bottom-[-5%] w-[45vw] md:w-[35vw] max-w-[700px] z-10 pointer-events-none mix-blend-hard-light opacity-80 animate-float-right hidden lg:block">
              <img src="https://framerusercontent.com/images/X89VFCABCEjjZ4oLGa3PjbOmsA.png?width=1542&height=1002" alt="Hand Receiving" class="w-full h-auto object-contain">
         </div>
 
@@ -735,7 +736,7 @@
             </div>
 
             <!-- 3D Phone Mockup -->
-            <div class="flex justify-center lg:justify-end z-20 w-full">
+            <div data-speed="1.08" class="flex justify-center lg:justify-end z-20 w-full">
                 <div class="phone-3d-wrapper">
                     <div class="phone-frame">
                         <div class="phone-screen">
@@ -1906,11 +1907,10 @@
         });
 
         // ═══ GLASS CLOCK ═══
-        (function() {
+        (function initClock() {
             const marksEl = document.getElementById('gcw-marks');
             if (!marksEl) return;
-            const sEl = document.getElementById('gcw-second');
-            if (sEl) sEl.style.transformOrigin = 'bottom';
+            // Build tick marks + numbers
             for (let i = 0; i < 60; i++) {
                 if (i % 5 === 0) {
                     const tick = document.createElement('div');
@@ -1923,7 +1923,7 @@
                     const r = 130;
                     num.style.left = (160 + Math.cos(angle)*r - 12) + 'px';
                     num.style.top  = (160 + Math.sin(angle)*r - 8) + 'px';
-                    num.textContent = (i===0?12:i/5).toString();
+                    num.textContent = (i===0 ? '12' : (i/5).toString());
                     marksEl.appendChild(num);
                 } else {
                     const tick = document.createElement('div');
@@ -1932,22 +1932,21 @@
                     marksEl.appendChild(tick);
                 }
             }
+            const hEl = document.getElementById('gcw-hour');
+            const mEl = document.getElementById('gcw-minute');
+            const sEl = document.getElementById('gcw-second');
+            const dateEl = document.getElementById('gcw-date');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             function updateClock() {
                 const now = new Date();
-                const h = now.getHours() % 12, m = now.getMinutes(), s = now.getSeconds(), ms = now.getMilliseconds();
-                const hDeg = h*30 + (m/60)*30;
-                const mDeg = m*6 + (s/60)*6;
-                const sDeg = s*6 + (ms/1000)*6;
-                const hEl = document.getElementById('gcw-hour');
-                const mEl = document.getElementById('gcw-minute');
-                if (hEl) hEl.style.transform = `rotate(${hDeg}deg)`;
-                if (mEl) mEl.style.transform = `rotate(${mDeg}deg)`;
-                if (sEl) sEl.style.transform = `rotate(${sDeg}deg)`;
-                const dateEl = document.getElementById('gcw-date');
-                if (dateEl) {
-                    const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                    dateEl.textContent = mo[now.getMonth()] + ' ' + now.getDate();
-                }
+                const h = now.getHours() % 12;
+                const m = now.getMinutes();
+                const s = now.getSeconds();
+                const ms = now.getMilliseconds();
+                if (hEl) hEl.style.transform = `rotate(${h*30 + (m/60)*30}deg)`;
+                if (mEl) mEl.style.transform = `rotate(${m*6 + (s/60)*6}deg)`;
+                if (sEl) sEl.style.transform = `rotate(${s*6 + (ms/1000)*6}deg)`;
+                if (dateEl) dateEl.textContent = months[now.getMonth()] + ' ' + now.getDate();
                 requestAnimationFrame(updateClock);
             }
             updateClock();
@@ -1971,6 +1970,92 @@
                 if (gainEl) gainEl.textContent = '$' + gain.toFixed(2);
             }
             setInterval(tick, 1000/60);
+        })();
+
+        // ═══ LENIS SMOOTH SCROLL + PARALLAX ═══
+        (function() {
+            if (typeof Lenis === 'undefined') return;
+            const lenis = new Lenis({
+                duration: 1.4,
+                easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                orientation: 'vertical',
+                smoothWheel: true,
+                touchMultiplier: 2
+            });
+            // Connect Lenis to GSAP ticker for ScrollTrigger sync
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(time => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+
+            // data-speed parallax on ALL elements with that attribute
+            gsap.utils.toArray('[data-speed]').forEach(el => {
+                const speed = parseFloat(el.getAttribute('data-speed'));
+                if (isNaN(speed)) return;
+                const factor = (1 - speed) * 150;
+                gsap.fromTo(el,
+                    { y: -factor },
+                    {
+                        y: factor,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top bottom',
+                            end: 'bottom top',
+                            scrub: true,
+                            invalidateOnRefresh: true
+                        }
+                    }
+                );
+            });
+
+            // Smooth reveal on scroll for all .reveal, .how-step, .super-card
+            gsap.utils.toArray('.reveal, .how-step, .super-card').forEach((el, i) => {
+                gsap.fromTo(el,
+                    { opacity: 0, y: 60 },
+                    {
+                        opacity: 1, y: 0,
+                        duration: 1,
+                        delay: i * 0.05,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 88%',
+                            toggleActions: 'play none none none'
+                        }
+                    }
+                );
+            });
+
+            // Section headings float in
+            gsap.utils.toArray('section h2, section h3').forEach(el => {
+                gsap.fromTo(el,
+                    { opacity: 0, y: 40 },
+                    {
+                        opacity: 1, y: 0,
+                        duration: 1.2,
+                        ease: 'power4.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 90%',
+                            toggleActions: 'play none none none'
+                        }
+                    }
+                );
+            });
+
+            // Parallax on section background blobs
+            gsap.utils.toArray('.absolute[class*="blur"]').forEach(el => {
+                gsap.to(el, {
+                    y: -80,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: el.closest('section') || el,
+                        start: 'top bottom',
+                        end: 'bottom top',
+                        scrub: 1.5
+                    }
+                });
+            });
         })();
     </script>
 </body>
