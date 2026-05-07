@@ -536,6 +536,39 @@
             height: 100%;
             object-fit: cover;
             object-position: center center;
+            will-change: transform, filter; /* optimize for smooth zoom and blur */
+        }
+
+        /* Cinematic Effects Overlay */
+        .portal-glow {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background: radial-gradient(circle at center, rgba(255, 69, 0, 0.4) 0%, transparent 60%);
+            opacity: 0;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        .ambient-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-up 10s infinite linear;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(1); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-20vh) scale(2); opacity: 0; }
         }
 
         /* Catch.ai branding on the intro overlay */
@@ -692,11 +725,18 @@
         <div class="image-container">
             <!-- Webflow portal image = the "window" that zooms -->
             <img src="https://assets-global.website-files.com/63ec206c5542613e2e5aa784/643312a6bc4ac122fc4e3afa_main%20home.webp" alt="Intro portal">
+            
+            <!-- Cinematic Lighting Glow -->
+            <div class="portal-glow"></div>
+            
             <!-- Catch.ai branding overlay on the image -->
             <div class="intro-brand">
                 <div class="intro-brand-name">Catch.ai</div>
                 <div class="intro-brand-hint">↓ &nbsp; scroll to enter &nbsp; ↓</div>
             </div>
+
+            <!-- Ambient Cinematic Particles -->
+            <div class="ambient-particles" id="particles-container"></div>
         </div>
 
     </div><!-- /.wrapper -->
@@ -1694,44 +1734,79 @@
         // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
         // USER'S EXACT GSAP CODE — adapted for Catch.ai
         window.addEventListener("load", () => {
+            // Generate ambient floating particles
+            const particleContainer = document.getElementById('particles-container');
+            if (particleContainer) {
+                for(let i=0; i<30; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.width = Math.random() * 4 + 1 + 'px';
+                    p.style.height = p.style.width;
+                    p.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                    p.style.animationDelay = (Math.random() * 5) + 's';
+                    particleContainer.appendChild(p);
+                }
+            }
+
             const introTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: ".wrapper",
                     start: "top top",
-                    end: "+=250%", // Longer scroll distance for a smooth fly-through
+                    end: "+=350%", // Long scroll for extreme cinematic inertia
                     pin: true,
-                    scrub: 1.5 // Smooth scrubbing
+                    scrub: 1.5 // Smooth heavy inertia
                 }
             });
 
-            // 1. Zoom the image MASSIVELY to simulate flying into the window
+            // 1. Extreme zoom through the portal, and slight downward shift to center the hole
             introTl.to(".image-container img", {
-                scale: 25, // Extreme scale to fly through the portal
-                transformOrigin: "center center",
-                ease: "power3.in" // Accelerates as you get closer
+                scale: 40, // Extreme scale to completely enter the portal
+                y: "10%",  // Shift down slightly to align the portal center with camera
+                filter: "blur(4px)", // Edge blurring simulating depth of field
+                transformOrigin: "center 55%", // Align zoom perfectly to the portal center
+                ease: "power2.in" 
             }, 0)
             
-            // 2. Hide the Catch.ai overlay text early so it doesn't get huge
+            // 2. Hide text quickly as we start moving
             .to(".intro-brand", {
                 opacity: 0,
+                scale: 1.5,
                 ease: "power1.in",
                 duration: 0.1
             }, 0)
 
-            // 3. Scale the hero section up from a smaller size (parallax depth)
-            .from(".section.hero", {
-                scale: 0.8,
-                opacity: 0.2,
-                transformOrigin: "center center",
-                ease: "power2.inOut"
+            // 3. Intensify the portal glow (light bloom)
+            .to(".portal-glow", {
+                opacity: 1,
+                scale: 5,
+                duration: 0.4,
+                ease: "power2.in"
             }, 0)
 
-            // 4. Fade out the image container at the very end to reveal the crisp website
+            // 4. Parallax the particles heavily towards the viewer
+            .to(".ambient-particles", {
+                scale: 5,
+                opacity: 0,
+                duration: 0.3,
+                ease: "power1.in"
+            }, 0)
+
+            // 5. Hero section waits behind, then resolves into clarity
+            .from(".section.hero", {
+                scale: 0.85,
+                opacity: 0,
+                filter: "blur(10px)",
+                transformOrigin: "center center",
+                ease: "power2.out"
+            }, 0.2) // Start revealing hero site as camera nears threshold
+
+            // 6. Completely fade the image wrapper at the exact moment we pass through the threshold
             .to(".image-container", {
                 opacity: 0,
-                duration: 0.2, // Quick fade at the end
+                duration: 0.2, // Fast transition
                 ease: "power1.inOut"
-            }, "-=0.2");
+            }, "-=0.3"); // Overlap fade out slightly before zoom ends
         });
     </script>
 </body>
