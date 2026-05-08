@@ -10,6 +10,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Auth Guard
+        async function checkAuth() {
+            const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+            const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+            
+            if(SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE') return; // Skip if keys not set yet
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const { data: { session } } = await supabase.auth.getSession();
+            if(!session) {
+                window.location.href = '/auth.html';
+            }
+        }
+        checkAuth();
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -166,7 +183,7 @@
                 <a class="top-nav-link" href="/">Landing</a>
                 <a class="top-nav-link" href="/#pricing">Pricing</a>
                 <a class="top-nav-link" href="javascript:void(0)" onclick="document.getElementById('log-container').scrollIntoView({behavior:'smooth'});">Activity</a>
-                <a class="top-nav-link" href="javascript:void(0)" onclick="document.getElementById('header-title').textContent='Settings'; window.scrollTo({top:0, behavior:'smooth'});">Settings</a>
+                <a class="top-nav-link" href="javascript:void(0)" onclick="handleSignOut()">Sign Out</a>
             </div>
             <a href="/" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[#FF4500] text-white hover:bg-orange-600 transition-all whitespace-nowrap">
                 Back to Landing
@@ -859,6 +876,18 @@
         }
 
         initGridDistortion();
+
+        async function handleSignOut() {
+            const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+            const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+            if(SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE') {
+                window.location.href = '/auth.html';
+                return;
+            }
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            await supabase.auth.signOut();
+            window.location.href = '/auth.html';
+        }
 
         setInterval(updateStats, 3000);
         updateStats();

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch.ai | Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #ffffff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .font-heading { font-family: 'Playfair Display', serif; }
+        
+        /* Global Background Elements */
+        .ambient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(255, 69, 0, 0.15); }
+        .blob-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: rgba(255, 255, 255, 0.05); }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.04;
+            mix-blend-mode: overlay;
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        }
+
+        /* Glass Auth Card */
+        .auth-card {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(145deg, rgba(17,17,17,0.88), rgba(7,7,7,0.88));
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 30px 80px rgba(0,0,0,0.6),
+                0 0 40px rgba(255,69,0,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            overflow: hidden;
+        }
+
+        .auth-input {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .auth-input:focus {
+            border-color: #FF4500;
+            background: rgba(255,69,0,0.05);
+            box-shadow: 0 0 15px rgba(255,69,0,0.15);
+        }
+        .auth-input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: #FF4500;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .auth-btn:hover {
+            background: #e63e00;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,69,0,0.25);
+        }
+        .auth-btn:disabled {
+            background: #333;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .toggle-link {
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+            text-align: center;
+            margin-top: 24px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .toggle-link:hover {
+            color: white;
+        }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        #toast.error { border-color: #ef4444; color: #f87171; }
+        #toast.success { border-color: #10b981; color: #34d399; }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+
+    <a href="/" class="absolute top-8 left-8 text-white/50 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium z-50">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home
+    </a>
+
+    <!-- Auth Card -->
+    <div class="auth-card" id="auth-box">
+        <!-- Logo -->
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center gap-3">
+                <img src="assets/catch-logo-premium.svg" alt="Catch.ai logo" class="h-10 w-auto" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23FF4500\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\'></path></svg>'">
+                <div class="leading-none">
+                    <h1 class="font-heading font-normal text-2xl tracking-tighter text-white">Catch<span class="text-[#FF4500] font-sans">.ai</span></h1>
+                </div>
+            </div>
+        </div>
+
+        <div id="form-container">
+            <!-- Login Form (Default) -->
+            <div id="login-view">
+                <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
+                <p class="text-xs text-white/50 mb-6">Enter your credentials to access the neural dashboard.</p>
+                
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <input type="email" id="login-email" class="auth-input" placeholder="Work Email" required autocomplete="email">
+                    </div>
+                    <div>
+                        <input type="password" id="login-password" class="auth-input" placeholder="Password" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="auth-btn" id="login-btn">
+                        <span>Sign In</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                
+                <div class="toggle-link" onclick="toggleView('signup')">
+                    Don't have an account? <span class="text-white hover:underline">Request Access</span>
+                </div>
+            </div>
+
+            <!-- Sign Up Form (Hidden) -->
+            <div id="signup-view" style="display: none;">
+                <h2 class="text-2xl font-bold mb-2">Initialize Account</h2>
+                <p class="text-xs text-white/50 mb-6">Deploy your AI receptionist in minutes.</p>
+                
+                <form id="signup-form" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="signup-fname" class="auth-input" placeholder="First Name" required>
+                        <input type="text" id="signup-lname" class="auth-input" placeholder="Last Name" required>
+                    </div>
+                    <div>
+                        <input type="email" id="signup-email" class="auth-input" placeholder="Work Email" required autocomplete="email">
+                    </div>
+                    <div>
+                        <input type="password" id="signup-password" class="auth-input" placeholder="Create Password" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="auth-btn" id="signup-btn">
+                        <span>Initialize</span>
+                        <i data-lucide="zap" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                
+                <div class="toggle-link" onclick="toggleView('login')">
+                    Already operational? <span class="text-white hover:underline">Sign In</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <i data-lucide="info" class="w-4 h-4" id="toast-icon"></i>
+        <span id="toast-msg">Notification</span>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // UI Toggle Logic
+        function toggleView(target) {
+            const loginView = document.getElementById('login-view');
+            const signupView = document.getElementById('signup-view');
+            const box = document.getElementById('auth-box');
+
+            gsap.to(box, {
+                scale: 0.95,
+                opacity: 0.5,
+                duration: 0.2,
+                onComplete: () => {
+                    if(target === 'signup') {
+                        loginView.style.display = 'none';
+                        signupView.style.display = 'block';
+                    } else {
+                        signupView.style.display = 'none';
+                        loginView.style.display = 'block';
+                    }
+                    gsap.to(box, {
+                        scale: 1,
+                        opacity: 1,
+                        duration: 0.3,
+                        ease: "back.out(1.5)"
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
