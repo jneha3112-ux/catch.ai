@@ -1,0 +1,28 @@
+<svg width="620" height="170" viewBox="0 0 620 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brand" x1="24" y1="18" x2="138" y2="136" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF9A73"/>
+      <stop offset="1" stop-color="#FF4500"/>
+    </linearGradient>
+    <linearGradient id="textWhite" x1="170" y1="40" x2="420" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#ECEFF3"/>
+    </linearGradient>
+    <filter id="logoGlow" x="0" y="0" width="170" height="170" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#FF4500" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="620" height="170" fill="transparent"/>
+
+  <g filter="url(#logoGlow)">
+    <rect x="24" y="24" width="122" height="122" rx="34" fill="#0E0F13" stroke="url(#brand)" stroke-width="2.8"/>
+    <path d="M103 58.5C96.9 53.7 88.9 51 80.1 51C60.2 51 44 67.1 44 87C44 106.9 60.2 123 80.1 123C88.9 123 96.9 120.3 103 115.5"
+      stroke="url(#brand)" stroke-width="10.5" stroke-linecap="round"/>
+    <circle cx="111" cy="87" r="7.2" fill="#FF6A3A"/>
+  </g>
+
+  <text x="170" y="94" fill="url(#textWhite)" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" letter-spacing="-1.5">Catch</text>
+  <text x="359" y="94" fill="#FF5C28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="66" font-weight="700">.ai</text>
+  <text x="172" y="125" fill="#8A909A" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="3.6">AI FRONT DESK AUTOMATION</text>
+</svg>
