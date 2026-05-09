@@ -982,8 +982,20 @@
                 const country = data.country_code;
 
                 const pricing = {
-                    "IN": { symbol: "₹", starter: "399", pro: "599" },
-                    "DEFAULT": { symbol: "$", starter: "199", pro: "499" }
+                    "IN": { 
+                        symbol: "₹", 
+                        starter: "399", 
+                        pro: "599",
+                        linkStarter: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/399INR", 
+                        linkPro: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/599INR" 
+                    },
+                    "DEFAULT": { 
+                        symbol: "$", 
+                        starter: "199", 
+                        pro: "499",
+                        linkStarter: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/199USD", 
+                        linkPro: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/499USD" 
+                    }
                 };
 
                 const tier = pricing[country] || pricing["DEFAULT"];
@@ -993,6 +1005,12 @@
                 // Update Prices
                 document.querySelectorAll('.billing-price-starter').forEach(el => el.textContent = tier.starter);
                 document.querySelectorAll('.billing-price-pro').forEach(el => el.textContent = tier.pro);
+
+                // Update PayPal Links
+                const starterBtn = document.getElementById('checkout-link-starter');
+                const proBtn = document.getElementById('checkout-link-pro');
+                if (starterBtn) starterBtn.href = tier.linkStarter;
+                if (proBtn) proBtn.href = tier.linkPro;
 
                 console.log(`Billing localized for ${country}`);
             } catch (e) {

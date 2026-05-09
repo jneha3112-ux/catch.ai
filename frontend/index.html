@@ -3429,11 +3429,16 @@
                 // 2. Define Pricing Matrix
                 // We use tiered pricing for PPP (Purchasing Power Parity)
                 const pricing = {
-                    "IN": { symbol: "₹", starter: "399", pro: "599" },
-                    "GB": { symbol: "£", starter: "159", pro: "399" },
-                    "EU": { symbol: "€", starter: "179", pro: "449" },
-                    "AU": { symbol: "A$", starter: "249", pro: "699" },
-                    "DEFAULT": { symbol: "$", starter: "199", pro: "499" }
+                    "IN": { 
+                        symbol: "₹", starter: "399", pro: "599",
+                        linkStarter: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/399INR", 
+                        linkPro: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/599INR" 
+                    },
+                    "DEFAULT": { 
+                        symbol: "$", starter: "199", pro: "499",
+                        linkStarter: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/199USD", 
+                        linkPro: "https://www.paypal.me/YOUR_PAYPAL_USERNAME/499USD" 
+                    }
                 };
 
                 const tier = pricing[country] || pricing["DEFAULT"];
@@ -3443,11 +3448,16 @@
                 const starterSym = document.getElementById('price-starter-symbol');
                 const proAmt = document.getElementById('price-pro-amount');
                 const proSym = document.getElementById('price-pro-symbol');
+                const starterBtn = document.getElementById('price-starter-btn');
+                const proBtn = document.getElementById('price-pro-btn');
 
                 if (starterAmt) starterAmt.textContent = tier.starter;
                 if (starterSym) starterSym.textContent = tier.symbol;
                 if (proAmt) proAmt.textContent = tier.pro;
                 if (proSym) proSym.textContent = tier.symbol;
+                
+                if (starterBtn) starterBtn.href = tier.linkStarter;
+                if (proBtn) proBtn.href = tier.linkPro;
 
                 console.log(`Dynamic Pricing Applied: Tier ${country || 'Default'}`);
             } catch (err) {
