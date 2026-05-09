@@ -3,16 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receptionist.ai | Dental Operations Dashboard</title>
+    <title>Catch.ai | Neural Dashboard</title>
+    
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Auth Guard -->
     <script>
-        // ── Secure Auth Guard ────────────────────────────────────────────────
         const SUPABASE_URL     = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
 
@@ -20,880 +26,553 @@
             auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
         });
 
-        // Only redirect to login on SIGNED_OUT — never on INITIAL_SESSION
         supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') {
-                window.location.href = '/auth.html';
-            }
+            if (event === 'SIGNED_OUT') window.location.replace('/auth.html');
         });
 
-        // One-time check on page load — wait for Supabase to restore the session from storage
         (async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = '/auth.html';
-            }
+            if (!session) window.location.replace('/auth.html');
         })();
 
+        async function handleSignOut() {
+            await supabase.auth.signOut();
+            window.location.replace('/auth.html');
+        }
     </script>
+
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505; 
-            color: #ffffff;
-            overflow: hidden;
-        }
-        .font-heading { font-family: 'Playfair Display', serif; }
-        .premium-shell {
-            position: relative;
-            isolation: isolate;
-        }
-        .premium-shell::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(circle at 15% 12%, rgba(255, 69, 0, 0.16), transparent 35%),
-                radial-gradient(circle at 80% 25%, rgba(45, 212, 191, 0.12), transparent 30%),
-                radial-gradient(circle at 45% 85%, rgba(255, 255, 255, 0.06), transparent 35%);
-            z-index: 0;
+        :root {
+            --accent: #FF4500;
+            --glass-bg: rgba(10, 10, 10, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.05);
         }
 
-        .brutal-border { border: 1px solid rgba(255,255,255,0.1); }
-        .brutal-border-b { border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .brutal-shadow { box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .brutal-shadow-sm { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        
-        .glass-dark {
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255,255,255,0.05);
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            overflow: hidden;
         }
+
+        .font-heading { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Three.js Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Glassmorphism 2.0 */
         .glass-panel {
-            background: linear-gradient(145deg, rgba(17,17,17,0.88), rgba(7,7,7,0.88));
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.08),
-                0 20px 60px rgba(0,0,0,0.45);
-            backdrop-filter: blur(14px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
+
         .premium-card {
             position: relative;
             overflow: hidden;
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
-        .premium-card::after {
-            content: "";
+
+        .premium-card::before {
+            content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.045) 50%, transparent 100%);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top right, rgba(255,69,0,0.1), transparent 70%);
             opacity: 0;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.4s ease;
+            z-index: 0;
             pointer-events: none;
         }
-        .premium-card:hover::after {
+
+        .premium-card:hover {
+            border-color: rgba(255, 69, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(255, 69, 0, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .premium-card:hover::before {
             opacity: 1;
         }
-        .stat-number {
-            letter-spacing: -0.03em;
-            text-shadow: 0 0 22px rgba(255,255,255,0.06);
-        }
-        
-        .sidebar-item-active {
-            background: rgba(255, 69, 0, 0.1);
-            color: #FF4500;
-            border: 1px solid rgba(255, 69, 0, 0.3);
+
+        .premium-card > * {
+            position: relative;
+            z-index: 1;
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-        .noise-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            pointer-events: none;
-            opacity: 0.05;
-            mix-blend-mode: overlay;
-            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        /* Typography & Accents */
+        .text-gradient {
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .top-nav-link {
-            color: rgba(255,255,255,0.72);
+
+        .accent-glow {
+            text-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+        }
+
+        .nav-link {
             font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            transition: color 0.2s ease;
+            color: rgba(255,255,255,0.5);
+            transition: color 0.3s;
+            cursor: pointer;
         }
-        .top-nav-link:hover {
-            color: #fff;
+        .nav-link:hover { color: #fff; }
+
+        /* Layout */
+        #app-layout {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            height: 100vh;
+            padding-top: 80px; /* Space for navbar */
         }
 
-        #grid-distortion-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-            opacity: 0.15;
-            pointer-events: none;
+        .sidebar {
+            width: 320px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
         }
 
-        @media (max-width: 1024px) {
-            .flex.h-screen {
-                flex-direction: column;
-                height: auto;
-                overflow-y: auto;
-            }
-            aside { 
-                width: 100%;
-                height: auto;
-                shrink: 0;
-            }
-            main {
-                width: 100%;
-                height: auto;
-                overflow: visible;
-            }
-            .dock-container {
-                bottom: 1rem;
-                width: 90%;
-                justify-content: space-around;
-            }
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
         }
 
-        @media (max-width: 768px) {
-            header {
-                padding: 1rem;
-                height: auto;
-                flex-direction: column;
-                text-align: center;
-            }
-            .grid-cols-4 {
-                grid-cols: 1 !important;
-            }
+        /* Top Navbar */
+        .top-navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 80px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(20px);
         }
+
+        /* Animated Graph Line */
+        .graph-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 3s ease-out forwards;
+        }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+        /* GSAP Initial States */
+        .gsap-reveal { opacity: 0; visibility: hidden; }
     </style>
 </head>
-<body class="bg-[#050505] font-['Inter'] text-white antialiased premium-shell">
-    <!-- Global Noise Overlay -->
-    <div class="noise-overlay"></div>
+<body>
 
-    <!-- Fixed Banner -->
-    <div class="fixed top-0 left-0 right-0 bg-[#FF4500]/10 backdrop-blur-md text-[#FF4500] text-[10px] font-bold py-2 px-4 text-center tracking-[0.2em] uppercase border-b border-[#FF4500]/20 z-[999]">
-        BETA ACCESS - NEURAL DASHBOARD V2
-    </div>
+    <!-- 3D Background -->
+    <canvas id="bg-canvas"></canvas>
 
-    <nav class="fixed top-8 left-0 right-0 z-[998] bg-black/40 backdrop-blur-xl border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
-            <a href="/" class="inline-flex items-center">
-                <img src="assets/catch-logo-premium.svg" alt="Catch.ai logo" class="h-10 w-auto">
-            </a>
-            <div class="hidden md:flex items-center gap-7">
-                <a class="top-nav-link" href="/">Landing</a>
-                <a class="top-nav-link" href="/#pricing">Pricing</a>
-                <a class="top-nav-link" href="javascript:void(0)" onclick="document.getElementById('log-container').scrollIntoView({behavior:'smooth'});">Activity</a>
-                <a class="top-nav-link" href="javascript:void(0)" onclick="handleSignOut()">Sign Out</a>
-            </div>
-            <a href="/" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[#FF4500] text-white hover:bg-orange-600 transition-all whitespace-nowrap">
-                Back to Landing
-            </a>
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <a href="/" class="flex items-center gap-3 group">
+            <img src="assets/catch-logo-premium.svg" alt="Catch.ai" class="h-8 w-auto group-hover:scale-105 transition-transform" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block'">
+            <div id="logo-text" style="display:none;" class="font-heading text-2xl tracking-tighter">Catch<span class="text-[#FF4500]">.ai</span></div>
+        </a>
+        <div class="flex items-center gap-8">
+            <a href="/" class="nav-link">Landing</a>
+            <a class="nav-link">Settings</a>
+            <button onclick="handleSignOut()" class="nav-link !text-[#FF4500] hover:!text-red-400">Disconnect</button>
         </div>
     </nav>
 
-    <div class="flex h-screen overflow-hidden relative z-10 pt-24">
+    <!-- App Layout -->
+    <div id="app-layout">
+        
         <!-- Sidebar -->
-        <aside class="w-72 glass-dark flex flex-col relative z-10 overflow-hidden shrink-0">
-            <!-- Grid Distortion Background -->
-            <div id="grid-distortion-container"></div>
-            
-            <div class="p-8 relative z-10 pt-16">
-                <div class="flex items-center gap-3">
-                    <img src="assets/catch-logo-premium.svg" alt="Catch.ai logo" class="h-10 w-auto">
-                    <div class="leading-tight">
-                        <h1 class="font-heading font-normal text-2xl tracking-tighter text-white">Catch<span class="text-[#FF4500] font-sans">.ai</span></h1>
-                        <p class="text-[9px] font-semibold text-[#FF4500] uppercase tracking-[0.3em]">Neural Operator</p>
+        <aside class="sidebar glass-panel">
+            <div class="mb-12 gsap-reveal">
+                <p class="text-[10px] font-mono text-[#FF4500] tracking-[0.2em] mb-2 uppercase">Neural Operator</p>
+                <h2 class="font-heading text-3xl text-gradient tracking-tight">Command Center</h2>
+            </div>
+
+            <div class="space-y-8 flex-1">
+                <div class="gsap-reveal">
+                    <label class="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Active Sector</label>
+                    <div class="relative">
+                        <select class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white appearance-none outline-none focus:border-[#FF4500] transition-colors cursor-pointer">
+                            <option>Dental Clinics (Active)</option>
+                            <option>Medical Spas</option>
+                            <option>Law Firms</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="gsap-reveal">
+                    <label class="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">System Status</label>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981] animate-pulse"></div>
+                            <span class="text-xs font-medium text-white/80">Voice AI Agent</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-[#10b981]">ONLINE</span>
                     </div>
                 </div>
             </div>
 
-            <nav class="flex-1 px-4 space-y-2 relative z-10 mt-8">
-                <div class="text-[10px] font-medium text-white/40 px-4 mb-4 uppercase tracking-[0.2em]">Matrix Control</div>
-                <div class="px-4 mb-8">
-                    <label class="text-[9px] font-medium text-white/40 uppercase block mb-2">Target Niche</label>
-                    <select id="industry-selector" class="w-full bg-[#0a0a0a] border border-white/10 rounded-xl p-3 text-xs font-medium text-white outline-none focus:border-[#FF4500] transition-all">
-                        <option value="dental">Dental Clinics</option>
-                        <option value="legal">Law Firms</option>
-                        <option value="medical">Medical Spas</option>
-                    </select>
-                </div>
-                
-            </nav>
-
-            <div class="p-6 relative z-10">
-                <div class="glass-panel rounded-3xl p-5 premium-card">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="w-2.5 h-2.5 bg-[#FF4500] rounded-full animate-pulse shadow-[0_0_8px_#FF4500]"></span>
-                        <span class="text-[10px] font-bold text-[#FF4500] tracking-widest uppercase">System Online</span>
+            <div class="mt-auto gsap-reveal">
+                <div class="glass-panel premium-card p-6 border-[#FF4500]/20">
+                    <h3 class="text-xs font-bold uppercase tracking-widest mb-2 text-white">Live Simulation</h3>
+                    <p class="text-[10px] text-white/40 mb-4 leading-relaxed">Test the AI receptionist by calling your dedicated number.</p>
+                    <div class="relative mb-4">
+                        <input type="text" placeholder="Enter Phone Number" class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-xs text-white outline-none focus:border-[#FF4500] transition-colors">
                     </div>
-                    <p class="text-[10px] text-white/40 leading-relaxed mb-4 font-mono">
-                        ID: <span class="text-white">NODE-042-X</span>
-                    </p>
-                    <div class="mb-4">
-                        <label for="phone" class="text-[9px] font-medium text-white/40 uppercase block mb-2 tracking-widest">Test Phone</label>
-                        <input id="phone" type="tel" placeholder="+91XXXXXXXXXX" class="w-full bg-[#0a0a0a] border border-white/10 rounded-xl p-3 text-xs font-medium text-white outline-none focus:border-[#FF4500] transition-all" />
-                    </div>
-                    <button id="simulate-btn" class="w-full bg-[#FF4500] text-white text-[10px] font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(255,69,0,0.3)] hover:shadow-[0_0_30px_rgba(255,69,0,0.5)] transition-all flex items-center justify-center gap-2 uppercase tracking-widest">
-                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-                        Simulate AI
+                    <button class="w-full bg-[#FF4500] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded-xl hover:bg-[#e63c00] transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,69,0,0.3)]">
+                        <i data-lucide="phone-call" class="w-4 h-4"></i> Initiate Call
                     </button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main -->
-        <main class="flex-1 flex flex-col overflow-hidden relative bg-[#050505]">
-            <!-- Content -->
-            <div class="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
-                <div class="flex items-center justify-between mb-2">
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="max-w-6xl mx-auto">
+                
+                <!-- Header -->
+                <header class="flex items-end justify-between mb-12 gsap-reveal">
                     <div>
-                        <h2 class="text-2xl font-heading font-medium text-white tracking-tighter" id="header-title">Neural Operator</h2>
-                        <p class="text-[10px] font-medium text-white/40 uppercase tracking-widest">Core Infrastructure 01</p>
+                        <h1 class="text-4xl font-heading text-white tracking-tight mb-2">Business Intelligence</h1>
+                        <p class="text-xs font-mono text-white/40 uppercase tracking-widest">Real-time Analytics • Live Data</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="text-right">
-                            <p class="text-xs font-medium text-white">Root Admin</p>
-                            <p class="text-[9px] font-medium text-[#FF4500] uppercase tracking-widest">Enterprise Node</p>
+                    <div class="text-right flex items-center gap-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-white uppercase tracking-widest">Root Admin</p>
+                            <p class="text-[9px] font-mono text-[#10b981]">SECURE CONNECTION</p>
                         </div>
-                        <div class="w-10 h-10 bg-[#111111] border border-white/10 rounded-full p-0.5 shadow-lg">
-                            <img src="https://ui-avatars.com/api/?name=Admin&background=111111&color=fff" class="rounded-full w-full h-full" alt="avatar">
-                        </div>
-                    </div>
-                </div>
-                <!-- Revenue Command Center -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    <!-- Card 1 -->
-                    <div class="glass-panel premium-card p-6 rounded-3xl transition-all hover:border-[#FF4500]/50 hover:-translate-y-1.5 relative group">
-                        <div class="flex justify-between items-start mb-3">
-                            <p class="text-[9px] font-medium text-white/40 uppercase tracking-[0.2em]">Recovered Today</p>
-                            <span class="text-teal-400 bg-teal-400/10 text-[9px] px-2 py-0.5 rounded-full border border-teal-400/20 font-bold">+12%</span>
-                        </div>
-                        <div class="flex items-end justify-between">
-                            <span class="text-4xl font-heading font-normal text-white stat-number" id="stat-recovered-today">12</span>
-                            <div class="w-16 h-8 opacity-60 group-hover:opacity-100 transition-opacity">
-                                <svg viewBox="0 0 100 30" class="w-full h-full stroke-teal-400 fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M0,25 Q15,15 30,20 T60,10 T100,5"></path>
-                                </svg>
-                            </div>
+                        <div class="w-12 h-12 rounded-full bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center">
+                            <i data-lucide="user" class="w-5 h-5 text-white/60"></i>
                         </div>
                     </div>
+                </header>
+
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     
-                    <!-- Card 2 -->
-                    <div class="premium-card bg-gradient-to-br from-[#1a1005] to-[#111111] p-6 rounded-3xl border border-[#FF4500]/35 shadow-xl transition-all hover:border-[#FF4500] hover:-translate-y-1.5 relative group">
-                        <div class="flex justify-between items-start mb-3">
-                            <p class="text-[9px] font-medium text-[#FF4500]/80 uppercase tracking-[0.2em]">Recovered This Week</p>
-                            <span class="text-[#FF4500] bg-[#FF4500]/10 text-[9px] px-2 py-0.5 rounded-full border border-[#FF4500]/20 font-bold">+8%</span>
+                    <!-- Card 1 -->
+                    <div class="glass-panel premium-card p-6 gsap-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Recovered Revenue</h3>
+                            <span class="text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#10b981]/20">+14.2%</span>
                         </div>
-                        <div class="flex items-end justify-between">
-                            <span class="text-4xl font-heading font-normal text-white stat-number" id="stat-recovered-week">48</span>
-                            <div class="w-16 h-8 opacity-60 group-hover:opacity-100 transition-opacity">
-                                <svg viewBox="0 0 100 30" class="w-full h-full stroke-[#FF4500] fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M0,28 L20,20 L40,24 L60,12 L80,16 L100,2"></path>
-                                </svg>
-                            </div>
+                        <div class="text-4xl font-heading text-white mb-4">$4,250</div>
+                        <div class="h-12 w-full">
+                            <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
+                                <path d="M0,25 Q20,20 40,25 T80,10 T100,5" fill="none" stroke="#10b981" stroke-width="2" class="graph-line" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="glass-panel premium-card p-6 gsap-card" style="border-color: rgba(255,69,0,0.3);">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest">Appointments Booked</h3>
+                            <span class="text-[#FF4500] bg-[#FF4500]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#FF4500]/20">Live</span>
+                        </div>
+                        <div class="text-4xl font-heading text-white mb-4">84</div>
+                        <div class="h-12 w-full">
+                            <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
+                                <path d="M0,28 L20,22 L40,24 L60,12 L80,15 L100,2" fill="none" stroke="#FF4500" stroke-width="2" class="graph-line" stroke-linejoin="round"/>
+                            </svg>
                         </div>
                     </div>
 
                     <!-- Card 3 -->
-                    <div class="glass-panel premium-card p-6 rounded-3xl transition-all hover:border-[#FF4500]/50 hover:-translate-y-1.5 relative group">
-                        <div class="flex justify-between items-start mb-3">
-                            <p class="text-[9px] font-medium text-white/40 uppercase tracking-[0.2em]">Intercepted</p>
-                            <span class="text-teal-400 bg-teal-400/10 text-[9px] px-2 py-0.5 rounded-full border border-teal-400/20 font-bold">+24%</span>
+                    <div class="glass-panel premium-card p-6 gsap-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Missed Calls Caught</h3>
                         </div>
-                        <div class="flex items-end justify-between">
-                            <span class="text-4xl font-heading font-normal text-white stat-number" id="stat-missed">248</span>
-                            <div class="w-16 h-8 opacity-60 group-hover:opacity-100 transition-opacity">
-                                <svg viewBox="0 0 100 30" class="w-full h-full stroke-teal-400 fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M0,20 Q20,25 40,15 T80,10 T100,5"></path>
-                                </svg>
-                            </div>
-                        </div>
+                        <div class="text-4xl font-heading text-white mb-4">127</div>
+                        <p class="text-[10px] text-white/40">Out of 130 total missed</p>
                     </div>
 
                     <!-- Card 4 -->
-                    <div class="premium-card bg-gradient-to-br from-teal-900/20 to-[#111111] p-6 rounded-3xl border border-teal-500/35 shadow-xl transition-all hover:border-teal-500 hover:-translate-y-1.5 relative group">
-                        <div class="flex justify-between items-start mb-3">
-                            <p class="text-[9px] font-medium text-teal-500/60 uppercase tracking-[0.2em]">Booked Value</p>
-                            <span class="text-teal-400 bg-teal-400/10 text-[9px] px-2 py-0.5 rounded-full border border-teal-400/20 font-bold">+18%</span>
+                    <div class="glass-panel premium-card p-6 gsap-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Conversion Rate</h3>
                         </div>
-                        <div class="flex items-end justify-between">
-                            <span class="text-4xl font-heading font-normal text-teal-400 stat-number" id="stat-revenue">$14.2k</span>
-                            <div class="w-16 h-8 opacity-60 group-hover:opacity-100 transition-opacity">
-                                <svg viewBox="0 0 100 30" class="w-full h-full stroke-teal-400 fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M0,30 L25,15 L50,20 L75,5 L100,0"></path>
-                                </svg>
-                            </div>
+                        <div class="text-4xl font-heading text-white mb-4">66%</div>
+                        <div class="w-full bg-white/10 rounded-full h-1 mt-6">
+                            <div class="bg-gradient-to-r from-transparent to-white h-1 rounded-full w-[66%]"></div>
                         </div>
                     </div>
+
                 </div>
 
-                <!-- New Dashboard Layout Grid -->
-                <div class="flex flex-col gap-10">
+                <!-- Complex Sections -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                    <!-- ROW 2: Live Feed & At-Risk Leads -->
-                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                        <!-- Live Conversation Feed -->
-                        <div class="xl:col-span-2">
-                            <div class="glass-panel rounded-[40px] overflow-hidden flex flex-col h-[600px] premium-card">
-                                <div class="px-10 py-7 border-b border-white/5 flex justify-between items-center bg-[#0a0a0a]">
+                    <!-- Activity Log -->
+                    <div class="lg:col-span-2 glass-panel premium-card p-8 gsap-reveal">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-lg font-heading text-white">Live Conversation Feed</h2>
+                            <button class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest hover:text-white transition-colors">View Full Matrix</button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Log Item -->
+                            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-[#10b981]/20 flex items-center justify-center shrink-0">
+                                    <i data-lucide="check" class="w-4 h-4 text-[#10b981]"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-bold text-white">Emergency Extraction Booking</p>
+                                        <span class="text-[10px] font-mono text-white/40">2 MINS AGO</span>
+                                    </div>
+                                    <p class="text-xs text-white/60 leading-relaxed mb-2">Patient called regarding severe tooth pain. AI successfully scheduled an emergency appointment for tomorrow at 10:00 AM.</p>
                                     <div class="flex items-center gap-3">
-                                        <div class="w-2 h-2 rounded-full bg-[#FF4500] shadow-[0_0_8px_#FF4500] animate-pulse"></div>
-                                        <h3 class="font-heading font-normal text-white tracking-tight uppercase">Live Conversation Feed</h3>
-                                    </div>
-                                    <span class="text-[9px] font-bold text-white/40 uppercase tracking-widest border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5 cursor-pointer transition-colors">Filter</span>
-                                </div>
-                                <div id="log-container" class="flex-1 overflow-y-auto p-8 space-y-4 custom-scrollbar bg-[#050505] inset-shadow-sm">
-                                    <div class="text-center py-20 text-white/20">
-                                        <i data-lucide="activity" class="w-12 h-12 mx-auto mb-6 animate-pulse text-[#FF4500]/50"></i>
-                                        <p class="text-sm font-medium tracking-widest uppercase">Monitoring Communications...</p>
+                                        <span class="px-2 py-1 rounded bg-white/10 text-[9px] font-bold uppercase tracking-widest text-white/80">Value: $400</span>
+                                        <span class="px-2 py-1 rounded bg-[#FF4500]/20 text-[9px] font-bold uppercase tracking-widest text-[#FF4500]">High Priority</span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- At-Risk Leads Queue -->
-                        <div class="glass-panel premium-card rounded-[40px] flex flex-col h-[600px]">
-                            <div class="px-8 py-7 border-b border-white/5 flex justify-between items-center bg-[#0a0a0a]/50">
-                                <h3 class="font-heading font-normal text-white tracking-tight uppercase flex items-center gap-2">
-                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-[#FF4500]"></i> Needs Attention
-                                </h3>
-                                <span class="bg-[#FF4500]/10 text-[#FF4500] text-[9px] px-2.5 py-1 rounded-full border border-[#FF4500]/20 font-bold">3 Active</span>
-                            </div>
-                            <div class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar" id="at-risk-queue">
-                                <div class="text-center py-20 text-white/20">
-                                    <p class="text-sm font-medium tracking-widest uppercase">No At-Risk Leads</p>
+                            
+                            <!-- Log Item -->
+                            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                                    <i data-lucide="message-square" class="w-4 h-4 text-white/60"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-bold text-white">General Inquiry Answered</p>
+                                        <span class="text-[10px] font-mono text-white/40">15 MINS AGO</span>
+                                    </div>
+                                    <p class="text-xs text-white/60 leading-relaxed">Caller asked about accepted insurance plans. AI provided the comprehensive list and offered to check specific coverage.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ROW 3: Funnel, ROI, Smart Alerts -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        <!-- Conversion Funnel Block -->
-                        <div class="glass-panel premium-card p-8 rounded-[40px] flex flex-col relative overflow-hidden">
-                            <h3 class="font-heading font-normal text-white tracking-tight uppercase mb-6 z-10">Conversion Funnel</h3>
-                            
-                            <div class="flex-1 flex flex-col justify-between relative z-10">
-                                <!-- Stage 1 -->
-                                <div class="relative group cursor-default">
-                                    <div class="bg-[#111111] border border-white/10 rounded-xl p-4 flex justify-between items-center z-10 relative group-hover:border-white/30 transition-all">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/60">
-                                                <i data-lucide="phone-missed" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-white uppercase tracking-wider">Missed Calls</p>
-                                                <p class="text-[10px] text-white/40">Total intercepted</p>
-                                            </div>
-                                        </div>
-                                        <span class="text-lg font-heading text-white stat-number" data-target="248">0</span>
-                                    </div>
-                                    <!-- Dropoff -->
-                                    <div class="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-                                        <div class="h-6 w-[1px] bg-gradient-to-b from-white/20 to-transparent"></div>
-                                        <span class="bg-[#050505] text-[9px] text-[#FF4500] font-bold px-2 py-0.5 rounded-full border border-[#FF4500]/20 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">98% Responded</span>
-                                    </div>
-                                </div>
+                    <!-- At Risk Leads -->
+                    <div class="glass-panel premium-card p-8 gsap-reveal">
+                        <h2 class="text-lg font-heading text-white mb-2">Attention Required</h2>
+                        <p class="text-[10px] text-[#FF4500] uppercase tracking-widest font-bold mb-8">2 Leads at risk of dropping</p>
 
-                                <!-- Stage 2 -->
-                                <div class="relative mt-8 group cursor-default">
-                                    <div class="bg-[#111111] border border-white/10 rounded-xl p-4 flex justify-between items-center w-[90%] mx-auto z-10 relative group-hover:border-white/30 transition-all">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
-                                                <i data-lucide="bot" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-white uppercase tracking-wider">AI Replied</p>
-                                            </div>
-                                        </div>
-                                        <span class="text-lg font-heading text-white stat-number" data-target="243">0</span>
-                                    </div>
-                                    <!-- Dropoff -->
-                                    <div class="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-                                        <div class="h-6 w-[1px] bg-gradient-to-b from-white/20 to-transparent"></div>
-                                        <span class="bg-[#050505] text-[9px] text-white/60 font-bold px-2 py-0.5 rounded-full border border-white/10 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">74% Qualified</span>
-                                    </div>
-                                </div>
-
-                                <!-- Stage 3 -->
-                                <div class="relative mt-8 group cursor-default">
-                                    <div class="bg-[#111111] border border-white/10 rounded-xl p-4 flex justify-between items-center w-[80%] mx-auto z-10 relative group-hover:border-white/30 transition-all">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
-                                                <i data-lucide="target" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-white uppercase tracking-wider">Qualified</p>
-                                            </div>
-                                        </div>
-                                        <span class="text-lg font-heading text-white stat-number" data-target="180">0</span>
-                                    </div>
-                                    <!-- Dropoff -->
-                                    <div class="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-                                        <div class="h-6 w-[1px] bg-gradient-to-b from-white/20 to-transparent"></div>
-                                        <span class="bg-[#050505] text-[9px] text-teal-400 font-bold px-2 py-0.5 rounded-full border border-teal-400/20 absolute top-1/2 -translate-y-1/2 whitespace-nowrap">42% Booked</span>
-                                    </div>
-                                </div>
-
-                                <!-- Stage 4 -->
-                                <div class="relative mt-8 group cursor-default">
-                                    <div class="bg-gradient-to-r from-[#FF4500]/20 to-[#FF4500]/5 border border-[#FF4500]/30 rounded-xl p-4 flex justify-between items-center w-[70%] mx-auto shadow-[0_0_30px_rgba(255,69,0,0.1)] z-10 relative group-hover:border-[#FF4500]/60 transition-all">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-[#FF4500]/20 flex items-center justify-center text-[#FF4500]">
-                                                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-[#FF4500] uppercase tracking-wider">Booked</p>
-                                            </div>
-                                        </div>
-                                        <span class="text-xl font-heading font-bold text-white stat-number" data-target="75">0</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Background Funnel Graphic -->
-                            <div class="absolute inset-0 z-0 opacity-10 pointer-events-none flex justify-center mt-16">
-                                <svg width="200" height="300" viewBox="0 0 200 300" fill="none">
-                                    <path d="M0 0 L200 0 L150 250 L50 250 Z" fill="url(#paint0_linear)"/>
-                                    <defs>
-                                        <linearGradient id="paint0_linear" x1="100" y1="0" x2="100" y2="300" gradientUnits="userSpaceOnUse">
-                                            <stop stop-color="white"/>
-                                            <stop offset="1" stop-color="#FF4500"/>
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- ROI Drilldown Widget -->
-                        <div class="glass-panel premium-card p-8 rounded-[40px] flex flex-col">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-heading font-normal text-white tracking-tight uppercase">ROI Drilldown</h3>
-                                <select class="bg-[#111111] border border-white/10 text-[9px] uppercase tracking-wider text-white/70 px-2 py-1.5 rounded-lg outline-none cursor-pointer">
-                                    <option>This Month</option>
-                                    <option>Last Month</option>
-                                    <option>YTD</option>
-                                </select>
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-xl border border-[#FF4500]/30 bg-[#FF4500]/5 relative overflow-hidden group">
+                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#FF4500]"></div>
+                                <h4 class="text-sm font-bold text-white mb-1">John D.</h4>
+                                <p class="text-xs text-white/60 mb-3">Missed call. AI sent WhatsApp, waiting for human follow-up on specific pricing question.</p>
+                                <button class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest group-hover:text-white transition-colors">Take Action →</button>
                             </div>
                             
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-white/5 rounded-2xl p-4 border border-white/5">
-                                    <p class="text-[9px] text-white/40 uppercase tracking-widest mb-1">Cost Saved</p>
-                                    <p class="text-lg font-heading text-teal-400">$3,420</p>
-                                    <p class="text-[8px] text-white/30 uppercase mt-1">vs Manual Staffing</p>
-                                </div>
-                                <div class="bg-white/5 rounded-2xl p-4 border border-white/5">
-                                    <p class="text-[9px] text-white/40 uppercase tracking-widest mb-1">AI Handled</p>
-                                    <p class="text-lg font-heading text-white">94%</p>
-                                    <p class="text-[8px] text-white/30 uppercase mt-1">Resolution Rate</p>
-                                </div>
-                            </div>
-
-                            <div class="space-y-4">
-                                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Channel Split</p>
-                                <!-- Channel 1 -->
-                                <div>
-                                    <div class="flex justify-between text-[10px] font-medium mb-1">
-                                        <span class="text-white/70 flex items-center gap-1.5"><i data-lucide="phone" class="w-3 h-3 text-white/40"></i> Phone</span>
-                                        <span class="text-white">68%</span>
-                                    </div>
-                                    <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                        <div class="bg-[#FF4500] h-full w-[68%] rounded-full shadow-[0_0_10px_#FF4500]"></div>
-                                    </div>
-                                </div>
-                                <!-- Channel 2 -->
-                                <div>
-                                    <div class="flex justify-between text-[10px] font-medium mb-1">
-                                        <span class="text-white/70 flex items-center gap-1.5"><i data-lucide="message-circle" class="w-3 h-3 text-white/40"></i> WhatsApp</span>
-                                        <span class="text-white">22%</span>
-                                    </div>
-                                    <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                        <div class="bg-teal-400 h-full w-[22%] rounded-full shadow-[0_0_10px_#2dd4bf]"></div>
-                                    </div>
-                                </div>
-                                <!-- Channel 3 -->
-                                <div>
-                                    <div class="flex justify-between text-[10px] font-medium mb-1">
-                                        <span class="text-white/70 flex items-center gap-1.5"><i data-lucide="globe" class="w-3 h-3 text-white/40"></i> Web Chat</span>
-                                        <span class="text-white">10%</span>
-                                    </div>
-                                    <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                        <div class="bg-blue-400 h-full w-[10%] rounded-full shadow-[0_0_10px_#60a5fa]"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Smart Alerts & Recommendations -->
-                        <div class="glass-panel premium-card p-8 rounded-[40px] border border-[#FF4500]/20 bg-gradient-to-b from-[#FF4500]/5 to-transparent">
-                            <h3 class="font-heading font-normal text-[#FF4500] tracking-tight uppercase mb-6 flex items-center gap-2">
-                                <i data-lucide="zap" class="w-5 h-5"></i> Smart Insights
-                            </h3>
-                            
-                            <div class="space-y-4">
-                                <!-- Insight 1 -->
-                                <div class="bg-[#0a0a0a]/80 border border-white/10 rounded-2xl p-5 hover:border-[#FF4500]/40 transition-all group">
-                                    <div class="flex gap-3 mb-3">
-                                        <div class="mt-0.5 text-[#FF4500]"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
-                                        <div>
-                                            <p class="text-xs font-bold text-white mb-1">After-hours Spike Detected</p>
-                                            <p class="text-[11px] text-white/60 leading-relaxed">Missed calls spike between 6–8 PM. Enable aggressive evening escalation.</p>
-                                        </div>
-                                    </div>
-                                    <button class="w-full bg-white/5 hover:bg-[#FF4500] hover:text-white hover:border-[#FF4500] text-white/70 border border-white/10 text-[9px] font-bold py-2 rounded-lg transition-all uppercase tracking-widest mt-2 group-hover:shadow-[0_0_15px_rgba(255,69,0,0.3)]">
-                                        Apply Suggestion
-                                    </button>
-                                </div>
-
-                                <!-- Insight 2 -->
-                                <div class="bg-[#0a0a0a]/80 border border-white/10 rounded-2xl p-5 hover:border-teal-400/40 transition-all group">
-                                    <div class="flex gap-3 mb-3">
-                                        <div class="mt-0.5 text-teal-400"><i data-lucide="sparkles" class="w-4 h-4"></i></div>
-                                        <div>
-                                            <p class="text-xs font-bold text-white mb-1">Template Optimization</p>
-                                            <p class="text-[11px] text-white/60 leading-relaxed">Clinic A converting 2x better with faster confirmation templates.</p>
-                                        </div>
-                                    </div>
-                                    <button class="w-full bg-white/5 hover:bg-teal-500 hover:text-white hover:border-teal-500 text-white/70 border border-white/10 text-[9px] font-bold py-2 rounded-lg transition-all uppercase tracking-widest mt-2 group-hover:shadow-[0_0_15px_rgba(45,212,191,0.3)]">
-                                        Deploy to All
-                                    </button>
-                                </div>
+                            <div class="p-4 rounded-xl border border-white/10 bg-white/5 relative overflow-hidden group hover:border-white/30 transition-colors">
+                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-white/20 group-hover:bg-white/50 transition-colors"></div>
+                                <h4 class="text-sm font-bold text-white mb-1">Sarah M.</h4>
+                                <p class="text-xs text-white/60 mb-3">Requested a callback regarding Invisalign consultation.</p>
+                                <button class="text-[10px] font-bold text-white/60 uppercase tracking-widest group-hover:text-white transition-colors">Take Action →</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ROW 4: Timeline Heatmap & Compliance -->
-                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                        <!-- Timeline Heatmap -->
-                        <div class="xl:col-span-2 glass-panel premium-card p-8 rounded-[40px]">
-                            <h3 class="font-heading font-normal text-white tracking-tight uppercase mb-6">Booking Activity Heatmap</h3>
-                            <div class="w-full overflow-x-auto">
-                                <div class="min-w-[600px]">
-                                    <div class="flex justify-between text-[9px] font-bold text-white/30 uppercase mb-2 pl-8 pr-2">
-                                        <span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span><span>8pm</span>
-                                    </div>
-                                    <div class="space-y-2" id="heatmap-container">
-                                        <!-- Heatmap rows will be generated via JS -->
-                                    </div>
-                                    <div class="flex justify-end gap-3 mt-4 text-[9px] font-medium text-white/40 uppercase items-center">
-                                        <span>Low</span>
-                                        <div class="flex gap-1">
-                                            <div class="w-3 h-3 rounded-sm bg-white/5"></div>
-                                            <div class="w-3 h-3 rounded-sm bg-[#FF4500]/30"></div>
-                                            <div class="w-3 h-3 rounded-sm bg-[#FF4500]/60"></div>
-                                            <div class="w-3 h-3 rounded-sm bg-[#FF4500]"></div>
-                                        </div>
-                                        <span>High</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Trust / Compliance Panel -->
-                        <div class="glass-panel premium-card p-8 rounded-[40px] flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-heading font-normal text-white tracking-tight uppercase mb-6 flex items-center gap-2">
-                                    <i data-lucide="shield-check" class="w-5 h-5 text-teal-400"></i> Trust & Compliance
-                                </h3>
-                                
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-teal-400/10 flex items-center justify-center text-teal-400">
-                                                <i data-lucide="lock" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-white">HIPAA Status</p>
-                                                <p class="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Fully Compliant</p>
-                                            </div>
-                                        </div>
-                                        <div class="w-2.5 h-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_#2dd4bf]"></div>
-                                    </div>
-                                    
-                                    <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-blue-400/10 flex items-center justify-center text-blue-400">
-                                                <i data-lucide="database" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-white">PMS Integration</p>
-                                                <p class="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">Dentrix / OpenDental</p>
-                                            </div>
-                                        </div>
-                                        <div class="w-2.5 h-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_#2dd4bf]"></div>
-                                    </div>
-
-                                    <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-purple-400/10 flex items-center justify-center text-purple-400">
-                                                <i data-lucide="server" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold text-white">Voice Node</p>
-                                                <p class="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">99.99% Uptime</p>
-                                            </div>
-                                        </div>
-                                        <div class="w-2.5 h-2.5 rounded-full bg-teal-400 shadow-[0_0_10px_#2dd4bf]"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6 text-center">
-                                <p class="text-[9px] text-white/30 uppercase tracking-[0.2em] font-mono">ENCRYPTED NEURAL TRANSMISSION</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
-    </main>
-
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-6 py-3 rounded-full flex items-center gap-3 shadow-2xl z-50 pointer-events-none">
-        <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-400"></i>
-        <span class="text-sm font-bold">Inbound Simulation Sent</span>
+        </main>
     </div>
 
+    <!-- Scripts -->
     <script>
-
+        // Initialize Icons
         lucide.createIcons();
-        const logContainer = document.getElementById('log-container');
-        const simulateBtn = document.getElementById('simulate-btn');
-        const phoneInput = document.getElementById('phone');
-        const toast = document.getElementById('toast');
 
-        // Setup Heatmap
-        function generateHeatmap() {
-            const container = document.getElementById('heatmap-container');
-            if(!container) return;
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-            let html = '';
-            days.forEach(day => {
-                html += `<div class="flex items-center gap-4">
-                            <span class="text-[9px] font-bold text-white/40 uppercase w-6">${day}</span>
-                            <div class="flex-1 flex gap-1 h-6">`;
-                for(let h=8; h<21; h++) {
-                    // Generate a "hot" zone between 4pm (16) and 7pm (19)
-                    let intensityClass = 'bg-white/5';
-                    const isHotZone = h >= 16 && h <= 19;
-                    const rand = Math.random();
-                    if(isHotZone) {
-                        if(rand > 0.6) intensityClass = 'bg-[#FF4500] shadow-[0_0_8px_rgba(255,69,0,0.5)]';
-                        else if(rand > 0.2) intensityClass = 'bg-[#FF4500]/60';
-                        else intensityClass = 'bg-[#FF4500]/30';
-                    } else {
-                        if(rand > 0.9) intensityClass = 'bg-[#FF4500]/60';
-                        else if(rand > 0.7) intensityClass = 'bg-[#FF4500]/30';
-                    }
-                    
-                    html += `<div class="flex-1 rounded-sm ${intensityClass} hover:bg-white transition-colors cursor-pointer" title="${h}:00 - Activity Level"></div>`;
-                }
-                html += `</div></div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        // Animate numbers on load
-        function animateNumbers() {
-            const elements = document.querySelectorAll('.stat-number');
-            elements.forEach(el => {
-                let target = 0;
-                let isCurrency = false;
-                if(el.hasAttribute('data-target')) {
-                    target = parseInt(el.getAttribute('data-target'));
-                } else if(el.innerText.includes('$')) {
-                    isCurrency = true;
-                    target = parseFloat(el.innerText.replace('$', '').replace('k', '')) * 1000;
-                } else {
-                    target = parseInt(el.innerText);
-                }
-                
-                let startTimestamp = null;
-                const duration = 1500;
-                const step = (timestamp) => {
-                    if (!startTimestamp) startTimestamp = timestamp;
-                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const current = Math.floor(progress * target);
-                    
-                    if(isCurrency) {
-                        el.innerText = '$' + (current / 1000).toFixed(1) + 'k';
-                    } else {
-                        el.innerText = current;
-                    }
-                    
-                    if (progress < 1) window.requestAnimationFrame(step);
-                    else {
-                        if(isCurrency) el.innerText = '$' + (target / 1000).toFixed(1) + 'k';
-                        else el.innerText = target;
-                    }
-                };
-                window.requestAnimationFrame(step);
-            });
-        }
-
-        // Initialize and start intervals
-        setTimeout(() => {
-            generateHeatmap();
-            animateNumbers();
-            
-            // Clear placeholder immediately
-            if (logContainer && logContainer.querySelector('.py-20')) logContainer.innerHTML = '';
-        }, 100);
-
-        // Update simulate button click to add a specific event
-        simulateBtn.addEventListener('click', async () => {
-            const phone = phoneInput.value || '+1 (555) 000-0000';
-            simulateBtn.disabled = true;
-            simulateBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Sending...';
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-y-20', 'opacity-0');
-                setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
-                
-                simulateBtn.disabled = false;
-                simulateBtn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5"></i> Simulate AI';
-                lucide.createIcons();
-                
-                // Add specific log for the simulated call
-                const entry = document.createElement('div');
-                entry.className = "p-5 rounded-2xl bg-[#FF4500]/10 border border-[#FF4500]/30 shadow-[0_0_20px_rgba(255,69,0,0.1)] group cursor-pointer";
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                entry.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-[#FF4500]/20 text-[#FF4500] flex items-center justify-center transition-all border border-[#FF4500]/30">
-                                <i data-lucide="zap" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-white text-xs">Simulated Inquiry</h4>
-                                <p class="text-[10px] text-[#FF4500]/70 font-mono tracking-wider">${phone}</p>
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-medium text-[#FF4500]/60 uppercase tracking-widest">${time}</span>
-                    </div>
-                    <div class="flex items-center justify-between mt-2">
-                        <p class="text-[11px] text-white/90 italic flex-1 pr-4">"System initiated test sequence."</p>
-                        <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-[#FF4500]/30 text-[#FF4500] animate-pulse">Processing</span>
-                    </div>
-                `;
-                
-                entry.style.opacity = '0';
-                entry.style.transform = 'translateY(-10px)';
-                logContainer.prepend(entry);
-                void entry.offsetWidth;
-                entry.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                entry.style.opacity = '1';
-                entry.style.transform = 'translateY(0)';
-                lucide.createIcons();
-            }, 1500);
-        });
-
-        // Grid Distortion Shader Implementation
-        const vertexShader = `
-            uniform float time;
-            varying vec2 vUv;
-            void main() {
-                vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `;
-
-        const fragmentShader = `
-            uniform sampler2D uDataTexture;
-            uniform sampler2D uTexture;
-            varying vec2 vUv;
-            void main() {
-                vec4 offset = texture2D(uDataTexture, vUv);
-                gl_FragColor = texture2D(uTexture, vUv - 0.02 * offset.rg);
-            }
-        `;
-
-        function initGridDistortion() {
-            const container = document.getElementById('grid-distortion-container');
-            if (!container) return;
+        // ── THREE.JS Neural Network Background ──────────────────────────────
+        const initThreeJS = () => {
+            const canvas = document.getElementById('bg-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
             const scene = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, -1000, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setSize(container.offsetWidth, container.offsetHeight);
-            container.appendChild(renderer.domElement);
-
-            const size = 16;
-            const data = new Float32Array(4 * size * size);
-            const dataTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat, THREE.FloatType);
-
-            const loader = new THREE.TextureLoader();
-            const texture = loader.load('https://images.unsplash.com/photo-1558444479-c8f02e62770e?q=80&w=1000&auto=format&fit=crop'); // Industrial tech dark texture
             
-            const uniforms = {
-                uTexture: { value: texture },
-                uDataTexture: { value: dataTexture }
+            // Fog for depth
+            scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
+            camera.position.z = 600;
+            camera.position.y = 200;
+            camera.lookAt(scene.position);
+
+            // Particles
+            const particleCount = 1500;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const color1 = new THREE.Color(0xFF4500); // Catch Orange
+            const color2 = new THREE.Color(0x111111); // Dark Gray
+            const color3 = new THREE.Color(0x333333); // Mid Gray
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 2000;
+                positions[i3 + 1] = (Math.random() - 0.5) * 1000;
+                positions[i3 + 2] = (Math.random() - 0.5) * 2000;
+
+                const mix = Math.random();
+                let c = color2.clone();
+                if (mix > 0.9) c = color1.clone();
+                else if (mix > 0.5) c = color3.clone();
+
+                colors[i3] = c.r;
+                colors[i3 + 1] = c.g;
+                colors[i3 + 2] = c.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+
+            // Lines connecting nearby particles
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.05
+            });
+
+            // Animation Loop
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - window.innerWidth / 2) * 2;
+                mouseY = (event.clientY - window.innerHeight / 2) * 2;
+            });
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                targetX = mouseX * 0.1;
+                targetY = mouseY * 0.1;
+
+                camera.position.x += (targetX - camera.position.x) * 0.02;
+                camera.position.y += (-targetY - camera.position.y) * 0.02;
+                camera.lookAt(scene.position);
+
+                particleSystem.rotation.y += 0.0005;
+
+                // Wavy motion
+                const time = Date.now() * 0.0005;
+                const posAttr = geometry.attributes.position;
+                for (let i = 0; i < particleCount; i++) {
+                    const y = posAttr.getY(i);
+                    const x = posAttr.getX(i);
+                    posAttr.setY(i, y + Math.sin(time + x * 0.01) * 0.5);
+                }
+                posAttr.needsUpdate = true;
+
+                renderer.render(scene, camera);
             };
 
-            const material = new THREE.ShaderMaterial({
-                uniforms,
-                vertexShader,
-                fragmentShader,
-                transparent: true
-            });
-
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
-            scene.add(mesh);
-
-            let mouseX = 0, mouseY = 0, prevX = 0, prevY = 0;
-            document.addEventListener('mousemove', (e) => {
-                const rect = container.getBoundingClientRect();
-                mouseX = (e.clientX - rect.left) / rect.width;
-                mouseY = 1 - (e.clientY - rect.top) / rect.height;
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                const vX = mouseX - prevX;
-                const vY = mouseY - prevY;
-                prevX = mouseX;
-                prevY = mouseY;
-
-                for (let i = 0; i < size * size; i++) {
-                    data[i * 4] *= 0.92;
-                    data[i * 4 + 1] *= 0.92;
-                }
-
-                const gridX = Math.floor(mouseX * size);
-                const gridY = Math.floor(mouseY * size);
-
-                if (gridX >= 0 && gridX < size && gridY >= 0 && gridY < size) {
-                    const index = 4 * (gridX + size * gridY);
-                    data[index] += vX * 5.0;
-                    data[index + 1] -= vY * 5.0;
-                }
-
-                dataTexture.needsUpdate = true;
-                renderer.render(scene, camera);
-            }
             animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // Initialize Three.js gracefully
+        try {
+            initThreeJS();
+        } catch(e) {
+            console.warn("WebGL background failed to load.", e);
         }
 
-        initGridDistortion();
+        // ── GSAP ANIMATIONS (Pro Max UX) ────────────────────────────────────
+        window.addEventListener('DOMContentLoaded', () => {
+            // Unhide elements before animating
+            gsap.set('.gsap-reveal, .gsap-card', { autoAlpha: 1 });
 
-        async function handleSignOut() {
-            // Uses the `supabase` instance already created at the top of the page
-            await supabase.auth.signOut();
-            window.location.href = '/auth.html';
-        }
+            const tl = gsap.timeline();
 
-        setInterval(updateStats, 3000);
-        updateStats();
+            // Navbar drop down
+            tl.from('.top-navbar', {
+                y: -80,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+
+            // Sidebar elements stagger
+            tl.from('.sidebar .gsap-reveal', {
+                x: -30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                ease: "power2.out"
+            }, "-=0.5");
+
+            // Main Header
+            tl.from('main header.gsap-reveal', {
+                y: 20,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            }, "-=0.4");
+
+            // Stat Cards Stagger
+            tl.from('.gsap-card', {
+                y: 40,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "back.out(1.2)"
+            }, "-=0.6");
+
+            // Bottom Complex Sections
+            tl.from('main .gsap-reveal:not(header)', {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "power2.out"
+            }, "-=0.4");
+        });
     </script>
 </body>
 </html>
