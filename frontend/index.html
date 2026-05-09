@@ -2047,7 +2047,7 @@
                     <div class="pricing-card p-10 rounded-[3rem] flex flex-col group parallax-card-down">
                         <div class="mb-8">
                             <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10">Starter</span>
-                            <h3 class="text-5xl font-serif mt-6 text-white">$199<span class="text-lg text-white/40 font-light">/mo</span></h3>
+                            <h3 class="text-5xl font-serif mt-6 text-white"><span id="price-starter-symbol">$</span><span id="price-starter-amount">199</span><span class="text-lg text-white/40 font-light">/mo</span></h3>
                         </div>
                         <ul class="space-y-4 mb-12 flex-1">
                             <li class="flex items-center gap-3 text-sm font-light text-white/60">
@@ -2060,7 +2060,7 @@
                                 <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i> Email Summaries
                             </li>
                         </ul>
-                        <button class="w-full py-5 rounded-full bg-white/10 border border-white/20 text-white font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all">Get Started</button>
+                        <a href="/auth.html" class="w-full py-5 rounded-full bg-white/10 border border-white/20 text-white font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all text-center">Get Started</a>
                     </div>
 
                     <!-- Pro -->
@@ -2070,7 +2070,7 @@
                         </div>
                         <div class="mb-8 text-white">
                             <span class="text-[10px] font-bold text-white uppercase tracking-widest bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">Pro (Full Neural)</span>
-                            <h3 class="text-5xl font-serif mt-6">$499<span class="text-lg text-white/60 font-light">/mo</span></h3>
+                            <h3 class="text-5xl font-serif mt-6"><span id="price-pro-symbol">$</span><span id="price-pro-amount">499</span><span class="text-lg text-white/60 font-light">/mo</span></h3>
                         </div>
                         <ul class="space-y-4 mb-12 flex-1 text-white/90">
                             <li class="flex items-center gap-3 text-sm font-light">
@@ -2086,7 +2086,7 @@
                                 <i data-lucide="zap" class="w-5 h-5 text-white"></i> Custom Voice Responses
                             </li>
                         </ul>
-                        <button class="w-full py-5 rounded-full bg-white text-[#FF4500] font-bold text-sm uppercase tracking-widest hover:bg-white/90 transition-all">Go Neural</button>
+                        <a href="/auth.html" class="w-full py-5 rounded-full bg-white text-[#FF4500] font-bold text-sm uppercase tracking-widest hover:bg-white/90 transition-all text-center">Go Neural</a>
                     </div>
 
                     <!-- Enterprise -->
@@ -2096,7 +2096,7 @@
                             <h3 class="text-5xl font-serif mt-6 text-white">Custom Pricing</h3>
                             <p class="text-sm font-light text-white/50 mt-2">Multi-location control & dedicated neural support.</p>
                         </div>
-                        <button class="px-10 py-5 rounded-full bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-white/80 transition-all">Talk to Sales</button>
+                        <a href="mailto:hello@catch.ai" class="px-10 py-5 rounded-full bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-white/80 transition-all text-center">Talk to Sales</a>
                     </div>
                 </div>
             </div>
@@ -3384,6 +3384,43 @@
                 }
             } catch(e) {
                 console.warn('Navbar auth check failed:', e);
+            }
+        })();
+
+        // ── GLOBAL DYNAMIC PRICING (PPP) ──
+        (async function initDynamicPricing() {
+            try {
+                // 1. Fetch user location
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                const country = data.country_code; // e.g. "IN", "US"
+
+                // 2. Define Pricing Matrix
+                // We use tiered pricing for PPP (Purchasing Power Parity)
+                const pricing = {
+                    "IN": { symbol: "₹", starter: "399", pro: "599" },
+                    "GB": { symbol: "£", starter: "159", pro: "399" },
+                    "EU": { symbol: "€", starter: "179", pro: "449" },
+                    "AU": { symbol: "A$", starter: "249", pro: "699" },
+                    "DEFAULT": { symbol: "$", starter: "199", pro: "499" }
+                };
+
+                const tier = pricing[country] || pricing["DEFAULT"];
+
+                // 3. Update DOM
+                const starterAmt = document.getElementById('price-starter-amount');
+                const starterSym = document.getElementById('price-starter-symbol');
+                const proAmt = document.getElementById('price-pro-amount');
+                const proSym = document.getElementById('price-pro-symbol');
+
+                if (starterAmt) starterAmt.textContent = tier.starter;
+                if (starterSym) starterSym.textContent = tier.symbol;
+                if (proAmt) proAmt.textContent = tier.pro;
+                if (proSym) proSym.textContent = tier.symbol;
+
+                console.log(`Dynamic Pricing Applied: Tier ${country || 'Default'}`);
+            } catch (err) {
+                console.error('Pricing localization failed:', err);
             }
         })();
     </script>
