@@ -217,6 +217,7 @@
             color: #fff;
             transform: translateZ(0);
             transition: all 0.35s ease;
+            will-change: transform, opacity;
         }
         .flow-node.is-active {
             border-color: rgba(255,137,98,0.62);
@@ -297,6 +298,9 @@
             transform: perspective(920px) rotateX(12deg);
             transform-origin: left bottom;
             margin-bottom: 10px;
+        }
+        .marquee-wrapper {
+            will-change: transform;
         }
         .roi-layout {
             display: grid;
@@ -2517,6 +2521,10 @@
 
             p.setup = () => {
                 const container = document.getElementById('force-field-container');
+                if (!container || window.innerWidth < 768) {
+                    if (container) container.style.display = 'none';
+                    return;
+                }
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
                 canvas.parent('force-field-container');
                 
@@ -2687,13 +2695,14 @@
         (function() {
             if (typeof Lenis === 'undefined') return;
             const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const isMobile = window.innerWidth < 768;
             const lenis = new Lenis({
-                duration: reducedMotion ? 1 : 1.35,
+                duration: reducedMotion ? 1 : (isMobile ? 1.1 : 1.35),
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 orientation: 'vertical',
                 smoothWheel: true,
-                wheelMultiplier: reducedMotion ? 0.9 : 1,
-                touchMultiplier: 1.25
+                wheelMultiplier: isMobile ? 0.8 : (reducedMotion ? 0.9 : 1),
+                touchMultiplier: 1.5
             });
             lenis.on('scroll', ScrollTrigger.update);
             gsap.ticker.add(time => lenis.raf(time * 1000));
@@ -2770,24 +2779,28 @@
         // Three.js ambient neural field background
         (function initThreeAmbient() {
             if (typeof THREE === "undefined") return;
-            const lowPowerMode = window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.innerWidth < 1024;
+            const isMobile = window.innerWidth < 768;
+            const lowPowerMode = window.matchMedia('(prefers-reduced-motion: reduce)').matches || isMobile;
             const canvas = document.getElementById("three-bg-canvas");
-            if (!canvas) return;
+            if (!canvas || isMobile) {
+                if (canvas) canvas.style.display = 'none';
+                return;
+            }
 
             const renderer = new THREE.WebGLRenderer({
                 canvas,
-                antialias: !lowPowerMode,
+                antialias: false,
                 powerPreference: "low-power",
                 alpha: true
             });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPowerMode ? 1.15 : 1.4));
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.2));
             renderer.setSize(window.innerWidth, window.innerHeight);
 
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.z = 8;
 
-            const particlesCount = lowPowerMode ? 450 : 800;
+            const particlesCount = lowPowerMode ? 80 : 200;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particlesCount * 3);
             const scales = new Float32Array(particlesCount);
