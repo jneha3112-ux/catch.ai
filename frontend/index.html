@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/framer-motion@11.0.0/dist/framer-motion.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Inter & Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
@@ -1210,7 +1211,7 @@
                 <a href="#footer-company" class="hover:text-white transition-colors">Company</a>
             </div>
 
-            <a href="/auth.html" class="inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium bg-[#FF4500] text-white hover:scale-105 hover:bg-orange-600 transition-all duration-300 whitespace-nowrap">
+            <a href="/auth.html" id="nav-auth-btn" class="inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium bg-[#FF4500] text-white hover:scale-105 hover:bg-orange-600 transition-all duration-300 whitespace-nowrap">
                 Login
             </a>
         </div>
@@ -3360,6 +3361,30 @@
                 };
                 tick();
             });
+        })();
+
+        // ── Auth Check for Navbar Button ──
+        (async function checkNavbarAuth() {
+            try {
+                const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
+                
+                if (window.supabase) {
+                    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const { data: { session } } = await sb.auth.getSession();
+                    if (session) {
+                        const navBtn = document.getElementById('nav-auth-btn');
+                        if (navBtn) {
+                            navBtn.href = '/dashboard.html';
+                            navBtn.textContent = 'Dashboard';
+                            navBtn.classList.remove('bg-[#FF4500]');
+                            navBtn.classList.add('bg-[#10b981]', 'hover:bg-[#059669]');
+                        }
+                    }
+                }
+            } catch(e) {
+                console.warn('Navbar auth check failed:', e);
+            }
         })();
     </script>
 </div>
