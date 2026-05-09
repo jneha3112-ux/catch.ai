@@ -302,6 +302,23 @@
         .marquee-wrapper {
             will-change: transform;
         }
+
+        /* ── MOBILE GLITCH FIXES ── */
+        @media (max-width: 768px) {
+            .outbound-contact {
+                padding: 6px 8px !important;
+                gap: 6px !important;
+            }
+            .outbound-contact span { font-size: 8px !important; }
+            #outbound-node { left: 8% !important; width: 44px !important; height: 44px !important; }
+            #outbound-live-panel .right-5 { right: 8px !important; }
+            #outbound-live-panel .bottom-4 { bottom: 8px !important; padding: 6px 10px !important; gap: 8px !important; font-size: 8px !important; width: 90% !important; }
+            
+            .flow-node { width: 140px !important; padding: 8px 10px !important; }
+            .flow-node--left { left: 4% !important; }
+            .flow-node--right { right: 4% !important; }
+            .flow-3d-stage { min-height: 380px !important; padding: 15px !important; }
+        }
         .roi-layout {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
@@ -3114,7 +3131,7 @@
             setInterval(() => {
                 active = (active + 1) % contacts.length;
                 updateConnection();
-            }, 1400);
+            }, 3200);
 
             window.addEventListener("resize", updateConnection);
         })();
@@ -3369,7 +3386,8 @@
                         x += speed;
                         if (x >= 0) x -= loopWidth;
                     }
-                    wrapper.style.transform = `translate3d(${x}px,0,0)`;
+                    // Rounding X to avoid sub-pixel jitter on some mobile browsers
+                    wrapper.style.transform = `translate3d(${Math.round(x)}px,0,0)`;
                     requestAnimationFrame(tick);
                 };
                 tick();
