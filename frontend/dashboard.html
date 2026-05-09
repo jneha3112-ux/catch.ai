@@ -325,6 +325,12 @@
                     <i data-lucide="brain-circuit" class="w-5 h-5 text-white/60 transition-colors"></i>
                     <span class="text-sm font-semibold tracking-wide">Knowledge Base</span>
                 </button>
+
+                <button onclick="switchTab('billing')" id="nav-billing" class="w-full sidebar-tab">
+                    <i data-lucide="credit-card" class="w-5 h-5 text-white/60 transition-colors"></i>
+                    <span class="text-sm font-semibold tracking-wide">Billing & Plans</span>
+                    <span class="ml-auto text-[9px] font-bold text-white/40 uppercase">Trial</span>
+                </button>
             </div>
 
             <div class="mt-auto gsap-reveal">
@@ -626,6 +632,77 @@
                     </div>
                 </section>
 
+                <!-- TAB 4: BILLING & PLANS -->
+                <section id="tab-billing" class="tab-content">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="glass-panel premium-card p-8 mb-10 flex items-center justify-between border-l-4 border-l-[#FF4500]">
+                            <div>
+                                <h2 class="text-xl font-heading text-white mb-1">Your Current Subscription</h2>
+                                <p class="text-sm text-white/50">You are currently using the <span class="text-[#FF4500] font-bold">14-Day Pro Free Trial</span>.</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Trial Ends In</p>
+                                <p class="text-2xl font-heading text-white">12 Days</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Starter Card -->
+                            <div class="glass-panel premium-card p-8 group hover:border-[#FF4500]/30 transition-all">
+                                <div class="mb-6">
+                                    <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10">Starter</span>
+                                    <h3 class="text-3xl font-heading text-white mt-4"><span class="billing-symbol">$</span><span class="billing-price-starter">199</span><span class="text-sm text-white/40 font-light">/mo</span></h3>
+                                </div>
+                                <ul class="space-y-4 mb-10">
+                                    <li class="flex items-center gap-3 text-xs text-white/60">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-[#FF4500]"></i> 1,000 AI Minutes
+                                    </li>
+                                    <li class="flex items-center gap-3 text-xs text-white/60">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-[#FF4500]"></i> Missed-Call Text Back
+                                    </li>
+                                    <li class="flex items-center gap-3 text-xs text-white/60">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-[#FF4500]"></i> WhatsApp Integration
+                                    </li>
+                                </ul>
+                                <a href="mailto:hello@catch.ai?subject=Upgrade to Starter" id="checkout-link-starter" class="w-full py-4 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all border border-white/10 flex items-center justify-center">
+                                    Switch to Starter
+                                </a>
+                            </div>
+
+                            <!-- Pro Card -->
+                            <div class="glass-panel premium-card p-8 border-[#FF4500]/30 bg-[#FF4500]/5 relative overflow-hidden">
+                                <div class="absolute top-4 right-4">
+                                    <span class="text-[8px] font-bold text-white bg-[#FF4500] px-2 py-0.5 rounded uppercase tracking-widest">Recommended</span>
+                                </div>
+                                <div class="mb-6">
+                                    <span class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest bg-[#FF4500]/10 px-3 py-1 rounded-full border border-[#FF4500]/20">Pro Neural</span>
+                                    <h3 class="text-3xl font-heading text-white mt-4"><span class="billing-symbol">$</span><span class="billing-price-pro">499</span><span class="text-sm text-white/40 font-light">/mo</span></h3>
+                                </div>
+                                <ul class="space-y-4 mb-10">
+                                    <li class="flex items-center gap-3 text-xs text-white/90">
+                                        <i data-lucide="zap" class="w-4 h-4 text-[#FF4500]"></i> Unlimited AI Minutes
+                                    </li>
+                                    <li class="flex items-center gap-3 text-xs text-white/90">
+                                        <i data-lucide="zap" class="w-4 h-4 text-[#FF4500]"></i> Direct Calendar Booking
+                                    </li>
+                                    <li class="flex items-center gap-3 text-xs text-white/90">
+                                        <i data-lucide="zap" class="w-4 h-4 text-[#FF4500]"></i> Outbound Neural Dialing
+                                    </li>
+                                    <li class="flex items-center gap-3 text-xs text-white/90">
+                                        <i data-lucide="zap" class="w-4 h-4 text-[#FF4500]"></i> Dedicated Account Manager
+                                    </li>
+                                </ul>
+                                <a href="mailto:hello@catch.ai?subject=Upgrade to Pro" id="checkout-link-pro" class="w-full py-4 bg-[#FF4500] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all hover:bg-[#e63c00] flex items-center justify-center shadow-[0_0_20px_rgba(255,69,0,0.3)]">
+                                    Upgrade to Pro
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 p-6 glass-panel text-center">
+                            <p class="text-xs text-white/40">Secure payments handled by Stripe. Need a custom enterprise plan? <a href="mailto:hello@catch.ai" class="text-[#FF4500] hover:underline">Talk to Sales</a></p>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
@@ -652,12 +729,14 @@
             const titleMap = {
                 'overview': 'Business Intelligence',
                 'inbox': 'Call Inbox & CRM',
-                'kb': 'AI Knowledge Matrix'
+                'kb': 'AI Knowledge Matrix',
+                'billing': 'Subscription & Billing'
             };
             const subtitleMap = {
                 'overview': 'Real-time Analytics • Live Data',
                 'inbox': 'Review, Analyze, and Follow-up',
-                'kb': 'Train and Configure your Neural Agent'
+                'kb': 'Train and Configure your Neural Agent',
+                'billing': 'Manage your plan and payment methods'
             };
             
             document.getElementById('header-title').innerText = titleMap[tabId];
@@ -894,6 +973,32 @@
             tl.from('main header', { y: 20, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.4");
             tl.from('#tab-overview > *', { y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out" }, "-=0.6");
         });
+
+        // ── DYNAMIC BILLING LOGIC (PPP) ──
+        (async function initDashboardBilling() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                const country = data.country_code;
+
+                const pricing = {
+                    "IN": { symbol: "₹", starter: "399", pro: "599" },
+                    "DEFAULT": { symbol: "$", starter: "199", pro: "499" }
+                };
+
+                const tier = pricing[country] || pricing["DEFAULT"];
+
+                // Update Symbols
+                document.querySelectorAll('.billing-symbol').forEach(el => el.textContent = tier.symbol);
+                // Update Prices
+                document.querySelectorAll('.billing-price-starter').forEach(el => el.textContent = tier.starter);
+                document.querySelectorAll('.billing-price-pro').forEach(el => el.textContent = tier.pro);
+
+                console.log(`Billing localized for ${country}`);
+            } catch (e) {
+                console.warn('Billing localization failed:', e);
+            }
+        })();
     </script>
 </body>
 </html>
