@@ -40,13 +40,33 @@ if(SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPA
 // Check Session on Load
 document.addEventListener('DOMContentLoaded', async () => {
     if(supabase) {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
         if(session) {
             // Already logged in, redirect to dashboard
             window.location.href = '/dashboard.html';
         }
     }
 });
+
+// Handle Social Logins
+async function loginWith(provider) {
+    if(!supabase) {
+        showToast('System offline. Keys required.', 'error');
+        return;
+    }
+    
+    try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: provider,
+            options: {
+                redirectTo: window.location.origin + '/dashboard.html'
+            }
+        });
+        if (error) throw error;
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+}
 
 // Handle Login
 document.getElementById('login-form')?.addEventListener('submit', async (e) => {

@@ -302,10 +302,38 @@
                         <input type="password" id="login-password" class="auth-input" placeholder=" " required autocomplete="current-password">
                         <label class="input-label">Password</label>
                     </div>
+                    
+                    <div class="flex items-center justify-between mb-8 px-2">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-white/10 bg-white/5 text-[#FF4500] focus:ring-[#FF4500]" checked>
+                            <span class="text-[11px] text-white/40 group-hover:text-white/60 transition-colors uppercase tracking-wider">Remember Me</span>
+                        </label>
+                        <a href="#" class="text-[11px] text-[#FF4500] hover:underline uppercase tracking-wider font-bold">Forgot?</a>
+                    </div>
+
                     <div class="magnetic-btn-wrap">
                         <button type="submit" class="auth-btn" id="login-btn">
                             <span>Sign In</span>
                             <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Social Logins -->
+                    <div class="relative my-10">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                        <div class="relative flex justify-center text-[10px] uppercase tracking-[0.2em] font-bold">
+                            <span class="bg-[#0a0a0a] px-4 text-white/20">Third Party Verification</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <button type="button" onclick="loginWith('google')" class="flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 transition-all group">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google">
+                            <span class="text-[10px] font-bold text-white/50 group-hover:text-white uppercase tracking-widest">Google</span>
+                        </button>
+                        <button type="button" onclick="loginWith('facebook')" class="flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 transition-all group">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="w-4 h-4" alt="Facebook">
+                            <span class="text-[10px] font-bold text-white/50 group-hover:text-white uppercase tracking-widest">Facebook</span>
                         </button>
                     </div>
                 </form>
