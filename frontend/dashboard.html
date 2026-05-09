@@ -124,10 +124,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .accent-glow {
-            text-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
-        }
-
         .nav-link {
             font-size: 11px;
             font-weight: 700;
@@ -145,7 +141,7 @@
             z-index: 10;
             display: flex;
             height: 100vh;
-            padding-top: 80px; /* Space for navbar */
+            padding-top: 80px;
         }
 
         .sidebar {
@@ -187,6 +183,51 @@
 
         /* GSAP Initial States */
         .gsap-reveal { opacity: 0; visibility: hidden; }
+
+        /* Tab System */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .sidebar-tab {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.6);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .sidebar-tab:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+        .sidebar-tab.active {
+            color: #FF4500;
+            background: rgba(255,69,0,0.1);
+            border-color: rgba(255,69,0,0.2);
+            box-shadow: inset 0 0 20px rgba(255,69,0,0.05);
+        }
+        .sidebar-tab.active i { color: #FF4500; }
+
+        /* Mock Audio Player */
+        .mock-audio {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .mock-wave {
+            flex: 1;
+            height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 24" xmlns="http://www.w3.org/2000/svg"><path d="M0,12 L5,5 L10,20 L15,8 L20,16 L25,4 L30,18 L35,10 L40,15 L45,6 L50,22 L55,9 L60,14 L65,7 L70,19 L75,11 L80,17 L85,3 L90,21 L95,8 L100,12" stroke="rgba(255,255,255,0.3)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') repeat-x;
+            background-size: 100% 100%;
+        }
+
     </style>
 </head>
 <body>
@@ -212,34 +253,30 @@
         
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
-            <div class="mb-12 gsap-reveal">
+            <div class="mb-10 gsap-reveal">
                 <p class="text-[10px] font-mono text-[#FF4500] tracking-[0.2em] mb-2 uppercase">Neural Operator</p>
                 <h2 class="font-heading text-3xl text-gradient tracking-tight">Command Center</h2>
             </div>
 
-            <div class="space-y-8 flex-1">
-                <div class="gsap-reveal">
-                    <label class="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Active Sector</label>
-                    <div class="relative">
-                        <select class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white appearance-none outline-none focus:border-[#FF4500] transition-colors cursor-pointer">
-                            <option>Dental Clinics (Active)</option>
-                            <option>Medical Spas</option>
-                            <option>Law Firms</option>
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none"></i>
-                    </div>
-                </div>
+            <!-- Tab Navigation -->
+            <div class="space-y-2 mb-10 gsap-reveal flex-1">
+                <div class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4 px-2">Core Tools</div>
+                
+                <button onclick="switchTab('overview')" id="nav-overview" class="w-full sidebar-tab active">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-white/60 transition-colors"></i>
+                    <span class="text-sm font-semibold tracking-wide">Overview</span>
+                </button>
+                
+                <button onclick="switchTab('inbox')" id="nav-inbox" class="w-full sidebar-tab">
+                    <i data-lucide="inbox" class="w-5 h-5 text-white/60 transition-colors"></i>
+                    <span class="text-sm font-semibold tracking-wide">Call Inbox</span>
+                    <span class="ml-auto bg-[#FF4500] text-white text-[9px] font-bold px-2 py-0.5 rounded-full">3 New</span>
+                </button>
 
-                <div class="gsap-reveal">
-                    <label class="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">System Status</label>
-                    <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981] animate-pulse"></div>
-                            <span class="text-xs font-medium text-white/80">Voice AI Agent</span>
-                        </div>
-                        <span class="text-[10px] font-mono text-[#10b981]">ONLINE</span>
-                    </div>
-                </div>
+                <button onclick="switchTab('kb')" id="nav-kb" class="w-full sidebar-tab">
+                    <i data-lucide="brain-circuit" class="w-5 h-5 text-white/60 transition-colors"></i>
+                    <span class="text-sm font-semibold tracking-wide">Knowledge Base</span>
+                </button>
             </div>
 
             <div class="mt-auto gsap-reveal">
@@ -258,13 +295,13 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <div class="max-w-6xl mx-auto">
+            <div class="max-w-6xl mx-auto relative min-h-[80vh]">
                 
-                <!-- Header -->
-                <header class="flex items-end justify-between mb-12 gsap-reveal">
+                <!-- HEADER (Persistent across tabs) -->
+                <header class="flex items-end justify-between mb-12 gsap-reveal" id="main-header">
                     <div>
-                        <h1 class="text-4xl font-heading text-white tracking-tight mb-2">Business Intelligence</h1>
-                        <p class="text-xs font-mono text-white/40 uppercase tracking-widest">Real-time Analytics • Live Data</p>
+                        <h1 class="text-4xl font-heading text-white tracking-tight mb-2" id="header-title">Business Intelligence</h1>
+                        <p class="text-xs font-mono text-white/40 uppercase tracking-widest" id="header-subtitle">Real-time Analytics • Live Data</p>
                     </div>
                     <div class="text-right flex items-center gap-4">
                         <div>
@@ -277,127 +314,267 @@
                     </div>
                 </header>
 
-                <!-- Stat Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    
-                    <!-- Card 1 -->
-                    <div class="glass-panel premium-card p-6 gsap-card">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Recovered Revenue</h3>
-                            <span class="text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#10b981]/20">+14.2%</span>
+                <!-- TAB 1: OVERVIEW -->
+                <section id="tab-overview" class="tab-content active">
+                    <!-- Stat Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <div class="glass-panel premium-card p-6 gsap-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Recovered Revenue</h3>
+                                <span class="text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#10b981]/20">+14.2%</span>
+                            </div>
+                            <div class="text-4xl font-heading text-white mb-4">$4,250</div>
+                            <div class="h-12 w-full">
+                                <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
+                                    <path d="M0,25 Q20,20 40,25 T80,10 T100,5" fill="none" stroke="#10b981" stroke-width="2" class="graph-line" stroke-linecap="round"/>
+                                </svg>
+                            </div>
                         </div>
-                        <div class="text-4xl font-heading text-white mb-4">$4,250</div>
-                        <div class="h-12 w-full">
-                            <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
-                                <path d="M0,25 Q20,20 40,25 T80,10 T100,5" fill="none" stroke="#10b981" stroke-width="2" class="graph-line" stroke-linecap="round"/>
-                            </svg>
+
+                        <div class="glass-panel premium-card p-6 gsap-card" style="border-color: rgba(255,69,0,0.3);">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest">Appointments Booked</h3>
+                                <span class="text-[#FF4500] bg-[#FF4500]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#FF4500]/20">Live</span>
+                            </div>
+                            <div class="text-4xl font-heading text-white mb-4">84</div>
+                            <div class="h-12 w-full">
+                                <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
+                                    <path d="M0,28 L20,22 L40,24 L60,12 L80,15 L100,2" fill="none" stroke="#FF4500" stroke-width="2" class="graph-line" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel premium-card p-6 gsap-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Missed Calls Caught</h3>
+                            </div>
+                            <div class="text-4xl font-heading text-white mb-4">127</div>
+                            <p class="text-[10px] text-white/40">Out of 130 total missed</p>
+                        </div>
+
+                        <div class="glass-panel premium-card p-6 gsap-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Conversion Rate</h3>
+                            </div>
+                            <div class="text-4xl font-heading text-white mb-4">66%</div>
+                            <div class="w-full bg-white/10 rounded-full h-1 mt-6">
+                                <div class="bg-gradient-to-r from-transparent to-white h-1 rounded-full w-[66%]"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Card 2 -->
-                    <div class="glass-panel premium-card p-6 gsap-card" style="border-color: rgba(255,69,0,0.3);">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest">Appointments Booked</h3>
-                            <span class="text-[#FF4500] bg-[#FF4500]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#FF4500]/20">Live</span>
-                        </div>
-                        <div class="text-4xl font-heading text-white mb-4">84</div>
-                        <div class="h-12 w-full">
-                            <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
-                                <path d="M0,28 L20,22 L40,24 L60,12 L80,15 L100,2" fill="none" stroke="#FF4500" stroke-width="2" class="graph-line" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Card 3 -->
-                    <div class="glass-panel premium-card p-6 gsap-card">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Missed Calls Caught</h3>
-                        </div>
-                        <div class="text-4xl font-heading text-white mb-4">127</div>
-                        <p class="text-[10px] text-white/40">Out of 130 total missed</p>
-                    </div>
-
-                    <!-- Card 4 -->
-                    <div class="glass-panel premium-card p-6 gsap-card">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Conversion Rate</h3>
-                        </div>
-                        <div class="text-4xl font-heading text-white mb-4">66%</div>
-                        <div class="w-full bg-white/10 rounded-full h-1 mt-6">
-                            <div class="bg-gradient-to-r from-transparent to-white h-1 rounded-full w-[66%]"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Complex Sections -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
-                    <!-- Activity Log -->
-                    <div class="lg:col-span-2 glass-panel premium-card p-8 gsap-reveal">
-                        <div class="flex items-center justify-between mb-8">
-                            <h2 class="text-lg font-heading text-white">Live Conversation Feed</h2>
-                            <button class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest hover:text-white transition-colors">View Full Matrix</button>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <!-- Log Item -->
-                            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
-                                <div class="w-8 h-8 rounded-full bg-[#10b981]/20 flex items-center justify-center shrink-0">
-                                    <i data-lucide="check" class="w-4 h-4 text-[#10b981]"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <p class="text-sm font-bold text-white">Emergency Extraction Booking</p>
-                                        <span class="text-[10px] font-mono text-white/40">2 MINS AGO</span>
-                                    </div>
-                                    <p class="text-xs text-white/60 leading-relaxed mb-2">Patient called regarding severe tooth pain. AI successfully scheduled an emergency appointment for tomorrow at 10:00 AM.</p>
-                                    <div class="flex items-center gap-3">
-                                        <span class="px-2 py-1 rounded bg-white/10 text-[9px] font-bold uppercase tracking-widest text-white/80">Value: $400</span>
-                                        <span class="px-2 py-1 rounded bg-[#FF4500]/20 text-[9px] font-bold uppercase tracking-widest text-[#FF4500]">High Priority</span>
-                                    </div>
-                                </div>
+                    <!-- Complex Sections -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Activity Log -->
+                        <div class="lg:col-span-2 glass-panel premium-card p-8 gsap-reveal tab-animate-up">
+                            <div class="flex items-center justify-between mb-8">
+                                <h2 class="text-lg font-heading text-white">Live Conversation Feed</h2>
+                                <button onclick="switchTab('inbox')" class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest hover:text-white transition-colors">View All Calls →</button>
                             </div>
                             
-                            <!-- Log Item -->
-                            <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
-                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                    <i data-lucide="message-square" class="w-4 h-4 text-white/60"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <p class="text-sm font-bold text-white">General Inquiry Answered</p>
-                                        <span class="text-[10px] font-mono text-white/40">15 MINS AGO</span>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors cursor-pointer" onclick="switchTab('inbox')">
+                                    <div class="w-8 h-8 rounded-full bg-[#10b981]/20 flex items-center justify-center shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-[#10b981]"></i>
                                     </div>
-                                    <p class="text-xs text-white/60 leading-relaxed">Caller asked about accepted insurance plans. AI provided the comprehensive list and offered to check specific coverage.</p>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <p class="text-sm font-bold text-white">Emergency Extraction Booking</p>
+                                            <span class="text-[10px] font-mono text-white/40">2 MINS AGO</span>
+                                        </div>
+                                        <p class="text-xs text-white/60 leading-relaxed mb-2">Patient called regarding severe tooth pain. AI successfully scheduled an emergency appointment.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- At Risk Leads -->
+                        <div class="glass-panel premium-card p-8 gsap-reveal tab-animate-up" style="animation-delay: 0.1s;">
+                            <h2 class="text-lg font-heading text-white mb-2">Attention Required</h2>
+                            <p class="text-[10px] text-[#FF4500] uppercase tracking-widest font-bold mb-8">2 Leads at risk</p>
+
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl border border-[#FF4500]/30 bg-[#FF4500]/5 relative overflow-hidden group">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#FF4500]"></div>
+                                    <h4 class="text-sm font-bold text-white mb-1">John D.</h4>
+                                    <p class="text-xs text-white/60 mb-3">AI sent WhatsApp, waiting for human follow-up on pricing.</p>
+                                    <button class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest group-hover:text-white transition-colors">Take Action →</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    <!-- At Risk Leads -->
-                    <div class="glass-panel premium-card p-8 gsap-reveal">
-                        <h2 class="text-lg font-heading text-white mb-2">Attention Required</h2>
-                        <p class="text-[10px] text-[#FF4500] uppercase tracking-widest font-bold mb-8">2 Leads at risk of dropping</p>
-
-                        <div class="space-y-4">
-                            <div class="p-4 rounded-xl border border-[#FF4500]/30 bg-[#FF4500]/5 relative overflow-hidden group">
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#FF4500]"></div>
-                                <h4 class="text-sm font-bold text-white mb-1">John D.</h4>
-                                <p class="text-xs text-white/60 mb-3">Missed call. AI sent WhatsApp, waiting for human follow-up on specific pricing question.</p>
-                                <button class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest group-hover:text-white transition-colors">Take Action →</button>
+                <!-- TAB 2: CALL INBOX -->
+                <section id="tab-inbox" class="tab-content">
+                    <div class="glass-panel premium-card rounded-2xl overflow-hidden border border-white/10">
+                        <div class="flex items-center justify-between p-6 border-b border-white/5 bg-white/5">
+                            <div class="flex gap-4">
+                                <button class="px-4 py-1.5 rounded-full bg-white/10 text-white text-xs font-semibold">All Calls</button>
+                                <button class="px-4 py-1.5 rounded-full text-white/50 text-xs font-semibold hover:text-white">Needs Follow-up (2)</button>
+                                <button class="px-4 py-1.5 rounded-full text-white/50 text-xs font-semibold hover:text-white">Appointments Booked</button>
                             </div>
+                            <div class="relative">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40"></i>
+                                <input type="text" placeholder="Search callers..." class="bg-black/50 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs text-white outline-none focus:border-[#FF4500]">
+                            </div>
+                        </div>
+
+                        <!-- Call List -->
+                        <div class="divide-y divide-white/5 max-h-[600px] overflow-y-auto custom-scrollbar">
                             
-                            <div class="p-4 rounded-xl border border-white/10 bg-white/5 relative overflow-hidden group hover:border-white/30 transition-colors">
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-white/20 group-hover:bg-white/50 transition-colors"></div>
-                                <h4 class="text-sm font-bold text-white mb-1">Sarah M.</h4>
-                                <p class="text-xs text-white/60 mb-3">Requested a callback regarding Invisalign consultation.</p>
-                                <button class="text-[10px] font-bold text-white/60 uppercase tracking-widest group-hover:text-white transition-colors">Take Action →</button>
+                            <!-- Call Item 1 -->
+                            <div class="p-6 hover:bg-white/5 transition-colors group">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF4500] to-purple-600 flex items-center justify-center text-white font-heading font-bold text-lg shadow-lg">J</div>
+                                        <div>
+                                            <h4 class="text-base font-bold text-white flex items-center gap-2">
+                                                John Doe 
+                                                <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/20">Booked</span>
+                                            </h4>
+                                            <p class="text-xs text-white/50 font-mono">+1 (555) 019-2834 • Today at 10:42 AM</p>
+                                        </div>
+                                    </div>
+                                    <button class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+                                        <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call Back
+                                    </button>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-14">
+                                    <div class="bg-black/40 rounded-xl p-4 border border-white/5">
+                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">AI Summary</p>
+                                        <p class="text-sm text-white/80 leading-relaxed">Caller was experiencing sharp pain in lower left jaw. Expressed urgency. I verified their insurance (Delta Dental) and secured the 2:00 PM slot for tomorrow with Dr. Smith. Sent confirmation SMS.</p>
+                                    </div>
+                                    <div class="flex flex-col justify-center">
+                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Recording (2m 14s)</p>
+                                        <div class="mock-audio cursor-pointer hover:border-white/20 transition-colors">
+                                            <button class="w-8 h-8 rounded-full bg-[#FF4500] flex items-center justify-center text-white shrink-0 hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,69,0,0.4)]">
+                                                <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
+                                            </button>
+                                            <div class="mock-wave"></div>
+                                            <span class="text-[10px] font-mono text-white/60">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Call Item 2 -->
+                            <div class="p-6 hover:bg-white/5 transition-colors group bg-[#FF4500]/5 border-l-2 border-l-[#FF4500]">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white/60 font-heading font-bold text-lg">S</div>
+                                        <div>
+                                            <h4 class="text-base font-bold text-white flex items-center gap-2">
+                                                Sarah Miller 
+                                                <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#FF4500]/20 text-[#FF4500] border border-[#FF4500]/20">Follow-up Required</span>
+                                            </h4>
+                                            <p class="text-xs text-white/50 font-mono">+1 (555) 882-1923 • Yesterday at 4:15 PM</p>
+                                        </div>
+                                    </div>
+                                    <button class="px-4 py-2 bg-[#FF4500] hover:bg-[#e63c00] text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,69,0,0.3)]">
+                                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Resolve
+                                    </button>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-14">
+                                    <div class="bg-black/40 rounded-xl p-4 border border-[#FF4500]/20">
+                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">AI Summary</p>
+                                        <p class="text-sm text-white/80 leading-relaxed">Asked about the total cost of Invisalign without insurance. I provided the base range ($3k-$5k) but they requested a precise quote. <strong class="text-[#FF4500]">I promised a human specialist would call them back today.</strong></p>
+                                    </div>
+                                    <div class="flex flex-col justify-center">
+                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Recording (3m 45s)</p>
+                                        <div class="mock-audio cursor-pointer hover:border-white/20 transition-colors">
+                                            <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:scale-105 transition-transform border border-white/20">
+                                                <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
+                                            </button>
+                                            <div class="mock-wave" style="opacity: 0.5;"></div>
+                                            <span class="text-[10px] font-mono text-white/60">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: KNOWLEDGE BASE -->
+                <section id="tab-kb" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Business Profile -->
+                            <div class="glass-panel premium-card p-8">
+                                <h2 class="text-xl font-heading text-white mb-2">Business Instructions</h2>
+                                <p class="text-xs text-white/50 mb-6">Train your AI agent by providing detailed rules about your services, tone, and policies.</p>
+                                
+                                <div class="space-y-5">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-2">Agent Tone & Persona</label>
+                                        <input type="text" value="Professional, warm, empathetic, and highly efficient." class="w-full bg-black/50 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-[#FF4500] transition-colors">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-2">Core Directives / Custom Rules</label>
+                                        <textarea rows="5" class="w-full bg-black/50 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-[#FF4500] transition-colors leading-relaxed">1. Always ask for the caller's name and phone number first.
+2. If they mention pain or "emergency", offer a same-day appointment.
+3. For pricing questions on implants, state that a consultation is required and book it.
+4. Do not offer medical advice. Ever.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Upload -->
+                            <div class="glass-panel premium-card p-8 border-dashed border-2 border-white/10 hover:border-[#FF4500]/50 transition-colors text-center cursor-pointer group">
+                                <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-[#FF4500]"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-white mb-2">Upload Knowledge Documents</h3>
+                                <p class="text-xs text-white/50 mb-4 max-w-sm mx-auto">Upload PDFs, Word Docs, or Text files containing your pricing sheets, FAQs, and service descriptions. The AI will read and learn them instantly.</p>
+                                <button class="px-6 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-colors">Select Files</button>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar Settings -->
+                        <div class="space-y-8">
+                            <div class="glass-panel premium-card p-6 border border-[#FF4500]/20">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-full bg-[#FF4500]/20 flex items-center justify-center">
+                                        <i data-lucide="cpu" class="w-5 h-5 text-[#FF4500]"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-white text-sm">Deploy Matrix</h3>
+                                        <p class="text-[10px] font-mono text-[#10b981]">SYSTEM READY</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-white/50 mb-6 leading-relaxed">Unsaved changes detected in Core Directives. Retrain the AI to apply new knowledge.</p>
+                                <button class="w-full bg-[#FF4500] hover:bg-[#e63c00] text-white text-xs font-bold uppercase tracking-widest py-3 rounded-xl shadow-[0_0_20px_rgba(255,69,0,0.3)] transition-all flex items-center justify-center gap-2">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Retrain AI Agent
+                                </button>
+                            </div>
+
+                            <div class="glass-panel premium-card p-6">
+                                <h3 class="font-bold text-white text-sm mb-4">Active Documents</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-[#FF4500]"></i>
+                                            <span class="text-xs text-white font-medium">dental_pricing_2026.pdf</span>
+                                        </div>
+                                        <button class="text-white/40 hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-[#FF4500]"></i>
+                                            <span class="text-xs text-white font-medium">standard_faqs.docx</span>
+                                        </div>
+                                        <button class="text-white/40 hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                </div>
             </div>
         </main>
     </div>
@@ -407,6 +584,43 @@
         // Initialize Icons
         lucide.createIcons();
 
+        // ── TAB LOGIC ───────────────────────────────────────────────────────
+        function switchTab(tabId) {
+            // Update Headers
+            const titleMap = {
+                'overview': 'Business Intelligence',
+                'inbox': 'Call Inbox & CRM',
+                'kb': 'AI Knowledge Matrix'
+            };
+            const subtitleMap = {
+                'overview': 'Real-time Analytics • Live Data',
+                'inbox': 'Review, Analyze, and Follow-up',
+                'kb': 'Train and Configure your Neural Agent'
+            };
+            
+            document.getElementById('header-title').innerText = titleMap[tabId];
+            document.getElementById('header-subtitle').innerText = subtitleMap[tabId];
+
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Remove active state from sidebar links
+            document.querySelectorAll('.sidebar-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('nav-' + tabId).classList.add('active');
+
+            // Trigger GSAP entrance animation for the new tab content
+            gsap.fromTo(`#tab-${tabId} > *`, 
+                { y: 30, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
+            );
+        }
+
         // ── THREE.JS Neural Network Background ──────────────────────────────
         const initThreeJS = () => {
             const canvas = document.getElementById('bg-canvas');
@@ -415,8 +629,6 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
             const scene = new THREE.Scene();
-            
-            // Fog for depth
             scene.fog = new THREE.FogExp2(0x000000, 0.0015);
 
             const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
@@ -424,15 +636,14 @@
             camera.position.y = 200;
             camera.lookAt(scene.position);
 
-            // Particles
             const particleCount = 1500;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
 
-            const color1 = new THREE.Color(0xFF4500); // Catch Orange
-            const color2 = new THREE.Color(0x111111); // Dark Gray
-            const color3 = new THREE.Color(0x333333); // Mid Gray
+            const color1 = new THREE.Color(0xFF4500); 
+            const color2 = new THREE.Color(0x111111); 
+            const color3 = new THREE.Color(0x333333); 
 
             for (let i = 0; i < particleCount; i++) {
                 const i3 = i * 3;
@@ -464,14 +675,6 @@
             const particleSystem = new THREE.Points(geometry, material);
             scene.add(particleSystem);
 
-            // Lines connecting nearby particles
-            const lineMaterial = new THREE.LineBasicMaterial({
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.05
-            });
-
-            // Animation Loop
             let mouseX = 0;
             let mouseY = 0;
             let targetX = 0;
@@ -494,7 +697,6 @@
 
                 particleSystem.rotation.y += 0.0005;
 
-                // Wavy motion
                 const time = Date.now() * 0.0005;
                 const posAttr = geometry.attributes.position;
                 for (let i = 0; i < particleCount; i++) {
@@ -516,62 +718,18 @@
             });
         };
 
-        // Initialize Three.js gracefully
-        try {
-            initThreeJS();
-        } catch(e) {
-            console.warn("WebGL background failed to load.", e);
-        }
+        try { initThreeJS(); } catch(e) { console.warn("WebGL background failed.", e); }
 
-        // ── GSAP ANIMATIONS (Pro Max UX) ────────────────────────────────────
+        // ── GSAP INITIAL LOAD ANIMATIONS ────────────────────────────────────
         window.addEventListener('DOMContentLoaded', () => {
-            // Unhide elements before animating
             gsap.set('.gsap-reveal, .gsap-card', { autoAlpha: 1 });
 
             const tl = gsap.timeline();
 
-            // Navbar drop down
-            tl.from('.top-navbar', {
-                y: -80,
-                opacity: 0,
-                duration: 1,
-                ease: "power3.out"
-            });
-
-            // Sidebar elements stagger
-            tl.from('.sidebar .gsap-reveal', {
-                x: -30,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.15,
-                ease: "power2.out"
-            }, "-=0.5");
-
-            // Main Header
-            tl.from('main header.gsap-reveal', {
-                y: 20,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.out"
-            }, "-=0.4");
-
-            // Stat Cards Stagger
-            tl.from('.gsap-card', {
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "back.out(1.2)"
-            }, "-=0.6");
-
-            // Bottom Complex Sections
-            tl.from('main .gsap-reveal:not(header)', {
-                y: 30,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "power2.out"
-            }, "-=0.4");
+            tl.from('.top-navbar', { y: -80, opacity: 0, duration: 1, ease: "power3.out" });
+            tl.from('.sidebar .gsap-reveal', { x: -30, opacity: 0, duration: 0.8, stagger: 0.15, ease: "power2.out" }, "-=0.5");
+            tl.from('main header', { y: 20, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.4");
+            tl.from('#tab-overview > *', { y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out" }, "-=0.6");
         });
     </script>
 </body>
