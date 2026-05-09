@@ -3,275 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catch.ai | Secure Access</title>
+    <title>Catch.ai | Neural Access Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        :root {
+            --accent: #FF4500;
+            --accent-glow: rgba(255, 69, 0, 0.3);
+            --glass-bg: rgba(7, 7, 7, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #050505;
+            background-color: #020202;
             color: #ffffff;
+            margin: 0;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
         }
-        .font-heading { font-family: 'Playfair Display', serif; }
-        
-        /* Global Background Elements */
-        .ambient-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.4;
-            pointer-events: none;
-        }
-        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(255, 69, 0, 0.15); }
-        .blob-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: rgba(255, 255, 255, 0.05); }
 
-        .noise-overlay {
+        #three-canvas {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
             z-index: 1;
             pointer-events: none;
-            opacity: 0.04;
-            mix-blend-mode: overlay;
-            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
         }
 
-        /* Glass Auth Card */
-        .auth-card {
+        .font-heading { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Advanced Glassmorphism */
+        .auth-container {
             position: relative;
             z-index: 10;
-            background: linear-gradient(145deg, rgba(17,17,17,0.88), rgba(7,7,7,0.88));
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.08),
-                0 30px 80px rgba(0,0,0,0.6),
-                0 0 40px rgba(255,69,0,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
+            perspective: 2000px;
             width: 100%;
-            max-width: 440px;
-            padding: 40px;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        .auth-card {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.8),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
             overflow: hidden;
+            transform-style: preserve-3d;
+            transition: border-color 0.4s ease;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255,69,0,0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Input Styling */
+        .input-group {
+            position: relative;
+            margin-bottom: 24px;
         }
 
         .auth-input {
             width: 100%;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px 20px;
             color: white;
             font-size: 14px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             outline: none;
+            backdrop-filter: blur(5px);
         }
+
         .auth-input:focus {
-            border-color: #FF4500;
-            background: rgba(255,69,0,0.05);
-            box-shadow: 0 0 15px rgba(255,69,0,0.15);
+            background: rgba(255, 69, 0, 0.03);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(255, 69, 0, 0.15);
+            transform: translateY(-2px);
         }
-        .auth-input::placeholder {
-            color: rgba(255,255,255,0.3);
+
+        .input-label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .auth-input:focus + .input-label,
+        .auth-input:not(:placeholder-shown) + .input-label {
+            top: -10px;
+            left: 14px;
+            font-size: 11px;
+            color: var(--accent);
+            background: #0a0a0a;
+            padding: 0 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 4px;
+        }
+
+        /* Premium Buttons */
+        .magnetic-btn-wrap {
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
         .auth-btn {
+            position: relative;
             width: 100%;
-            background: #FF4500;
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
+            letter-spacing: 0.15em;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            overflow: hidden;
+            z-index: 1;
         }
+
+        .auth-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+
+        .auth-btn:hover::after {
+            left: 100%;
+        }
+
         .auth-btn:hover {
-            background: #e63e00;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255,69,0,0.25);
-        }
-        .auth-btn:disabled {
-            background: #333;
-            color: #888;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            background: #ff571a;
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(255, 69, 0, 0.3);
         }
 
-        .toggle-link {
-            color: rgba(255,255,255,0.5);
-            font-size: 13px;
-            text-align: center;
-            margin-top: 24px;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        .toggle-link:hover {
-            color: white;
+        .auth-btn:active { transform: scale(0.98); }
+
+        /* Scanning Line Effect */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+            animation: scan 4s linear infinite;
+            z-index: 2;
         }
 
-        /* Toast Notification */
+        @keyframes scan {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+
+        /* UI Details */
+        .system-status {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 40px;
+            left: 40px;
+            z-index: 50;
+            mix-blend-mode: difference;
+        }
+
+        /* Toast Styling */
         #toast {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #111;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 500;
+            top: 40px;
+            right: 40px;
+            transform: translateX(120%);
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid var(--glass-border);
+            padding: 16px 24px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
             display: flex;
             align-items: center;
-            gap: 10px;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            gap: 12px;
         }
-        #toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        #toast.error { border-color: #ef4444; color: #f87171; }
-        #toast.success { border-color: #10b981; color: #34d399; }
+
+        #toast.show { transform: translateX(0); }
+        #toast.error { border-left: 4px solid #ef4444; }
+        #toast.success { border-left: 4px solid #10b981; }
+
     </style>
 </head>
 <body>
 
-    <div class="noise-overlay"></div>
-    <div class="ambient-blob blob-1"></div>
-    <div class="ambient-blob blob-2"></div>
+    <canvas id="three-canvas"></canvas>
 
-    <a href="/" class="absolute top-8 left-8 text-white/50 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium z-50">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home
-    </a>
+    <div class="back-link">
+        <a href="/" class="text-white/50 hover:text-white transition-colors flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em]">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Escape Matrix
+        </a>
+    </div>
 
-    <!-- Auth Card -->
-    <div class="auth-card" id="auth-box">
-        <!-- Logo -->
-        <div class="flex justify-center mb-8">
-            <div class="flex items-center gap-3">
-                <img src="assets/catch-logo-premium.svg" alt="Catch.ai logo" class="h-10 w-auto" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23FF4500\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\'></path></svg>'">
-                <div class="leading-none">
-                    <h1 class="font-heading font-normal text-2xl tracking-tighter text-white">Catch<span class="text-[#FF4500] font-sans">.ai</span></h1>
+    <div class="system-status">
+        <div class="flex items-center"><span class="status-dot"></span> NEURAL_LINK: ACTIVE</div>
+        <div>REGION: US_EAST_1</div>
+        <div id="system-time">00:00:00:00</div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card" id="auth-card">
+            <div class="scan-line"></div>
+            
+            <!-- Header -->
+            <div class="text-center mb-10 relative z-10">
+                <div class="inline-block p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 group cursor-pointer hover:border-[#FF4500]/50 transition-colors">
+                    <img src="assets/catch-logo-premium.svg" alt="Catch.ai" class="h-12 w-auto" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23FF4500\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\'></path></svg>'">
                 </div>
-            </div>
-        </div>
-
-        <div id="form-container">
-            <!-- Login Form (Default) -->
-            <div id="login-view">
-                <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
-                <p class="text-xs text-white/50 mb-6">Enter your credentials to access the neural dashboard.</p>
-                
-                <form id="login-form" class="space-y-4">
-                    <div>
-                        <input type="email" id="login-email" class="auth-input" placeholder="Work Email" required autocomplete="email">
-                    </div>
-                    <div>
-                        <input type="password" id="login-password" class="auth-input" placeholder="Password" required autocomplete="current-password">
-                    </div>
-                    <button type="submit" class="auth-btn" id="login-btn">
-                        <span>Sign In</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
-                </form>
-                
-                <div class="toggle-link" onclick="toggleView('signup')">
-                    Don't have an account? <span class="text-white hover:underline">Request Access</span>
-                </div>
+                <h1 class="font-heading text-4xl text-white tracking-tighter" id="auth-title">Neural Portal</h1>
+                <p class="text-[11px] font-mono text-white/30 uppercase tracking-[0.3em] mt-2" id="auth-subtitle">IDENTIFICATION_REQUIRED</p>
             </div>
 
-            <!-- Sign Up Form (Hidden) -->
-            <div id="signup-view" style="display: none;">
-                <h2 class="text-2xl font-bold mb-2">Initialize Account</h2>
-                <p class="text-xs text-white/50 mb-6">Deploy your AI receptionist in minutes.</p>
-                
-                <form id="signup-form" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="signup-fname" class="auth-input" placeholder="First Name" required>
-                        <input type="text" id="signup-lname" class="auth-input" placeholder="Last Name" required>
+            <!-- Login Form -->
+            <div id="login-form-view">
+                <form id="login-form" class="relative z-10">
+                    <div class="input-group">
+                        <input type="email" id="login-email" class="auth-input" placeholder=" " required autocomplete="email">
+                        <label class="input-label">Terminal Identity</label>
                     </div>
-                    <div>
-                        <input type="email" id="signup-email" class="auth-input" placeholder="Work Email" required autocomplete="email">
+                    <div class="input-group">
+                        <input type="password" id="login-password" class="auth-input" placeholder=" " required autocomplete="current-password">
+                        <label class="input-label">Access Key</label>
                     </div>
-                    <div>
-                        <input type="password" id="signup-password" class="auth-input" placeholder="Create Password" required autocomplete="new-password">
+                    <div class="magnetic-btn-wrap">
+                        <button type="submit" class="auth-btn" id="login-btn">
+                            <span>Initialize Session</span>
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <button type="submit" class="auth-btn" id="signup-btn">
-                        <span>Initialize</span>
-                        <i data-lucide="zap" class="w-4 h-4"></i>
-                    </button>
                 </form>
-                
-                <div class="toggle-link" onclick="toggleView('login')">
-                    Already operational? <span class="text-white hover:underline">Sign In</span>
-                </div>
+                <p class="text-center mt-8 text-[11px] text-white/30 tracking-[0.1em]">
+                    NEW OPERATOR? <span class="text-white cursor-pointer hover:text-[#FF4500] transition-colors" onclick="toggleAuth('signup')">REQUEST PROTOCOL</span>
+                </p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form-view" class="hidden">
+                <form id="signup-form" class="relative z-10">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="input-group mb-0">
+                            <input type="text" id="signup-fname" class="auth-input" placeholder=" " required>
+                            <label class="input-label">First</label>
+                        </div>
+                        <div class="input-group mb-0">
+                            <input type="text" id="signup-lname" class="auth-input" placeholder=" " required>
+                            <label class="input-label">Last</label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="signup-email" class="auth-input" placeholder=" " required autocomplete="email">
+                        <label class="input-label">Corporate Email</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="signup-password" class="auth-input" placeholder=" " required autocomplete="new-password">
+                        <label class="input-label">Secure Key</label>
+                    </div>
+                    <div class="magnetic-btn-wrap">
+                        <button type="submit" class="auth-btn" id="signup-btn">
+                            <span>Request Access</span>
+                            <i data-lucide="cpu" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </form>
+                <p class="text-center mt-8 text-[11px] text-white/30 tracking-[0.1em]">
+                    ALREADY ACTIVE? <span class="text-white cursor-pointer hover:text-[#FF4500] transition-colors" onclick="toggleAuth('login')">RETURN TO TERMINAL</span>
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
     <div id="toast">
-        <i data-lucide="info" class="w-4 h-4" id="toast-icon"></i>
-        <span id="toast-msg">Notification</span>
+        <i data-lucide="info" class="w-5 h-5 text-accent" id="toast-icon"></i>
+        <div class="flex flex-col">
+            <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">System Message</span>
+            <span id="toast-msg" class="text-sm font-medium">Notification</span>
+        </div>
     </div>
 
     <script src="js/auth.js"></script>
     <script>
         lucide.createIcons();
 
-        // UI Toggle Logic
-        function toggleView(target) {
-            const loginView = document.getElementById('login-view');
-            const signupView = document.getElementById('signup-view');
-            const box = document.getElementById('auth-box');
+        // 3D BACKGROUND (Three.js)
+        const canvas = document.querySelector('#three-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-            gsap.to(box, {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // Neural Particles
+        const particlesCount = 2000;
+        const positions = new Float32Array(particlesCount * 3);
+        const colors = new Float32Array(particlesCount * 3);
+        const sizes = new Float32Array(particlesCount);
+
+        for (let i = 0; i < particlesCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 15;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+
+            colors[i * 3] = 255 / 255;
+            colors[i * 3 + 1] = 69 / 255;
+            colors[i * 3 + 2] = 0 / 255;
+
+            sizes[i] = Math.random() * 2;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.015,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.6,
+            sizeAttenuation: true
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // Animation
+        let mouseX = 0;
+        let mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) / 100;
+            mouseY = (e.clientY - window.innerHeight / 2) / 100;
+            
+            // 3D Card Parallax
+            const card = document.getElementById('auth-card');
+            const rotX = -mouseY * 2;
+            const rotY = mouseX * 2;
+            gsap.to(card, {
+                rotateX: rotX,
+                rotateY: rotY,
+                duration: 1,
+                ease: "power2.out"
+            });
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.y += 0.001;
+            particles.rotation.x += 0.0005;
+            
+            // Camera follow mouse
+            camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 0.5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // SYSTEM CLOCK
+        function updateClock() {
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' +
+                         now.getMinutes().toString().padStart(2, '0') + ':' +
+                         now.getSeconds().toString().padStart(2, '0') + ':' +
+                         Math.floor(now.getMilliseconds() / 10).toString().padStart(2, '0');
+            document.getElementById('system-time').textContent = 'TIME: ' + time;
+        }
+        setInterval(updateClock, 10);
+
+        // TOGGLE AUTH
+        function toggleAuth(type) {
+            const loginView = document.getElementById('login-form-view');
+            const signupView = document.getElementById('signup-form-view');
+            const title = document.getElementById('auth-title');
+            const sub = document.getElementById('auth-subtitle');
+
+            gsap.to('.auth-card', {
+                opacity: 0,
+                y: 20,
                 scale: 0.95,
-                opacity: 0.5,
-                duration: 0.2,
+                duration: 0.4,
+                ease: "power2.in",
                 onComplete: () => {
-                    if(target === 'signup') {
-                        loginView.style.display = 'none';
-                        signupView.style.display = 'block';
+                    if (type === 'signup') {
+                        loginView.classList.add('hidden');
+                        signupView.classList.remove('hidden');
+                        title.textContent = 'Join Network';
+                        sub.textContent = 'PROTOCOL_INITIATION';
                     } else {
-                        signupView.style.display = 'none';
-                        loginView.style.display = 'block';
+                        signupView.classList.add('hidden');
+                        loginView.classList.remove('hidden');
+                        title.textContent = 'Neural Portal';
+                        sub.textContent = 'IDENTIFICATION_REQUIRED';
                     }
-                    gsap.to(box, {
-                        scale: 1,
+                    gsap.to('.auth-card', {
                         opacity: 1,
-                        duration: 0.3,
-                        ease: "back.out(1.5)"
+                        y: 0,
+                        scale: 1,
+                        duration: 0.6,
+                        ease: "power4.out"
                     });
                 }
             });
         }
+
+        // ENTRANCE ANIMATION
+        window.addEventListener('load', () => {
+            gsap.from('.auth-card', {
+                opacity: 0,
+                y: 60,
+                scale: 0.9,
+                duration: 1.2,
+                ease: "power4.out",
+                delay: 0.5
+            });
+            gsap.from('.system-status div', {
+                opacity: 0,
+                x: -20,
+                stagger: 0.1,
+                duration: 1,
+                ease: "power2.out",
+                delay: 1
+            });
+        });
     </script>
 </body>
 </html>

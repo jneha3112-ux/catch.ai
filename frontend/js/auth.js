@@ -128,7 +128,7 @@ document.getElementById('signup-form')?.addEventListener('submit', async (e) => 
         document.getElementById('signup-form').reset();
         
         setTimeout(() => {
-            toggleView('login');
+            toggleAuth('login');
         }, 2000);
 
     } catch (error) {
