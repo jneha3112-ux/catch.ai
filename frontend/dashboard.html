@@ -150,12 +150,41 @@
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--glass-border);
+            transition: left 0.3s ease;
         }
 
         .main-content {
             flex: 1;
             padding: 40px;
             overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                position: fixed;
+                top: 0; bottom: 0; left: -320px;
+                z-index: 100;
+                background: rgba(10, 10, 10, 0.95);
+                padding-top: 40px;
+            }
+            .sidebar.open { left: 0; }
+            .main-content { padding: 20px; }
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .mobile-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* Top Navbar */
@@ -242,18 +271,27 @@
             <div id="logo-text" style="display:none;" class="font-heading text-2xl tracking-tighter">Catch<span class="text-[#FF4500]">.ai</span></div>
         </a>
         <div class="flex items-center gap-8">
-            <a href="/" class="nav-link">Landing</a>
-            <a class="nav-link">Settings</a>
-            <button onclick="handleSignOut()" class="nav-link !text-[#FF4500] hover:!text-red-400">Disconnect</button>
+            <a href="/" class="nav-link hidden lg:block">Landing</a>
+            <a class="nav-link hidden lg:block">Settings</a>
+            <button onclick="handleSignOut()" class="nav-link !text-[#FF4500] hover:!text-red-400 hidden lg:block">Disconnect</button>
+            <button onclick="toggleMobileMenu()" class="text-white hover:text-[#FF4500] transition-colors lg:hidden">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
         </div>
     </nav>
 
     <!-- App Layout -->
     <div id="app-layout">
         
+        <!-- Mobile Overlay -->
+        <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
-            <div class="mb-10 gsap-reveal">
+            <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-white/50 hover:text-white lg:hidden">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="mb-10 gsap-reveal pr-8">
                 <p class="text-[10px] font-mono text-[#FF4500] tracking-[0.2em] mb-2 uppercase">Neural Operator</p>
                 <h2 class="font-heading text-3xl text-gradient tracking-tight">Command Center</h2>
             </div>
@@ -290,6 +328,9 @@
                         <i data-lucide="phone-call" id="simulate-icon" class="w-4 h-4"></i> <span id="simulate-btn-text">Initiate Call</span>
                     </button>
                 </div>
+                <button onclick="handleSignOut()" class="w-full mt-4 text-[#FF4500] text-xs font-bold uppercase tracking-widest py-3 rounded-xl border border-[#FF4500]/20 hover:bg-[#FF4500]/10 transition-colors flex items-center justify-center gap-2 lg:hidden">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Disconnect
+                </button>
             </div>
         </aside>
 
@@ -585,7 +626,18 @@
         lucide.createIcons();
 
         // ── TAB LOGIC ───────────────────────────────────────────────────────
+        function toggleMobileMenu() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.getElementById('mobile-overlay').classList.toggle('open');
+        }
+
         function switchTab(tabId) {
+            // Close mobile menu if open
+            if (window.innerWidth < 1024) {
+                document.querySelector('.sidebar').classList.remove('open');
+                document.getElementById('mobile-overlay').classList.remove('open');
+            }
+
             // Update Headers
             const titleMap = {
                 'overview': 'Business Intelligence',
