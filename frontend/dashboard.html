@@ -801,8 +801,10 @@
             );
         }
 
-        // ── AUTH & TRIAL LOGIC ─────────────────────────────────────────────
-        (async function initTrialSystem() {
+        // ── SUBSCRIPTION & FEATURE GATING ────────────────────────────────────
+        let currentUserPlan = 'free';
+
+        (async function initSubscriptionSystem() {
             try {
                 const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
@@ -816,41 +818,94 @@
                     return;
                 }
 
-                // Calculate Trial
-                const createdAt = new Date(session.user.created_at);
-                const trialDurationMs = 2 * 24 * 60 * 60 * 1000; // 2 Days
-                const expiryDate = new Date(createdAt.getTime() + trialDurationMs);
+                const user = session.user;
+
+                // 1. Fetch or Create Profile
+                let { data: profile, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
                 
-                const updateTimer = () => {
-                    const now = new Date();
-                    const diff = expiryDate - now;
+                if (error && error.code === 'PGRST116') {
+                    // Profile doesn't exist, create it
+                    const { data: newProfile, error: insError } = await sb.from('profiles').insert([
+                        { id: user.id, email: user.email, plan: 'free' }
+                    ]).select().single();
+                    profile = newProfile;
+                }
 
-                    if (diff <= 0) {
-                        document.getElementById('trial-lock-modal').classList.add('is-active');
-                        document.getElementById('trial-timer-display').innerText = "Expired";
-                        return true;
+                // 2. Handle PayPal Success Redirect (Client-side sync for launch)
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('payment') === 'success_pro') {
+                    const { error: upError } = await sb.from('profiles').update({ plan: 'pro' }).eq('id', user.id);
+                    if (!upError) {
+                        profile.plan = 'pro';
+                        // Clean URL
+                        window.history.replaceState({}, document.title, "/dashboard.html");
+                        alert("🎉 Payment Successful! Welcome to Catch.ai Pro.");
                     }
+                } else if (urlParams.get('payment') === 'success_starter') {
+                    const { error: upError } = await sb.from('profiles').update({ plan: 'starter' }).eq('id', user.id);
+                    if (!upError) {
+                        profile.plan = 'starter';
+                        window.history.replaceState({}, document.title, "/dashboard.html");
+                        alert("🎉 Payment Successful! Welcome to Catch.ai Starter.");
+                    }
+                }
 
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                currentUserPlan = profile.plan;
 
-                    let timeStr = "";
-                    if (days > 0) timeStr = `${days}d ${hours}h`;
-                    else if (hours > 0) timeStr = `${hours}h ${mins}m`;
-                    else timeStr = `${mins}m left`;
+                // 3. Apply Feature Gating
+                applyFeatureGating(currentUserPlan);
 
-                    document.getElementById('trial-timer-display').innerText = timeStr;
-                    return false;
-                };
+                // 4. Trial Timer Logic (Only for 'free' users)
+                if (currentUserPlan === 'free') {
+                    const createdAt = new Date(profile.trial_start || user.created_at);
+                    const trialDurationMs = 2 * 24 * 60 * 60 * 1000;
+                    const expiryDate = new Date(createdAt.getTime() + trialDurationMs);
+                    
+                    const updateTimer = () => {
+                        const now = new Date();
+                        const diff = expiryDate - now;
 
-                const isExpired = updateTimer();
-                if (!isExpired) setInterval(updateTimer, 60000); // Update every minute
+                        if (diff <= 0) {
+                            document.getElementById('trial-lock-modal').classList.add('is-active');
+                            document.getElementById('trial-timer-display').innerText = "Expired";
+                            return true;
+                        }
+
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                        document.getElementById('trial-timer-display').innerText = days > 0 ? `${days}d ${hours}h` : `${hours}h ${mins}m`;
+                        return false;
+                    };
+
+                    const isExpired = updateTimer();
+                    if (!isExpired) setInterval(updateTimer, 60000);
+                } else {
+                    // Paid user: Hide Trial UI, show plan name
+                    document.getElementById('trial-timer-display').innerText = currentUserPlan.toUpperCase();
+                    document.getElementById('trial-timer-display').classList.add('text-[#10b981]');
+                }
 
             } catch (e) {
-                console.error("Trial logic failed:", e);
+                console.error("Subscription system failed:", e);
             }
         })();
+
+        function applyFeatureGating(plan) {
+            console.log("Applying gating for:", plan);
+            // Example: Starter plan can't use Outbound Dialing
+            if (plan === 'starter') {
+                const outboundBtn = document.getElementById('simulate-call-btn');
+                if (outboundBtn) {
+                    outboundBtn.disabled = true;
+                    outboundBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Upgrade for Outbound';
+                    outboundBtn.classList.add('opacity-50', 'bg-gray-500');
+                    outboundBtn.onclick = () => switchTab('billing');
+                }
+            }
+            lucide.createIcons();
+        }
 
         async function initiateVapiCall() {
             const phoneInput = document.getElementById('simulate-phone-input').value.trim();
