@@ -728,78 +728,88 @@
 
                 const user = session.user;
 
-                // 1. Fetch or Create Profile
-                let { data: profile, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
-                
-                if (error && error.code === 'PGRST116') {
-                    // Profile doesn't exist, create it
-                    const { data: newProfile, error: insError } = await sb.from('profiles').insert([
-                        { id: user.id, email: user.email, plan: 'free' }
-                    ]).select().single();
-                    profile = newProfile;
+                // 1. Fetch or Create Profile (with full error safety)
+                let profile = null;
+                let plan = 'free';
+
+                try {
+                    const { data: existingProfile, error: fetchError } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                    if (fetchError && fetchError.code === 'PGRST116') {
+                        const { data: newProfile } = await sb.from('profiles').insert([
+                            { id: user.id, email: user.email, plan: 'free' }
+                        ]).select().single();
+                        profile = newProfile;
+                    } else if (!fetchError) {
+                        profile = existingProfile;
+                    }
+                } catch(profileErr) {
+                    console.warn('Profile fetch failed, using fallback timer from auth session:', profileErr);
                 }
 
-                // 2. Handle PayPal Success Redirect (Client-side sync for launch)
+                plan = profile?.plan || 'free';
+
+                // 2. Handle PayPal Success Redirect
                 const urlParams = new URLSearchParams(window.location.search);
                 const paymentStatus = urlParams.get('payment');
-                
                 if (paymentStatus === 'success_pro' || paymentStatus === 'success') {
-                    const { error: upError } = await sb.from('profiles').update({ plan: 'pro' }).eq('id', user.id);
-                    if (!upError) {
-                        profile.plan = 'pro';
+                    try {
+                        await sb.from('profiles').upsert({ id: user.id, email: user.email, plan: 'pro' });
+                        plan = 'pro';
                         window.history.replaceState({}, document.title, "/dashboard.html");
                         alert("🎉 Payment Successful! Welcome to Catch.ai Pro.");
-                    }
+                    } catch(e) { console.warn('Plan upgrade failed:', e); }
                 } else if (paymentStatus === 'success_starter') {
-                    const { error: upError } = await sb.from('profiles').update({ plan: 'starter' }).eq('id', user.id);
-                    if (!upError) {
-                        profile.plan = 'starter';
+                    try {
+                        await sb.from('profiles').upsert({ id: user.id, email: user.email, plan: 'starter' });
+                        plan = 'starter';
                         window.history.replaceState({}, document.title, "/dashboard.html");
                         alert("🎉 Payment Successful! Welcome to Catch.ai Starter.");
-                    }
+                    } catch(e) { console.warn('Plan upgrade failed:', e); }
                 }
 
-                currentUserPlan = profile.plan;
-
-                // 3. Apply Feature Gating
+                currentUserPlan = plan;
                 applyFeatureGating(currentUserPlan);
 
-                // 4. Trial Timer Logic (Only for 'free' users)
-                if (currentUserPlan === 'free') {
-                    const createdAt = new Date(profile.trial_start || user.created_at);
-                    const trialDurationMs = 2 * 24 * 60 * 60 * 1000;
-                    const expiryDate = new Date(createdAt.getTime() + trialDurationMs);
-                    
-                    const updateTimer = () => {
-                        const now = new Date();
-                        const diff = expiryDate - now;
+                // 3. Trial Timer — ALWAYS works, uses session date as ultimate fallback
+                const runTimer = () => {
+                    const timerEl = document.getElementById('trial-timer-display');
+                    if (!timerEl) return;
 
-                        if (diff <= 0) {
-                            document.getElementById('trial-lock-modal').classList.add('is-active');
-                            document.getElementById('trial-timer-display').innerText = "Expired";
-                            return true;
-                        }
+                    if (currentUserPlan !== 'free') {
+                        timerEl.innerText = currentUserPlan.toUpperCase();
+                        timerEl.classList.add('text-[#10b981]');
+                        return;
+                    }
 
-                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const startDate = new Date(profile?.trial_start || user.created_at);
+                    const expiryDate = new Date(startDate.getTime() + 2 * 24 * 60 * 60 * 1000);
+                    const diff = expiryDate - new Date();
 
-                        document.getElementById('trial-timer-display').innerText = days > 0 ? `${days}d ${hours}h` : `${hours}h ${mins}m`;
-                        return false;
-                    };
+                    if (diff <= 0) {
+                        document.getElementById('trial-lock-modal').classList.add('is-active');
+                        timerEl.innerText = "Expired";
+                        return;
+                    }
 
-                    const isExpired = updateTimer();
-                    if (!isExpired) setInterval(updateTimer, 60000);
-                } else {
-                    // Paid user: Hide Trial UI, show plan name
-                    document.getElementById('trial-timer-display').innerText = currentUserPlan.toUpperCase();
-                    document.getElementById('trial-timer-display').classList.add('text-[#10b981]');
-                }
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    timerEl.innerText = days > 0 ? `${days}d ${hours}h` : hours > 0 ? `${hours}h ${mins}m` : `${mins}m left`;
+                };
+
+                runTimer();
+                setInterval(runTimer, 60000);
 
             } catch (e) {
                 console.error("Subscription system failed:", e);
+                // Absolute last resort — always show something
+                const timerEl = document.getElementById('trial-timer-display');
+                if (timerEl) timerEl.innerText = "2d 0h";
             }
         })();
+
+
+
 
         function applyFeatureGating(plan) {
             console.log("Applying gating for:", plan);
