@@ -357,7 +357,6 @@
                 <button onclick="switchTab('inbox')" id="nav-inbox" class="w-full sidebar-tab">
                     <i data-lucide="inbox" class="w-5 h-5 text-white/60 transition-colors"></i>
                     <span class="text-sm font-semibold tracking-wide">Call Inbox</span>
-                    <span class="ml-auto bg-[#FF4500] text-white text-[9px] font-bold px-2 py-0.5 rounded-full">3 New</span>
                 </button>
 
                 <button onclick="switchTab('kb')" id="nav-kb" class="w-full sidebar-tab">
@@ -417,44 +416,36 @@
                         <div class="glass-panel premium-card p-6 gsap-card">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Recovered Revenue</h3>
-                                <span class="text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#10b981]/20">+14.2%</span>
+                                <span class="text-white/20 bg-white/5 px-2 py-1 rounded text-[9px] font-bold border border-white/10">Awaiting</span>
                             </div>
-                            <div class="text-4xl font-heading text-white mb-4">$4,250</div>
-                            <div class="h-12 w-full">
-                                <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
-                                    <path d="M0,25 Q20,20 40,25 T80,10 T100,5" fill="none" stroke="#10b981" stroke-width="2" class="graph-line" stroke-linecap="round"/>
-                                </svg>
-                            </div>
+                            <div class="text-4xl font-heading text-white mb-4">$0</div>
+                            <p class="text-[10px] text-white/30">Revenue appears after first AI call</p>
                         </div>
 
-                        <div class="glass-panel premium-card p-6 gsap-card" style="border-color: rgba(255,69,0,0.3);">
+                        <div class="glass-panel premium-card p-6 gsap-card">
                             <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest">Appointments Booked</h3>
+                                <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Appointments Booked</h3>
                                 <span class="text-[#FF4500] bg-[#FF4500]/10 px-2 py-1 rounded text-[9px] font-bold border border-[#FF4500]/20">Live</span>
                             </div>
-                            <div class="text-4xl font-heading text-white mb-4">84</div>
-                            <div class="h-12 w-full">
-                                <svg viewBox="0 0 100 30" class="w-full h-full preserve-aspect-ratio="none">
-                                    <path d="M0,28 L20,22 L40,24 L60,12 L80,15 L100,2" fill="none" stroke="#FF4500" stroke-width="2" class="graph-line" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
+                            <div class="text-4xl font-heading text-white mb-4">0</div>
+                            <p class="text-[10px] text-white/30">Updates after each AI call</p>
                         </div>
 
                         <div class="glass-panel premium-card p-6 gsap-card">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Missed Calls Caught</h3>
                             </div>
-                            <div class="text-4xl font-heading text-white mb-4">127</div>
-                            <p class="text-[10px] text-white/40">Out of 130 total missed</p>
+                            <div class="text-4xl font-heading text-white mb-4">0</div>
+                            <p class="text-[10px] text-white/30">Out of 0 total missed</p>
                         </div>
 
                         <div class="glass-panel premium-card p-6 gsap-card">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Conversion Rate</h3>
                             </div>
-                            <div class="text-4xl font-heading text-white mb-4">66%</div>
+                            <div class="text-4xl font-heading text-white mb-4">—</div>
                             <div class="w-full bg-white/10 rounded-full h-1 mt-6">
-                                <div class="bg-gradient-to-r from-transparent to-white h-1 rounded-full w-[66%]"></div>
+                                <div class="bg-gradient-to-r from-transparent to-white h-1 rounded-full w-0"></div>
                             </div>
                         </div>
                     </div>
@@ -468,34 +459,26 @@
                                 <button onclick="switchTab('inbox')" class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest hover:text-white transition-colors">View All Calls →</button>
                             </div>
                             
-                            <div class="space-y-4">
-                                <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors cursor-pointer" onclick="switchTab('inbox')">
-                                    <div class="w-8 h-8 rounded-full bg-[#10b981]/20 flex items-center justify-center shrink-0">
-                                        <i data-lucide="check" class="w-4 h-4 text-[#10b981]"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <p class="text-sm font-bold text-white">Emergency Extraction Booking</p>
-                                            <span class="text-[10px] font-mono text-white/40">2 MINS AGO</span>
-                                        </div>
-                                        <p class="text-xs text-white/60 leading-relaxed mb-2">Patient called regarding severe tooth pain. AI successfully scheduled an emergency appointment.</p>
-                                    </div>
+                            <div class="flex flex-col items-center justify-center py-12 text-center">
+                                <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+                                    <i data-lucide="phone-off" class="w-7 h-7 text-white/20"></i>
                                 </div>
+                                <p class="text-sm font-semibold text-white/40 mb-1">No calls yet</p>
+                                <p class="text-xs text-white/20">Your AI call feed will appear here once the first call comes in.</p>
                             </div>
                         </div>
 
                         <!-- At Risk Leads -->
                         <div class="glass-panel premium-card p-8 gsap-reveal tab-animate-up" style="animation-delay: 0.1s;">
                             <h2 class="text-lg font-heading text-white mb-2">Attention Required</h2>
-                            <p class="text-[10px] text-[#FF4500] uppercase tracking-widest font-bold mb-8">2 Leads at risk</p>
+                            <p class="text-[10px] text-white/30 uppercase tracking-widest font-bold mb-8">All Clear</p>
 
-                            <div class="space-y-4">
-                                <div class="p-4 rounded-xl border border-[#FF4500]/30 bg-[#FF4500]/5 relative overflow-hidden group">
-                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#FF4500]"></div>
-                                    <h4 class="text-sm font-bold text-white mb-1">John D.</h4>
-                                    <p class="text-xs text-white/60 mb-3">AI sent WhatsApp, waiting for human follow-up on pricing.</p>
-                                    <button class="text-[10px] font-bold text-[#FF4500] uppercase tracking-widest group-hover:text-white transition-colors">Take Action →</button>
+                            <div class="flex flex-col items-center justify-center py-8 text-center">
+                                <div class="w-12 h-12 rounded-full bg-[#10b981]/10 border border-[#10b981]/20 flex items-center justify-center mb-3">
+                                    <i data-lucide="shield-check" class="w-6 h-6 text-[#10b981]"></i>
                                 </div>
+                                <p class="text-xs font-semibold text-white/40">No leads at risk</p>
+                                <p class="text-[10px] text-white/20 mt-1">At-risk leads will appear here.</p>
                             </div>
                         </div>
                     </div>
@@ -516,81 +499,15 @@
                             </div>
                         </div>
 
-                        <!-- Call List -->
-                        <div class="divide-y divide-white/5 max-h-[600px] overflow-y-auto custom-scrollbar">
-                            
-                            <!-- Call Item 1 -->
-                            <div class="p-6 hover:bg-white/5 transition-colors group">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF4500] to-purple-600 flex items-center justify-center text-white font-heading font-bold text-lg shadow-lg">J</div>
-                                        <div>
-                                            <h4 class="text-base font-bold text-white flex items-center gap-2">
-                                                John Doe 
-                                                <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/20">Booked</span>
-                                            </h4>
-                                            <p class="text-xs text-white/50 font-mono">+1 (555) 019-2834 • Today at 10:42 AM</p>
-                                        </div>
-                                    </div>
-                                    <button class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
-                                        <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call Back
-                                    </button>
+                        <!-- Call List - Empty State -->
+                        <div class="divide-y divide-white/5 max-h-[600px] overflow-y-auto custom-scrollbar" id="call-inbox-list">
+                            <div class="flex flex-col items-center justify-center py-24 text-center px-8">
+                                <div class="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                                    <i data-lucide="inbox" class="w-9 h-9 text-white/20"></i>
                                 </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-14">
-                                    <div class="bg-black/40 rounded-xl p-4 border border-white/5">
-                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">AI Summary</p>
-                                        <p class="text-sm text-white/80 leading-relaxed">Caller was experiencing sharp pain in lower left jaw. Expressed urgency. I verified their insurance (Delta Dental) and secured the 2:00 PM slot for tomorrow with Dr. Smith. Sent confirmation SMS.</p>
-                                    </div>
-                                    <div class="flex flex-col justify-center">
-                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Recording (2m 14s)</p>
-                                        <div class="mock-audio cursor-pointer hover:border-white/20 transition-colors">
-                                            <button class="w-8 h-8 rounded-full bg-[#FF4500] flex items-center justify-center text-white shrink-0 hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,69,0,0.4)]">
-                                                <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
-                                            </button>
-                                            <div class="mock-wave"></div>
-                                            <span class="text-[10px] font-mono text-white/60">0:00</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <h3 class="text-lg font-heading text-white/40 mb-2">Your inbox is empty</h3>
+                                <p class="text-xs text-white/20 max-w-xs leading-relaxed">When your AI receptionist catches a missed call, the full conversation summary, recording, and booking status will appear here automatically.</p>
                             </div>
-
-                            <!-- Call Item 2 -->
-                            <div class="p-6 hover:bg-white/5 transition-colors group bg-[#FF4500]/5 border-l-2 border-l-[#FF4500]">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white/60 font-heading font-bold text-lg">S</div>
-                                        <div>
-                                            <h4 class="text-base font-bold text-white flex items-center gap-2">
-                                                Sarah Miller 
-                                                <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#FF4500]/20 text-[#FF4500] border border-[#FF4500]/20">Follow-up Required</span>
-                                            </h4>
-                                            <p class="text-xs text-white/50 font-mono">+1 (555) 882-1923 • Yesterday at 4:15 PM</p>
-                                        </div>
-                                    </div>
-                                    <button class="px-4 py-2 bg-[#FF4500] hover:bg-[#e63c00] text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,69,0,0.3)]">
-                                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Resolve
-                                    </button>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-14">
-                                    <div class="bg-black/40 rounded-xl p-4 border border-[#FF4500]/20">
-                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">AI Summary</p>
-                                        <p class="text-sm text-white/80 leading-relaxed">Asked about the total cost of Invisalign without insurance. I provided the base range ($3k-$5k) but they requested a precise quote. <strong class="text-[#FF4500]">I promised a human specialist would call them back today.</strong></p>
-                                    </div>
-                                    <div class="flex flex-col justify-center">
-                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Recording (3m 45s)</p>
-                                        <div class="mock-audio cursor-pointer hover:border-white/20 transition-colors">
-                                            <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:scale-105 transition-transform border border-white/20">
-                                                <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
-                                            </button>
-                                            <div class="mock-wave" style="opacity: 0.5;"></div>
-                                            <span class="text-[10px] font-mono text-white/60">0:00</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </section>
@@ -619,14 +536,17 @@
                                 </div>
                             </div>
 
-                            <!-- Document Upload -->
-                            <div class="glass-panel premium-card p-8 border-dashed border-2 border-white/10 hover:border-[#FF4500]/50 transition-colors text-center cursor-pointer group">
-                                <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-[#FF4500]"></i>
+                            <!-- Document Upload - Coming Soon -->
+                            <div class="glass-panel premium-card p-8 border-dashed border-2 border-white/10 text-center relative overflow-hidden opacity-60">
+                                <div class="absolute top-4 right-4">
+                                    <span class="text-[8px] font-bold text-white bg-white/10 px-2 py-0.5 rounded uppercase tracking-widest border border-white/10">Coming Soon</span>
                                 </div>
-                                <h3 class="text-lg font-bold text-white mb-2">Upload Knowledge Documents</h3>
-                                <p class="text-xs text-white/50 mb-4 max-w-sm mx-auto">Upload PDFs, Word Docs, or Text files containing your pricing sheets, FAQs, and service descriptions. The AI will read and learn them instantly.</p>
-                                <button class="px-6 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-colors">Select Files</button>
+                                <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-white/30"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-white/50 mb-2">Upload Knowledge Documents</h3>
+                                <p class="text-xs text-white/30 mb-4 max-w-sm mx-auto">PDF & document training is being finalized. Your AI agent already uses the Business Instructions above.</p>
+                                <button disabled class="px-6 py-2 bg-white/5 text-white/20 text-xs font-bold uppercase tracking-widest rounded-full cursor-not-allowed">Coming Soon</button>
                             </div>
                         </div>
 
@@ -650,21 +570,9 @@
 
                             <div class="glass-panel premium-card p-6">
                                 <h3 class="font-bold text-white text-sm mb-4">Active Documents</h3>
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
-                                        <div class="flex items-center gap-3">
-                                            <i data-lucide="file-text" class="w-4 h-4 text-[#FF4500]"></i>
-                                            <span class="text-xs text-white font-medium">dental_pricing_2026.pdf</span>
-                                        </div>
-                                        <button class="text-white/40 hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                                    </div>
-                                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
-                                        <div class="flex items-center gap-3">
-                                            <i data-lucide="file-text" class="w-4 h-4 text-[#FF4500]"></i>
-                                            <span class="text-xs text-white font-medium">standard_faqs.docx</span>
-                                        </div>
-                                        <button class="text-white/40 hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                                    </div>
+                                <div class="flex flex-col items-center justify-center py-6 text-center">
+                                    <i data-lucide="file-x" class="w-8 h-8 text-white/20 mb-2"></i>
+                                    <p class="text-xs text-white/30">No documents uploaded yet.</p>
                                 </div>
                             </div>
                         </div>
