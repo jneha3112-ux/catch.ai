@@ -115,7 +115,29 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        /* ── TRIAL LOCK OVERLAY ── */
+        #trial-lock-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #trial-lock-modal.is-active { display: flex; }
+        .lock-card {
+            max-width: 480px;
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,69,0,0.3);
+            border-radius: 2rem;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 80px rgba(255,69,0,0.15);
+        }
 
         /* Typography & Accents */
         .text-gradient {
@@ -295,6 +317,23 @@
         
         <!-- Mobile Overlay -->
         <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
+    <!-- Trial Lock Modal -->
+    <div id="trial-lock-modal">
+        <div class="lock-card gsap-reveal">
+            <div class="w-20 h-20 bg-[#FF4500]/10 border border-[#FF4500]/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="lock" class="w-10 h-10 text-[#FF4500]"></i>
+            </div>
+            <h2 class="text-3xl font-heading text-white mb-4">Trial Expired</h2>
+            <p class="text-white/50 mb-8 leading-relaxed">Your 2-day premium access has ended. To continue catching missed calls and booking patients, please upgrade to a Pro plan.</p>
+            <div class="space-y-4">
+                <button onclick="switchTab('billing')" class="w-full py-4 bg-[#FF4500] text-white font-bold uppercase tracking-widest rounded-xl hover:bg-orange-600 transition-all shadow-[0_0_30px_rgba(255,69,0,0.3)]">
+                    Upgrade Now
+                </button>
+                <p class="text-[10px] text-white/30 uppercase tracking-[0.2em]">Immediate Access • Secure Checkout</p>
+            </div>
+        </div>
+    </div>
 
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
@@ -638,11 +677,11 @@
                         <div class="glass-panel premium-card p-8 mb-10 flex items-center justify-between border-l-4 border-l-[#FF4500]">
                             <div>
                                 <h2 class="text-xl font-heading text-white mb-1">Your Current Subscription</h2>
-                                <p class="text-sm text-white/50">You are currently using the <span class="text-[#FF4500] font-bold">14-Day Pro Free Trial</span>.</p>
+                                <p class="text-sm text-white/50">You are currently using the <span class="text-[#FF4500] font-bold">2-Day Pro Free Trial</span>.</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Trial Ends In</p>
-                                <p class="text-2xl font-heading text-white">12 Days</p>
+                                <p class="text-2xl font-heading text-white" id="trial-timer-display">Calculating...</p>
                             </div>
                         </div>
 
@@ -762,7 +801,57 @@
             );
         }
 
-        // ── VAPI API INTEGRATION ────────────────────────────────────────────
+        // ── AUTH & TRIAL LOGIC ─────────────────────────────────────────────
+        (async function initTrialSystem() {
+            try {
+                const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
+                
+                if (!window.supabase) return;
+                const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                const { data: { session } } = await sb.auth.getSession();
+
+                if (!session) {
+                    window.location.href = '/auth.html';
+                    return;
+                }
+
+                // Calculate Trial
+                const createdAt = new Date(session.user.created_at);
+                const trialDurationMs = 2 * 24 * 60 * 60 * 1000; // 2 Days
+                const expiryDate = new Date(createdAt.getTime() + trialDurationMs);
+                
+                const updateTimer = () => {
+                    const now = new Date();
+                    const diff = expiryDate - now;
+
+                    if (diff <= 0) {
+                        document.getElementById('trial-lock-modal').classList.add('is-active');
+                        document.getElementById('trial-timer-display').innerText = "Expired";
+                        return true;
+                    }
+
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                    let timeStr = "";
+                    if (days > 0) timeStr = `${days}d ${hours}h`;
+                    else if (hours > 0) timeStr = `${hours}h ${mins}m`;
+                    else timeStr = `${mins}m left`;
+
+                    document.getElementById('trial-timer-display').innerText = timeStr;
+                    return false;
+                };
+
+                const isExpired = updateTimer();
+                if (!isExpired) setInterval(updateTimer, 60000); // Update every minute
+
+            } catch (e) {
+                console.error("Trial logic failed:", e);
+            }
+        })();
+
         async function initiateVapiCall() {
             const phoneInput = document.getElementById('simulate-phone-input').value.trim();
             const btn = document.getElementById('simulate-call-btn');
