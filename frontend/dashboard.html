@@ -585,10 +585,10 @@
                         <div class="glass-panel premium-card p-8 mb-10 flex items-center justify-between border-l-4 border-l-[#FF4500]">
                             <div>
                                 <h2 class="text-xl font-heading text-white mb-1">Your Current Subscription</h2>
-                                <p class="text-sm text-white/50">You are currently using the <span class="text-[#FF4500] font-bold">2-Day Pro Free Trial</span>.</p>
+                                <p class="text-sm text-white/50">You are on the <span id="billing-plan-label" class="text-[#FF4500] font-bold">2-Day Free Trial</span>.</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Trial Ends In</p>
+                                <p id="billing-timer-label" class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Trial Ends In</p>
                                 <p class="text-2xl font-heading text-white" id="trial-timer-display">Calculating...</p>
                             </div>
                         </div>
@@ -748,39 +748,74 @@
 
                 plan = profile?.plan || 'free';
 
-                // 2. Handle PayPal Success Redirect
+                // 2. Handle PayPal Success Redirect — store 30-day subscription end
                 const urlParams = new URLSearchParams(window.location.search);
                 const paymentStatus = urlParams.get('payment');
+                const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
                 if (paymentStatus === 'success_pro' || paymentStatus === 'success') {
                     try {
-                        await sb.from('profiles').upsert({ id: user.id, email: user.email, plan: 'pro' });
+                        const { data: upd } = await sb.from('profiles').upsert({ 
+                            id: user.id, email: user.email, plan: 'pro',
+                            subscription_end: thirtyDaysFromNow
+                        }).select().single();
+                        if (upd) { profile = upd; }
                         plan = 'pro';
                         window.history.replaceState({}, document.title, "/dashboard.html");
-                        alert("🎉 Payment Successful! Welcome to Catch.ai Pro.");
+                        alert("🎉 Payment Successful! Welcome to Catch.ai Pro. Your plan is active for 30 days.");
                     } catch(e) { console.warn('Plan upgrade failed:', e); }
                 } else if (paymentStatus === 'success_starter') {
                     try {
-                        await sb.from('profiles').upsert({ id: user.id, email: user.email, plan: 'starter' });
+                        const { data: upd } = await sb.from('profiles').upsert({ 
+                            id: user.id, email: user.email, plan: 'starter',
+                            subscription_end: thirtyDaysFromNow
+                        }).select().single();
+                        if (upd) { profile = upd; }
                         plan = 'starter';
                         window.history.replaceState({}, document.title, "/dashboard.html");
-                        alert("🎉 Payment Successful! Welcome to Catch.ai Starter.");
+                        alert("🎉 Payment Successful! Welcome to Catch.ai Starter. Your plan is active for 30 days.");
                     } catch(e) { console.warn('Plan upgrade failed:', e); }
+                }
+
+                // Check if a paid subscription has expired — downgrade to free
+                if ((plan === 'pro' || plan === 'starter') && profile?.subscription_end) {
+                    const subEnd = new Date(profile.subscription_end);
+                    if (subEnd < new Date()) {
+                        plan = 'expired';
+                    }
                 }
 
                 currentUserPlan = plan;
                 applyFeatureGating(currentUserPlan);
 
-                // 3. Trial Timer — ALWAYS works, uses session date as ultimate fallback
+                // 3. Timer / Status display
                 const runTimer = () => {
                     const timerEl = document.getElementById('trial-timer-display');
+                    const planLabelEl = document.getElementById('billing-plan-label');
                     if (!timerEl) return;
 
-                    if (currentUserPlan !== 'free') {
-                        timerEl.innerText = currentUserPlan.toUpperCase();
+                    // PAID PLAN — show subscription end date
+                    if (currentUserPlan === 'pro' || currentUserPlan === 'starter') {
+                        const endDate = profile?.subscription_end 
+                            ? new Date(profile.subscription_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                            : '30 days from purchase';
+                        timerEl.innerText = endDate;
                         timerEl.classList.add('text-[#10b981]');
+                        if (planLabelEl) planLabelEl.innerText = currentUserPlan === 'pro' ? 'Pro Plan' : 'Starter Plan';
+                        const timerLabel = document.getElementById('billing-timer-label');
+                        if (timerLabel) timerLabel.innerText = 'Plan Renews On';
                         return;
                     }
 
+                    // EXPIRED SUBSCRIPTION
+                    if (currentUserPlan === 'expired') {
+                        document.getElementById('trial-lock-modal').classList.add('is-active');
+                        timerEl.innerText = 'Expired';
+                        timerEl.classList.add('text-[#FF4500]');
+                        return;
+                    }
+
+                    // FREE TRIAL — countdown
                     const startDate = new Date(profile?.trial_start || user.created_at);
                     const expiryDate = new Date(startDate.getTime() + 2 * 24 * 60 * 60 * 1000);
                     const diff = expiryDate - new Date();
@@ -802,7 +837,6 @@
 
             } catch (e) {
                 console.error("Subscription system failed:", e);
-                // Absolute last resort — always show something
                 const timerEl = document.getElementById('trial-timer-display');
                 if (timerEl) timerEl.innerText = "2d 0h";
             }
@@ -812,17 +846,29 @@
 
 
         function applyFeatureGating(plan) {
-            console.log("Applying gating for:", plan);
-            // Example: Starter plan can't use Outbound Dialing
-            if (plan === 'starter') {
-                const outboundBtn = document.getElementById('simulate-call-btn');
-                if (outboundBtn) {
-                    outboundBtn.disabled = true;
-                    outboundBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Upgrade for Outbound';
-                    outboundBtn.classList.add('opacity-50', 'bg-gray-500');
-                    outboundBtn.onclick = () => switchTab('billing');
-                }
+            // ── PRO: Full access, unlock everything
+            if (plan === 'pro') {
+                lucide.createIcons();
+                return;
             }
+
+            // ── STARTER: Lock Outbound Calling & Calendar Booking
+            if (plan === 'starter') {
+                const callBtn = document.getElementById('simulate-call-btn');
+                if (callBtn) {
+                    callBtn.disabled = true;
+                    callBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4 inline mr-1"></i> Pro Feature';
+                    callBtn.classList.add('opacity-50', '!bg-gray-600', 'cursor-not-allowed');
+                    callBtn.onclick = () => { switchTab('billing'); };
+                }
+                // Add lock overlay to calendar section if it exists
+                const calSection = document.getElementById('calendar-section');
+                if (calSection) calSection.style.pointerEvents = 'none', calSection.style.opacity = '0.4';
+                lucide.createIcons();
+                return;
+            }
+
+            // ── FREE TRIAL or EXPIRED: no gating needed (lock modal handles it)
             lucide.createIcons();
         }
 
