@@ -833,15 +833,16 @@
 
                 // 2. Handle PayPal Success Redirect (Client-side sync for launch)
                 const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('payment') === 'success_pro') {
+                const paymentStatus = urlParams.get('payment');
+                
+                if (paymentStatus === 'success_pro' || paymentStatus === 'success') {
                     const { error: upError } = await sb.from('profiles').update({ plan: 'pro' }).eq('id', user.id);
                     if (!upError) {
                         profile.plan = 'pro';
-                        // Clean URL
                         window.history.replaceState({}, document.title, "/dashboard.html");
                         alert("🎉 Payment Successful! Welcome to Catch.ai Pro.");
                     }
-                } else if (urlParams.get('payment') === 'success_starter') {
+                } else if (paymentStatus === 'success_starter') {
                     const { error: upError } = await sb.from('profiles').update({ plan: 'starter' }).eq('id', user.id);
                     if (!upError) {
                         profile.plan = 'starter';
