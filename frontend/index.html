@@ -2519,7 +2519,7 @@
         const forceFieldSketch = (p) => {
             let img;
             let points = [];
-            const spacing = 14;
+            const spacing = 22;
             const magnifierRadius = 150;
             const forceStrength = 15;
             const friction = 0.9;
@@ -2527,6 +2527,7 @@
             let magnifierX, magnifierY;
 
             p.setup = () => {
+                p.frameRate(30);
                 const container = document.getElementById('force-field-container');
                 if (!container || window.innerWidth < 768) {
                     if (container) container.style.display = 'none';
@@ -2704,16 +2705,16 @@
             const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const isMobile = window.innerWidth < 768;
             const lenis = new Lenis({
-                duration: reducedMotion ? 1 : (isMobile ? 1.1 : 1.35),
+                duration: reducedMotion ? 1 : (isMobile ? 1.0 : 1.1),
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 orientation: 'vertical',
                 smoothWheel: true,
-                wheelMultiplier: isMobile ? 0.8 : (reducedMotion ? 0.9 : 1),
-                touchMultiplier: 1.5
+                wheelMultiplier: isMobile ? 1.0 : 1.1,
+                touchMultiplier: 2.0
             });
             lenis.on('scroll', ScrollTrigger.update);
             gsap.ticker.add(time => lenis.raf(time * 1000));
-            gsap.ticker.lagSmoothing(500, 33);
+            gsap.ticker.lagSmoothing(1000, 16);
 
             // Advanced data-speed parallax (mimics ScrollSmoother)
             gsap.utils.toArray('[data-speed]').forEach(el => {
@@ -2797,17 +2798,18 @@
             const renderer = new THREE.WebGLRenderer({
                 canvas,
                 antialias: false,
-                powerPreference: "low-power",
-                alpha: true
+                powerPreference: "high-performance",
+                alpha: true,
+                precision: 'lowp'
             });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.2));
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.0));
             renderer.setSize(window.innerWidth, window.innerHeight);
 
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.z = 8;
 
-            const particlesCount = lowPowerMode ? 80 : 200;
+            const particlesCount = lowPowerMode ? 40 : 120;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particlesCount * 3);
             const scales = new Float32Array(particlesCount);
@@ -2844,16 +2846,24 @@
 
             let rafId = null;
             const clock = new THREE.Clock();
-            const animate = () => {
-                const elapsed = clock.getElapsedTime();
-                points.rotation.y = elapsed * (lowPowerMode ? 0.03 : 0.04);
-                points.rotation.x = Math.sin(elapsed * 0.2) * (lowPowerMode ? 0.05 : 0.07);
-                camera.position.x = Math.sin(elapsed * 0.15) * (lowPowerMode ? 0.16 : 0.24);
-                camera.position.y = Math.cos(elapsed * 0.22) * (lowPowerMode ? 0.14 : 0.2);
-                renderer.render(scene, camera);
+            let lastTime = 0;
+            const fps = 30; // Limit background to 30fps to save CPU
+            const interval = 1000 / fps;
+
+            const animate = (time) => {
+                const delta = time - lastTime;
+                if (delta > interval) {
+                    lastTime = time - (delta % interval);
+                    const elapsed = clock.getElapsedTime();
+                    points.rotation.y = elapsed * (lowPowerMode ? 0.03 : 0.04);
+                    points.rotation.x = Math.sin(elapsed * 0.2) * (lowPowerMode ? 0.05 : 0.07);
+                    camera.position.x = Math.sin(elapsed * 0.15) * (lowPowerMode ? 0.16 : 0.24);
+                    camera.position.y = Math.cos(elapsed * 0.22) * (lowPowerMode ? 0.14 : 0.2);
+                    renderer.render(scene, camera);
+                }
                 rafId = requestAnimationFrame(animate);
             };
-            animate();
+            requestAnimationFrame(animate);
 
             // Scroll links scene intensity to page progress.
             ScrollTrigger.create({
