@@ -247,6 +247,18 @@
                 </div>
             </div>
             <div class="field">
+                <label for="s-clinic">Clinic Name</label>
+                <input type="text" id="s-clinic" placeholder="e.g. Smith Dental Care">
+            </div>
+            <div class="field">
+                <label for="s-phone">Mobile Number</label>
+                <input type="tel" id="s-phone" placeholder="+1 555 000 0000">
+            </div>
+            <div class="field">
+                <label for="s-dob">Date of Birth</label>
+                <input type="date" id="s-dob" style="color-scheme: dark;">
+            </div>
+            <div class="field">
                 <label for="s-email">Email Address</label>
                 <input type="email" id="s-email" placeholder="you@example.com" autocomplete="email">
             </div>
@@ -337,14 +349,17 @@ async function doLogin() {
 
 // ── SIGNUP ────────────────────────────────────────────────────────────────────
 async function doSignup() {
-    const fname = document.getElementById('s-fname').value.trim();
-    const lname = document.getElementById('s-lname').value.trim();
-    const email = document.getElementById('s-email').value.trim();
-    const pass  = document.getElementById('s-pass').value;
-    const btn   = document.getElementById('btn-signup');
+    const fname  = document.getElementById('s-fname').value.trim();
+    const lname  = document.getElementById('s-lname').value.trim();
+    const clinic = document.getElementById('s-clinic').value.trim();
+    const phone  = document.getElementById('s-phone').value.trim();
+    const dob    = document.getElementById('s-dob').value;
+    const email  = document.getElementById('s-email').value.trim();
+    const pass   = document.getElementById('s-pass').value;
+    const btn    = document.getElementById('btn-signup');
 
-    if (!fname || !email || !pass) { toast('Please fill in all required fields.', 'error'); return; }
-    if (pass.length < 6)            { toast('Password must be at least 6 characters.', 'error'); return; }
+    if (!fname || !clinic || !phone || !email || !pass) { toast('Please fill in all required fields.', 'error'); return; }
+    if (pass.length < 6) { toast('Password must be at least 6 characters.', 'error'); return; }
 
     btn.disabled = true;
     btn.textContent = 'Creating account...';
@@ -352,7 +367,7 @@ async function doSignup() {
     const { data, error } = await sb.auth.signUp({
         email, password: pass,
         options: {
-            data: { first_name: fname, last_name: lname },
+            data: { first_name: fname, last_name: lname, clinic_name: clinic, phone, dob },
             emailRedirectTo: window.location.origin + '/dashboard.html'
         }
     });
@@ -366,8 +381,23 @@ async function doSignup() {
         return;
     }
 
+    // Save extra profile data to profiles table
+    if (data.user) {
+        try {
+            await sb.from('profiles').upsert({
+                id: data.user.id,
+                email,
+                full_name: `${fname} ${lname}`.trim(),
+                clinic_name: clinic,
+                phone,
+                dob,
+                plan: 'free',
+                trial_start: new Date().toISOString()
+            });
+        } catch(e) { console.warn('Profile save failed:', e); }
+    }
+
     if (data.session) {
-        // Email confirmation is off → logged in immediately
         toast('Account created! Entering dashboard...', 'success');
         setTimeout(() => window.location.href = '/dashboard.html', 900);
     } else {
