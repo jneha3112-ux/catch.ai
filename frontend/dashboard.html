@@ -324,16 +324,27 @@
             <div class="w-20 h-20 bg-[#FF4500]/10 border border-[#FF4500]/30 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i data-lucide="lock" class="w-10 h-10 text-[#FF4500]"></i>
             </div>
-            <h2 class="text-3xl font-heading text-white mb-4">Trial Expired</h2>
-            <p class="text-white/50 mb-8 leading-relaxed">Your 2-day premium access has ended. To continue catching missed calls and booking patients, please upgrade to a Pro plan.</p>
-            <div class="space-y-4">
-                <button onclick="switchTab('billing')" class="w-full py-4 bg-[#FF4500] text-white font-bold uppercase tracking-widest rounded-xl hover:bg-orange-600 transition-all shadow-[0_0_30px_rgba(255,69,0,0.3)]">
-                    Upgrade Now
+            <h2 class="text-3xl font-heading text-white mb-2">Trial Expired</h2>
+            <p class="text-white/50 mb-8 leading-relaxed">Your 2-day access has ended. Choose a plan below to keep catching missed calls and booking patients — your data is safe.</p>
+            <div class="space-y-3">
+                <!-- Direct PayPal buttons — no modal blocking -->
+                <a id="modal-pro-btn" href="https://www.paypal.com/ncp/payment/JSMNG7UFHSBXJ?return=https://catch-ai.onrender.com/dashboard.html?payment=success_pro" target="_blank"
+                   class="w-full py-4 bg-[#FF4500] text-white font-bold uppercase tracking-widest rounded-xl hover:bg-orange-600 transition-all shadow-[0_0_30px_rgba(255,69,0,0.3)] flex items-center justify-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Upgrade to Pro — $299/mo
+                </a>
+                <a id="modal-starter-btn" href="https://www.paypal.com/ncp/payment/9VMWA2PPLU77Q?return=https://catch-ai.onrender.com/dashboard.html?payment=success_starter" target="_blank"
+                   class="w-full py-4 bg-white/10 text-white font-bold uppercase tracking-widest rounded-xl hover:bg-white/20 transition-all border border-white/10 flex items-center justify-center gap-2">
+                    <i data-lucide="star" class="w-4 h-4"></i> Starter Plan — $149/mo
+                </a>
+                <button onclick="document.getElementById('trial-lock-modal').classList.remove('is-active'); switchTab('billing');"
+                   class="w-full py-3 text-white/40 text-xs uppercase tracking-widest hover:text-white/70 transition-colors">
+                    View All Plans
                 </button>
-                <p class="text-[10px] text-white/30 uppercase tracking-[0.2em]">Immediate Access • Secure Checkout</p>
+                <p class="text-[10px] text-white/30 uppercase tracking-[0.2em] text-center">Secure Checkout via PayPal</p>
             </div>
         </div>
     </div>
+
 
         <!-- Sidebar -->
         <aside class="sidebar glass-panel">
