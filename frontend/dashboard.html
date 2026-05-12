@@ -411,26 +411,26 @@
         <div id="onboarding-step-2" class="onboarding-card onboarding-step text-center">
             <div class="mb-10">
                 <div class="ahead-number" id="ahead-count">1,204</div>
-                <h3 class="text-2xl font-heading text-white mb-4">Dentist Clinics Behind You</h3>
-                <p class="text-white/50 leading-relaxed">Catch.ai has officially integrated with your practice. You are now operating with elite efficiency.</p>
+                <h3 class="text-2xl font-heading text-white mb-4">Dental Practices Behind You</h3>
+                <p class="text-white/50 leading-relaxed text-sm">Welcome to the elite 0.1%. Your Neural Agent is now calibrated to your clinic's DNA. Every missed call is now an opportunity caught.</p>
             </div>
             
-            <div class="py-8 border-y border-white/5 mb-8">
-                <div class="flex items-center justify-center gap-8">
-                    <div class="text-center">
-                        <p class="text-[10px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-1">Status</p>
-                        <p class="text-sm font-mono text-white">ACTIVE</p>
+            <div class="grid grid-cols-2 gap-4 py-8 border-y border-white/5 mb-8">
+                <div class="text-center">
+                    <p class="text-[9px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-2">Neural Status</p>
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
+                        <p class="text-xs font-mono text-white">SYNCHRONIZED</p>
                     </div>
-                    <div class="w-px h-8 bg-white/10"></div>
-                    <div class="text-center">
-                        <p class="text-[10px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-1">Neural Rank</p>
-                        <p class="text-sm font-mono text-white">TOP 0.1%</p>
-                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-[9px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-2">Global Rank</p>
+                    <p class="text-xs font-mono text-white">#84 / TOP 0.1%</p>
                 </div>
             </div>
 
-            <button onclick="finishOnboarding()" class="w-full btn-premium">
-                Enter Command Center
+            <button onclick="finishOnboarding()" class="w-full btn-premium flex items-center justify-center gap-2">
+                Launch Dashboard <i data-lucide="zap" class="w-4 h-4"></i>
             </button>
         </div>
     </div>
@@ -1187,35 +1187,44 @@
             if (e) e.preventDefault();
             
             const btn = document.getElementById('ob-submit-btn');
+            if (!btn) return;
+            
             const originalHTML = btn.innerHTML;
             
-            const name   = document.getElementById('ob-name').value.trim();
-            const clinic = document.getElementById('ob-clinic').value.trim();
-            const phone  = document.getElementById('ob-phone').value.trim();
-            const dob    = document.getElementById('ob-dob').value;
+            const name   = document.getElementById('ob-name')?.value?.trim();
+            const clinic = document.getElementById('ob-clinic')?.value?.trim();
+            const phone  = document.getElementById('ob-phone')?.value?.trim();
+            const dob    = document.getElementById('ob-dob')?.value;
 
-            // 1. Basic Phone Validation
+            // Validation
+            if (!name || !clinic || !phone) {
+                alert("Please fill in all required fields (Name, Clinic, Phone)");
+                return;
+            }
+
+            // Phone Validation
             const phoneRegex = /^\+?[\d\s\-()]{8,20}$/;
             if (!phoneRegex.test(phone)) {
-                alert("Please enter a valid mobile number (e.g. +1 234 567 8900)");
+                alert("Please enter a valid mobile number (e.g., +1 234 567 8900)");
                 return;
             }
 
             btn.disabled = true;
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...';
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
 
             try {
                 if (!sb) throw new Error("Supabase not initialized");
                 const { data: { user } } = await sb.auth.getUser();
-                if (!user) throw new Error("No user found");
+                if (!user) throw new Error("No user found. Please log in again.");
 
                 const updates = {
                     id:           user.id,
                     full_name:    name,
                     clinic_name:  clinic,
                     phone:        phone,
-                    dob:          dob,
+                    dob:          dob || null,
+                    updated_at:   new Date().toISOString()
                 };
 
                 const { error } = await sb.from('profiles').upsert(updates);
@@ -1226,9 +1235,9 @@
 
                 // Transition to Step 2
                 gsap.to('#onboarding-step-1', {
-                    x: -50,
+                    y: -20,
                     opacity: 0,
-                    duration: 0.6,
+                    duration: 0.5,
                     ease: "power2.in",
                     onComplete: () => {
                         document.getElementById('onboarding-step-1').classList.remove('active');
@@ -1236,32 +1245,38 @@
                         
                         // Count up animation for the "ahead" number
                         const countEl = document.getElementById('ahead-count');
-                        let count = { val: 0 };
-                        gsap.to(count, {
-                            val: 1204,
-                            duration: 2,
-                            ease: "power2.out",
-                            onUpdate: () => {
-                                countEl.innerText = Math.floor(count.val).toLocaleString();
-                            }
-                        });
+                        if (countEl) {
+                            let count = { val: 0 };
+                            // Use a realistic and impressive number
+                            const targetCount = Math.floor(Math.random() * 500) + 2450; 
+                            gsap.to(count, {
+                                val: targetCount,
+                                duration: 3,
+                                ease: "power3.out",
+                                onUpdate: () => {
+                                    countEl.innerText = Math.floor(count.val).toLocaleString();
+                                }
+                            });
+                        }
 
                         gsap.from('#onboarding-step-2 > *', {
-                            x: 50,
+                            y: 30,
                             opacity: 0,
                             duration: 0.8,
-                            stagger: 0.1,
-                            ease: "power2.out"
+                            stagger: 0.15,
+                            ease: "power3.out"
                         });
+                        
+                        if (window.lucide) lucide.createIcons();
                     }
                 });
 
             } catch (err) {
                 console.error("Onboarding Save Error:", err);
-                alert("Critical System Error: " + err.message);
+                alert("Error: " + (err.message || 'Failed to save profile. Please try again.'));
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
             }
         }
 
@@ -1271,15 +1286,29 @@
                 duration: 0.8,
                 ease: "power2.inOut",
                 onComplete: () => {
-                    document.getElementById('onboarding-overlay').classList.remove('active');
+                    const overlay = document.getElementById('onboarding-overlay');
+                    if (overlay) overlay.classList.remove('active');
                 }
             });
         }
 
-        // Attach listener
-        document.addEventListener('DOMContentLoaded', () => {
+        // Attach listeners
+        window.addEventListener('load', () => {
             const form = document.getElementById('onboarding-form');
-            if (form) form.addEventListener('submit', submitOnboarding);
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    submitOnboarding(e);
+                });
+            }
+        });
+        
+        // Also support direct button click
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('ob-submit-btn');
+            if (btn && !btn.hasAttribute('data-listener-attached')) {
+                btn.setAttribute('data-listener-attached', 'true');
+            }
         });
 
         // ── TAB LOGIC ───────────────────────────────────────────────────────
@@ -1341,7 +1370,12 @@
 
         (async function initSubscriptionSystem() {
             try {
-                if (!sb) return;
+                if (!sb) {
+                    console.error('Supabase not initialized');
+                    setTimeout(() => window.location.href = '/auth.html', 2000);
+                    return;
+                }
+                
                 const { data: { session } } = await sb.auth.getSession();
 
                 if (!session) {
@@ -1357,16 +1391,37 @@
 
                 try {
                     const { data: existingProfile, error: fetchError } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                    
                     if (fetchError && fetchError.code === 'PGRST116') {
-                        const { data: newProfile } = await sb.from('profiles').insert([
-                            { id: user.id, email: user.email, plan: 'free' }
-                        ]).select().single();
-                        profile = newProfile;
+                        // Profile doesn't exist, create it
+                        console.log('Creating new profile...');
+                        const newProfileData = {
+                            id: user.id, 
+                            email: user.email,
+                            full_name: user.user_metadata?.full_name || user.user_metadata?.first_name || '',
+                            clinic_name: user.user_metadata?.clinic_name || '',
+                            phone: user.user_metadata?.phone || '',
+                            dob: user.user_metadata?.dob || null,
+                            plan: 'free',
+                            trial_start: new Date().toISOString(),
+                            subscription_end: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        };
+                        
+                        const { data: newProfile, error: createError } = await sb.from('profiles').insert([newProfileData]).select().single();
+                        if (!createError) {
+                            profile = newProfile;
+                        } else {
+                            console.warn('Profile creation error:', createError);
+                        }
                     } else if (!fetchError) {
                         profile = existingProfile;
+                    } else {
+                        console.warn('Profile fetch error:', fetchError);
                     }
                 } catch(profileErr) {
-                    console.warn('Profile fetch failed, using fallback timer from auth session:', profileErr);
+                    console.warn('Profile operation failed:', profileErr);
                 }
 
                 plan = profile?.plan || 'free';
@@ -1376,9 +1431,11 @@
 
                 // ── CHECK FOR ONBOARDING ──
                 const isComplete = profile?.full_name?.trim() && profile?.clinic_name?.trim() && profile?.phone?.trim();
+                console.log('Profile complete:', isComplete, { name: profile?.full_name, clinic: profile?.clinic_name, phone: profile?.phone });
+                
                 if (!isComplete) {
                     console.log("Onboarding triggered: Profile incomplete.");
-                    setTimeout(showOnboarding, 500); // Small delay to ensure DOM is ready
+                    setTimeout(showOnboarding, 800); // Small delay to ensure DOM is ready
                 }
 
                 // 2. Handle PayPal Success Redirect — store 30-day subscription end

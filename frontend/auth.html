@@ -322,112 +322,185 @@ function showPanel(name) {
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
 async function doLogin() {
-    const email = document.getElementById('l-email').value.trim();
-    const pass  = document.getElementById('l-pass').value;
+    const email = document.getElementById('l-email')?.value?.trim();
+    const pass  = document.getElementById('l-pass')?.value;
     const btn   = document.getElementById('btn-login');
 
-    if (!email || !pass) { toast('Please fill in all fields.', 'error'); return; }
-
-    btn.disabled = true;
-    btn.textContent = 'Signing in...';
-
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-
-    if (error) {
-        let msg = error.message;
-        if (msg.includes('Invalid login credentials')) msg = 'Incorrect email or password.';
-        if (msg.includes('Email not confirmed'))        msg = 'Please verify your email first — check your inbox.';
-        toast(msg, 'error');
-        btn.disabled = false;
-        btn.textContent = 'Sign In →';
-        return;
+    if (!email || !pass) { 
+        toast('Please fill in all fields.', 'error'); 
+        return; 
     }
 
-    toast('Login successful! Redirecting...', 'success');
-    setTimeout(() => window.location.href = '/dashboard.html', 900);
+    if (!btn) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Signing in...';
+
+    try {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+        if (error) {
+            let msg = error.message;
+            if (msg.includes('Invalid login credentials')) msg = 'Incorrect email or password.';
+            if (msg.includes('Email not confirmed'))        msg = 'Please verify your email first — check your inbox.';
+            toast(msg, 'error');
+            btn.disabled = false;
+            btn.textContent = originalText;
+            return;
+        }
+
+        toast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = '/dashboard.html', 900);
+    } catch(err) {
+        console.error('Login error:', err);
+        toast('An error occurred. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 }
 
 // ── SIGNUP ────────────────────────────────────────────────────────────────────
 async function doSignup() {
-    const fname  = document.getElementById('s-fname').value.trim();
-    const lname  = document.getElementById('s-lname').value.trim();
-    const clinic = document.getElementById('s-clinic').value.trim();
-    const phone  = document.getElementById('s-phone').value.trim();
-    const dob    = document.getElementById('s-dob').value;
-    const email  = document.getElementById('s-email').value.trim();
-    const pass   = document.getElementById('s-pass').value;
+    const fname  = document.getElementById('s-fname')?.value?.trim();
+    const lname  = document.getElementById('s-lname')?.value?.trim();
+    const clinic = document.getElementById('s-clinic')?.value?.trim();
+    const phone  = document.getElementById('s-phone')?.value?.trim();
+    const dob    = document.getElementById('s-dob')?.value;
+    const email  = document.getElementById('s-email')?.value?.trim();
+    const pass   = document.getElementById('s-pass')?.value;
     const btn    = document.getElementById('btn-signup');
 
-    if (!fname || !clinic || !phone || !email || !pass) { toast('Please fill in all required fields.', 'error'); return; }
-    if (pass.length < 6) { toast('Password must be at least 6 characters.', 'error'); return; }
+    // Validation
+    if (!fname || !clinic || !phone || !email || !pass) { 
+        toast('Please fill in all required fields.', 'error'); 
+        return; 
+    }
+    
+    if (pass.length < 6) { 
+        toast('Password must be at least 6 characters.', 'error'); 
+        return; 
+    }
 
-    btn.disabled = true;
-    btn.textContent = 'Creating account...';
-
-    const { data, error } = await sb.auth.signUp({
-        email, password: pass,
-        options: {
-            data: { first_name: fname, last_name: lname, clinic_name: clinic, phone, dob },
-            emailRedirectTo: window.location.origin + '/dashboard.html'
-        }
-    });
-
-    if (error) {
-        let msg = error.message;
-        if (msg.includes('already registered')) msg = 'This email is already registered. Try signing in.';
-        toast(msg, 'error');
-        btn.disabled = false;
-        btn.textContent = 'Create Account →';
+    // Validate phone format
+    const phoneRegex = /^\+?[\d\s\-()]{8,20}$/;
+    if (!phoneRegex.test(phone)) {
+        toast('Please enter a valid mobile number (e.g., +1 234 567 8900).', 'error');
         return;
     }
 
-    // Save extra profile data to profiles table
-    if (data.user) {
-        try {
-            await sb.from('profiles').upsert({
-                id: data.user.id,
-                email,
-                full_name: `${fname} ${lname}`.trim(),
-                clinic_name: clinic,
-                phone,
-                dob,
-                plan: 'free',
-                trial_start: new Date().toISOString()
-            });
-        } catch(e) { console.warn('Profile save failed:', e); }
-    }
+    if (!btn) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Creating account...';
 
-    if (data.session) {
-        toast('Account created! Entering dashboard...', 'success');
-        setTimeout(() => window.location.href = '/dashboard.html', 900);
-    } else {
-        toast('Account created! Check your email to confirm then sign in.', 'success');
+    try {
+        const { data, error } = await sb.auth.signUp({
+            email, password: pass,
+            options: {
+                data: { 
+                    first_name: fname, 
+                    last_name: lname, 
+                    full_name: `${fname} ${lname}`.trim(),
+                    clinic_name: clinic, 
+                    phone, 
+                    dob 
+                },
+                emailRedirectTo: window.location.origin + '/dashboard.html'
+            }
+        });
+
+        if (error) {
+            let msg = error.message;
+            if (msg.includes('already registered')) msg = 'This email is already registered. Try signing in.';
+            if (msg.includes('invalid_grant')) msg = 'Email already registered. Try logging in.';
+            toast(msg, 'error');
+            btn.disabled = false;
+            btn.textContent = originalText;
+            return;
+        }
+
+        // Save extended profile data immediately (for free trial users)
+        if (data.user) {
+            try {
+                const trialStart = new Date().toISOString();
+                const trialEnd = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
+                
+                await sb.from('profiles').upsert({
+                    id: data.user.id,
+                    email,
+                    full_name: `${fname} ${lname}`.trim(),
+                    clinic_name: clinic,
+                    phone,
+                    dob: dob || null,
+                    plan: 'free',
+                    trial_start: trialStart,
+                    subscription_end: trialEnd,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                });
+            } catch(profileErr) { 
+                console.warn('Profile creation warning:', profileErr);
+            }
+        }
+
+        if (data.session) {
+            toast('Account created! Welcome to Catch.ai. Entering dashboard...', 'success');
+            setTimeout(() => window.location.href = '/dashboard.html', 900);
+        } else {
+            toast('Account created! Check your email to confirm then sign in.', 'success');
+            btn.disabled = false;
+            btn.textContent = originalText;
+            setTimeout(() => showPanel('login'), 2500);
+        }
+    } catch(err) {
+        console.error('Signup error:', err);
+        toast('An error occurred. Please try again.', 'error');
         btn.disabled = false;
-        btn.textContent = 'Create Account →';
-        setTimeout(() => showPanel('login'), 2500);
+        btn.textContent = originalText;
     }
 }
 
 // ── SOCIAL AUTH ───────────────────────────────────────────────────────────────
 async function doSocial(provider) {
-    toast('Opening ' + provider + '...', 'info');
-    const { error } = await sb.auth.signInWithOAuth({
-        provider,
-        options: { redirectTo: window.location.origin + '/dashboard.html' }
-    });
-    if (error) toast(error.message, 'error');
+    try {
+        toast(`Opening ${provider}...`, 'info');
+        const { error } = await sb.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo: window.location.origin + '/dashboard.html' }
+        });
+        if (error) {
+            console.error(`${provider} auth error:`, error);
+            toast(`${provider} login failed. Please try another method.`, 'error');
+        }
+    } catch(err) {
+        console.error('Social auth error:', err);
+        toast('An error occurred. Please try again.', 'error');
+    }
 }
 
 // ── FORGOT PASSWORD ───────────────────────────────────────────────────────────
 async function triggerForgotPassword(e) {
     e.preventDefault();
-    const email = document.getElementById('l-email').value.trim();
-    if (!email) { toast('Enter your email above first, then click Forgot.', 'error'); return; }
-    const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/auth.html'
-    });
-    if (error) toast(error.message, 'error');
-    else toast('Password reset link sent to ' + email, 'success');
+    const email = document.getElementById('l-email')?.value?.trim();
+    if (!email) { 
+        toast('Enter your email above first, then click Forgot.', 'error'); 
+        return; 
+    }
+    
+    try {
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/auth.html'
+        });
+        if (error) {
+            console.error('Reset email error:', error);
+            toast(error.message || 'Failed to send reset email.', 'error');
+        } else {
+            toast('Password reset link sent to ' + email + '. Check your inbox.', 'success');
+        }
+    } catch(err) {
+        console.error('Forgot password error:', err);
+        toast('An error occurred. Please try again.', 'error');
+    }
 }
 
 // ── SYSTEM CLOCK ─────────────────────────────────────────────────────────────
