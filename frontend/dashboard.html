@@ -889,8 +889,20 @@
 
     <!-- Scripts -->
     <script>
+        // ── SUPABASE CONFIG ──────────────────────────────────────────────────
+        const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
+        const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
         // Initialize Icons
         lucide.createIcons();
+
+        async function handleSignOut() {
+            if (!sb) return;
+            const { error } = await sb.auth.signOut();
+            if (error) console.error('Logout error:', error);
+            window.location.href = '/auth.html';
+        }
 
         // ── CONNECTIONS TAB HELPERS ─────────────────────────────────────────
         function copyToClipboard(elementId) {
@@ -980,12 +992,9 @@
         }
 
         async function saveProfile() {
-            const sb2 = window.supabase.createClient(
-                'https://wbibehdgvmcrpgzaxkvu.supabase.co',
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk'
-            );
-            const { data: { user } } = await sb2.auth.getUser();
-            if (!user) { alert('Not logged in.'); return; }
+            if (!sb) { alert('System initializing, please wait...'); return; }
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) { alert('Not logged in.'); window.location.href = '/auth.html'; return; }
 
             const updates = {
                 id:           user.id,
@@ -995,8 +1004,12 @@
                 dob:          document.getElementById('profile-dob')?.value            || null,
             };
 
-            const { error } = await sb2.from('profiles').upsert(updates);
-            if (error) { alert('Save failed: ' + error.message); return; }
+            const { error } = await sb.from('profiles').upsert(updates);
+            if (error) { 
+                console.error('Save failed:', error);
+                alert('Save failed: ' + error.message); 
+                return; 
+            }
 
             // Update header live
             const headerName   = document.getElementById('header-user-name');
@@ -1009,11 +1022,12 @@
             if (profileDisplayClinic) profileDisplayClinic.innerText = updates.clinic_name;
 
             const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
             btn.classList.replace('bg-[#FF4500]', 'bg-[#10b981]');
             lucide.createIcons();
             setTimeout(() => {
-                btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Save Changes';
+                btn.innerHTML = originalHTML;
                 btn.classList.replace('bg-[#10b981]', 'bg-[#FF4500]');
                 lucide.createIcons();
             }, 2500);
@@ -1078,11 +1092,7 @@
 
         (async function initSubscriptionSystem() {
             try {
-                const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
-                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
-                
-                if (!window.supabase) return;
-                const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                if (!sb) return;
                 const { data: { session } } = await sb.auth.getSession();
 
                 if (!session) {
