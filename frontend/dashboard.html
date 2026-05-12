@@ -391,7 +391,17 @@
                     <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Clinic Name</label>
                     <input type="text" id="ob-clinic" required placeholder="Elite Dental Care" class="onboarding-input">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Gender</label>
+                        <select id="ob-gender" required class="onboarding-input">
+                            <option value="" disabled selected>Select gender</option>
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                            <option value="non-binary">Non-binary</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
                     <div>
                         <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Mobile Number</label>
                         <input type="tel" id="ob-phone" required placeholder="+1 234 567 890" class="onboarding-input">
@@ -411,8 +421,8 @@
         <div id="onboarding-step-2" class="onboarding-card onboarding-step text-center">
             <div class="mb-10">
                 <div class="ahead-number" id="ahead-count">1,204</div>
-                <h3 class="text-2xl font-heading text-white mb-4">Dental Practices Behind You</h3>
-                <p class="text-white/50 leading-relaxed text-sm">Welcome to the elite 0.1%. Your Neural Agent is now calibrated to your clinic's DNA. Every missed call is now an opportunity caught.</p>
+                <h3 class="text-3xl font-heading text-white mb-4">Congratulations!</h3>
+                <p class="text-white/50 leading-relaxed text-sm">You are now ahead of <span id="welcome-clinic-count">1,204</span> dental clinics. Catch.ai has officially connected with your practice and upgraded your clinic to elite performance.</p>
             </div>
             
             <div class="grid grid-cols-2 gap-4 py-8 border-y border-white/5 mb-8">
@@ -989,6 +999,15 @@
                                 <input type="text" id="profile-clinic" placeholder="Your clinic name" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#FF4500] transition-colors">
                             </div>
                             <div>
+                                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Gender</label>
+                                <select id="profile-gender" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#FF4500] transition-colors">
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                    <option value="non-binary">Non-binary</option>
+                                    <option value="prefer-not-to-say">Prefer not to say</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Mobile Number</label>
                                 <input type="tel" id="profile-phone" placeholder="+1 555 000 0000" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#FF4500] transition-colors">
                             </div>
@@ -1087,6 +1106,7 @@
             const clinic  = profile?.clinic_name || 'Your Clinic';
             const email   = user?.email || '';
             const phone   = profile?.phone || '';
+            const gender  = profile?.gender || user?.user_metadata?.gender || 'Prefer not to say';
             const dob     = profile?.dob || '';
             const plan    = (profile?.plan || 'free').charAt(0).toUpperCase() + (profile?.plan || 'free').slice(1);
 
@@ -1103,13 +1123,20 @@
                 'profile-display-email':  email,
                 'profile-name':           name,
                 'profile-clinic':         clinic,
+                'profile-gender':         gender,
                 'profile-phone':          phone,
                 'profile-dob':            dob,
                 'profile-email':          email,
             };
             for (const [id, val] of Object.entries(els)) {
                 const el = document.getElementById(id);
-                if (el) { el.value !== undefined && el.tagName === 'INPUT' ? el.value = val : el.innerText = val; }
+                if (!el) continue;
+                const tag = el.tagName;
+                if ((tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') && el.value !== undefined) {
+                    el.value = val;
+                } else {
+                    el.innerText = val;
+                }
             }
 
             // Plan badge
@@ -1135,6 +1162,7 @@
                 id:           user.id,
                 full_name:    document.getElementById('profile-name')?.value?.trim()   || '',
                 clinic_name:  document.getElementById('profile-clinic')?.value?.trim() || '',
+                gender:       document.getElementById('profile-gender')?.value?.trim()|| '',
                 phone:        document.getElementById('profile-phone')?.value?.trim()  || '',
                 dob:          document.getElementById('profile-dob')?.value            || null,
             };
@@ -1170,10 +1198,46 @@
 
 
         // ── ONBOARDING LOGIC ────────────────────────────────────────────────
-        function showOnboarding() {
+        function showOnboarding(step = '1') {
             const overlay = document.getElementById('onboarding-overlay');
-            if (overlay) overlay.classList.add('active');
-            
+            const step1 = document.getElementById('onboarding-step-1');
+            const step2 = document.getElementById('onboarding-step-2');
+            if (!overlay || !step1 || !step2) return;
+
+            overlay.classList.add('active');
+            if (step === '2') {
+                step1.classList.remove('active');
+                step2.classList.add('active');
+            } else {
+                step1.classList.add('active');
+                step2.classList.remove('active');
+            }
+
+            // Remember that welcome was shown after first login
+            if (step === '2') {
+                localStorage.setItem('catch_welcome_shown', 'true');
+            }
+
+            // If showing step 2 directly, animate the clinic count immediately
+            if (step === '2') {
+                const countEl = document.getElementById('ahead-count');
+                const welcomeCountEl = document.getElementById('welcome-clinic-count');
+                const targetCount = Math.floor(Math.random() * 500) + 2450;
+                if (countEl) {
+                    let count = { val: 0 };
+                    gsap.to(count, {
+                        val: targetCount,
+                        duration: 2.5,
+                        ease: "power3.out",
+                        onUpdate: () => {
+                            const text = Math.floor(count.val).toLocaleString();
+                            countEl.innerText = text;
+                            if (welcomeCountEl) welcomeCountEl.innerText = text;
+                        }
+                    });
+                }
+            }
+
             // GSAP Entrance
             gsap.from('.onboarding-card', {
                 y: 50,
@@ -1193,12 +1257,13 @@
             
             const name   = document.getElementById('ob-name')?.value?.trim();
             const clinic = document.getElementById('ob-clinic')?.value?.trim();
+            const gender = document.getElementById('ob-gender')?.value;
             const phone  = document.getElementById('ob-phone')?.value?.trim();
             const dob    = document.getElementById('ob-dob')?.value;
 
             // Validation
-            if (!name || !clinic || !phone) {
-                alert("Please fill in all required fields (Name, Clinic, Phone)");
+            if (!name || !clinic || !gender || !phone) {
+                alert("Please fill in all required fields (Name, Clinic, Gender, Phone)");
                 return;
             }
 
@@ -1222,6 +1287,7 @@
                     id:           user.id,
                     full_name:    name,
                     clinic_name:  clinic,
+                    gender:       gender || 'Prefer not to say',
                     phone:        phone,
                     dob:          dob || null,
                     updated_at:   new Date().toISOString()
@@ -1246,6 +1312,7 @@
                         // Count up animation for the "ahead" number
                         const countEl = document.getElementById('ahead-count');
                         if (countEl) {
+                            const welcomeCountEl = document.getElementById('welcome-clinic-count');
                             let count = { val: 0 };
                             // Use a realistic and impressive number
                             const targetCount = Math.floor(Math.random() * 500) + 2450; 
@@ -1254,7 +1321,9 @@
                                 duration: 3,
                                 ease: "power3.out",
                                 onUpdate: () => {
-                                    countEl.innerText = Math.floor(count.val).toLocaleString();
+                                    const text = Math.floor(count.val).toLocaleString();
+                                    countEl.innerText = text;
+                                    if (welcomeCountEl) welcomeCountEl.innerText = text;
                                 }
                             });
                         }
@@ -1281,6 +1350,7 @@
         }
 
         function finishOnboarding() {
+            localStorage.setItem('catch_welcome_shown', 'true');
             gsap.to('#onboarding-overlay', {
                 opacity: 0,
                 duration: 0.8,
@@ -1430,12 +1500,15 @@
                 populateProfileUI(profile, user);
 
                 // ── CHECK FOR ONBOARDING ──
-                const isComplete = profile?.full_name?.trim() && profile?.clinic_name?.trim() && profile?.phone?.trim();
-                console.log('Profile complete:', isComplete, { name: profile?.full_name, clinic: profile?.clinic_name, phone: profile?.phone });
+                const isComplete = profile?.full_name?.trim() && profile?.clinic_name?.trim() && profile?.gender?.trim() && profile?.phone?.trim();
+                console.log('Profile complete:', isComplete, { name: profile?.full_name, clinic: profile?.clinic_name, gender: profile?.gender, phone: profile?.phone });
                 
                 if (!isComplete) {
                     console.log("Onboarding triggered: Profile incomplete.");
-                    setTimeout(showOnboarding, 800); // Small delay to ensure DOM is ready
+                    setTimeout(() => showOnboarding('1'), 800); // Small delay to ensure DOM is ready
+                } else if (!localStorage.getItem('catch_welcome_shown')) {
+                    console.log("Showing welcome popup after login.");
+                    setTimeout(() => showOnboarding('2'), 800);
                 }
 
                 // 2. Handle PayPal Success Redirect — store 30-day subscription end

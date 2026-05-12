@@ -49,7 +49,8 @@
 
         /* Inputs */
         .field { position: relative; margin-bottom: 18px; }
-        .field input {
+        .field input,
+        .field select {
             width: 100%;
             padding: 15px 18px;
             background: rgba(255,255,255,0.04);
@@ -61,12 +62,14 @@
             outline: none;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
-        .field input:focus {
+        .field input:focus,
+        .field select:focus {
             border-color: #FF4500;
             box-shadow: 0 0 0 3px rgba(255,69,0,0.12);
             background: rgba(255,69,0,0.03);
         }
         .field input::placeholder { color: rgba(255,255,255,0.28); }
+        .field select { appearance: none; -webkit-appearance: none; -moz-appearance: none; }
         .field label {
             display: block;
             font-size: 11px;
@@ -251,6 +254,16 @@
                 <input type="text" id="s-clinic" placeholder="e.g. Smith Dental Care">
             </div>
             <div class="field">
+                <label for="s-gender">Gender</label>
+                <select id="s-gender">
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                    <option value="non-binary">Non-binary</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+            </div>
+            <div class="field">
                 <label for="s-phone">Mobile Number</label>
                 <input type="tel" id="s-phone" placeholder="+1 555 000 0000">
             </div>
@@ -364,6 +377,7 @@ async function doSignup() {
     const fname  = document.getElementById('s-fname')?.value?.trim();
     const lname  = document.getElementById('s-lname')?.value?.trim();
     const clinic = document.getElementById('s-clinic')?.value?.trim();
+    const gender = document.getElementById('s-gender')?.value;
     const phone  = document.getElementById('s-phone')?.value?.trim();
     const dob    = document.getElementById('s-dob')?.value;
     const email  = document.getElementById('s-email')?.value?.trim();
@@ -371,7 +385,7 @@ async function doSignup() {
     const btn    = document.getElementById('btn-signup');
 
     // Validation
-    if (!fname || !clinic || !phone || !email || !pass) { 
+    if (!fname || !clinic || !gender || !phone || !email || !pass) { 
         toast('Please fill in all required fields.', 'error'); 
         return; 
     }
@@ -402,6 +416,7 @@ async function doSignup() {
                     last_name: lname, 
                     full_name: `${fname} ${lname}`.trim(),
                     clinic_name: clinic, 
+                    gender,
                     phone, 
                     dob 
                 },
@@ -430,6 +445,7 @@ async function doSignup() {
                     email,
                     full_name: `${fname} ${lname}`.trim(),
                     clinic_name: clinic,
+                    gender,
                     phone,
                     dob: dob || null,
                     plan: 'free',
