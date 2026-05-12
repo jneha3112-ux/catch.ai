@@ -53,6 +53,60 @@ app.get('/api/stats', async (req, res) => {
   });
 });
 
+// Vapi Proxy Endpoint
+app.post('/api/vapi/call', async (req, res) => {
+    const { phoneNumber } = req.body;
+    const VAPI_KEY = process.env.VAPI_KEY;
+
+    if (!phoneNumber) {
+        return res.status(400).json({ success: false, error: 'Phone number is required' });
+    }
+
+    try {
+        const payload = {
+            phoneNumberId: "58504387-bfed-4baf-bb45-1fbae6e2a3ec",
+            customer: { number: phoneNumber },
+            assistant: {
+                firstMessage: "Hello! This is Sarah from Catch AI Dental. I saw you requested a callback on our website. How can I help you today?",
+                model: {
+                    provider: "openai",
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are Sarah, a highly professional AI receptionist for Catch AI Dental clinic. You are returning a call to a patient who just visited our website. Be extremely warm, ask how you can help them, and attempt to schedule them for a consultation this week. If they ask about pricing, say that it varies but consultations are free. Be concise, polite, and conversational."
+                        }
+                    ]
+                },
+                voice: {
+                    provider: "openai",
+                    voiceId: "alloy"
+                }
+            }
+        };
+
+        const response = await fetch("https://api.vapi.ai/call/phone", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${VAPI_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || data.error || "Failed to initiate call via Vapi");
+        }
+
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error("Vapi Proxy Error:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Health check endpoint
 app.get('/', (req, res) => {
   res.send('Clinic AI Backend is running.');
