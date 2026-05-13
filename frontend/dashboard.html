@@ -312,11 +312,13 @@
 
         .onboarding-card {
             width: 100%;
-            max-width: 900px;
-            background: rgba(10, 10, 10, 0.85);
-            border: 1px solid rgba(255, 69, 0, 0.2);
-            border-radius: 2.5rem;
-            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), 0 0 100px rgba(255, 69, 0, 0.05);
+            max-width: 1000px;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.6);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -324,22 +326,22 @@
         }
 
         @media (min-width: 768px) {
-            .onboarding-card { flex-direction: row; }
-            .onboarding-left { flex: 1.2; padding: 48px; }
+            .onboarding-card { flex-direction: row; height: 600px; }
+            .onboarding-left { flex: 1.1; padding: 60px; overflow-y: auto; }
             .onboarding-right { 
                 flex: 1; 
-                padding: 48px; 
-                background: linear-gradient(135deg, rgba(255,69,0,0.1), transparent), url('premium_saas_onboarding_bg_1778660655282.png');
+                padding: 60px; 
+                background: linear-gradient(to right, rgba(10,10,10,0.9), rgba(10,10,10,0.2)), url('ultra_premium_onboarding_bg_1778661751725.png');
                 background-size: cover;
                 background-position: center;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
-                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                justify-content: flex-end;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
             }
         }
 
-        .onboarding-left { padding: 32px; }
+        .onboarding-left { padding: 40px; }
         .onboarding-right { display: none; }
         @media (min-width: 768px) { .onboarding-right { display: flex; } }
 
@@ -1260,12 +1262,10 @@
                 id:           user.id,
                 full_name:    document.getElementById('profile-name')?.value?.trim()   || '',
                 clinic_name:  document.getElementById('profile-clinic')?.value?.trim() || '',
+                gender:       document.getElementById('profile-gender')?.value?.trim()|| '',
                 phone:        document.getElementById('profile-phone')?.value?.trim()  || '',
                 dob:          document.getElementById('profile-dob')?.value            || null,
             };
-
-            const genderVal = document.getElementById('profile-gender')?.value?.trim();
-            if (genderVal) updates.gender = genderVal;
 
             const { error } = await sb.from('profiles').upsert(updates);
             if (error) { 
@@ -1391,13 +1391,11 @@
                     id:           user.id,
                     full_name:    name,
                     clinic_name:  clinic,
+                    gender:       gender || 'Prefer not to say',
                     phone:        phone,
                     dob:          dob || null,
                     updated_at:   new Date().toISOString()
                 };
-
-                // Only add gender if it won't break the schema (defensive check)
-                if (gender) updates.gender = gender;
 
                 const { error } = await sb.from('profiles').upsert(updates);
                 if (error) throw error;
