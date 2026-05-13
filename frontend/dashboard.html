@@ -36,8 +36,19 @@
         })();
 
         async function handleSignOut() {
-            try { await supabase.auth.signOut(); } catch(e) { console.error('Signout error:', e); }
-            window.location.replace('auth.html');
+            try { 
+                await supabase.auth.signOut(); 
+            } catch(e) { 
+                console.error('Signout error:', e); 
+            }
+            // Force wipe Supabase local storage if API fails
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('sb-')) {
+                    localStorage.removeItem(key);
+                }
+            }
+            window.location.href = 'auth.html';
         }
     </script>
 
@@ -1610,8 +1621,8 @@
                 // Fallback to remove "Loading..." if crash occurs
                 const headerName = document.getElementById('header-user-name');
                 const headerClinic = document.getElementById('header-clinic-name');
-                if (headerName && headerName.innerText === 'Loading...') headerName.innerText = 'USER';
-                if (headerClinic && headerClinic.innerText === 'Connecting...') headerClinic.innerText = 'System Offline';
+                if (headerName && headerName.innerText.toLowerCase().includes('loading')) headerName.innerText = 'USER';
+                if (headerClinic && headerClinic.innerText.toLowerCase().includes('connecting')) headerClinic.innerText = 'System Offline';
             }
         })();
 
