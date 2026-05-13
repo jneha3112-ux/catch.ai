@@ -312,38 +312,76 @@
 
         .onboarding-card {
             width: 100%;
-            max-width: 1000px;
-            background: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 3rem;
-            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.6);
+            max-width: 1100px;
+            background: rgba(8, 8, 8, 0.85);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 3.5rem;
+            box-shadow: 0 100px 200px rgba(0, 0, 0, 0.8), 0 0 100px rgba(255, 69, 0, 0.05);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            animation: card-float 6s ease-in-out infinite;
+        }
+
+        @keyframes card-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         @media (min-width: 768px) {
-            .onboarding-card { flex-direction: row; height: 600px; }
-            .onboarding-left { flex: 1.1; padding: 60px; overflow-y: auto; }
+            .onboarding-card { flex-direction: row; height: 650px; }
+            .onboarding-left { flex: 1.2; padding: 70px; overflow-y: auto; z-index: 2; position: relative; }
             .onboarding-right { 
                 flex: 1; 
                 padding: 60px; 
-                background: linear-gradient(to right, rgba(10,10,10,0.9), rgba(10,10,10,0.2)), url('ultra_premium_onboarding_bg_1778661751725.png');
+                background: linear-gradient(135deg, rgba(255,69,0,0.15), transparent), url('assets/onboarding-bg.png');
                 background-size: cover;
                 background-position: center;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
                 border-left: 1px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+                overflow: hidden;
             }
+            .onboarding-right::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+                z-index: 1;
+            }
+            .onboarding-right > * { z-index: 2; position: relative; }
         }
 
         .onboarding-left { padding: 40px; }
         .onboarding-right { display: none; }
         @media (min-width: 768px) { .onboarding-right { display: flex; } }
+
+        .data-chip {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .data-chip:hover {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: rgba(255, 69, 0, 0.3);
+            color: white;
+            transform: scale(1.05);
+        }
 
         .onboarding-step { display: none; }
         .onboarding-step.active { display: block; }
@@ -452,39 +490,34 @@
                     </button>
                 </form>
             </div>
-            <div class="onboarding-right relative">
-                <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-                <div class="relative z-10">
-                    <div class="inline-block px-3 py-1 bg-[#FF4500]/20 border border-[#FF4500]/30 rounded-full mb-6">
-                        <span class="text-[9px] font-bold text-[#FF4500] uppercase tracking-widest">Neural Calibration</span>
+            <div class="onboarding-right">
+                <div class="mb-12">
+                    <div class="data-chip">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#FF4500]"></span>
+                        SYNC_READY: 100%
                     </div>
-                    <h3 class="text-3xl font-heading text-white mb-6 leading-tight">Join the Top 0.1% of Dental Practices</h3>
+                    <div class="data-chip">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+                        NEURAL_CORE: ACTIVE
+                    </div>
+                    <h3 class="text-4xl font-heading text-white mb-6 leading-tight">Scale Your Practice Automatically.</h3>
                     <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                                <i data-lucide="phone-forwarded" class="w-4 h-4 text-[#FF4500]"></i>
+                        <div class="flex items-start gap-5 group">
+                            <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-[#FF4500]/30 transition-all">
+                                <i data-lucide="shield-check" class="w-5 h-5 text-[#FF4500]"></i>
                             </div>
                             <div>
-                                <p class="text-xs font-bold text-white mb-1">Zero Missed Calls</p>
-                                <p class="text-[10px] text-white/40 leading-relaxed">Our AI receptionist never sleeps, catching 100% of missed opportunities.</p>
+                                <p class="text-sm font-bold text-white mb-1">HIPAA Compliant</p>
+                                <p class="text-xs text-white/40 leading-relaxed">Enterprise-grade security protecting every patient interaction.</p>
                             </div>
                         </div>
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                                <i data-lucide="calendar" class="w-4 h-4 text-[#FF4500]"></i>
+                        <div class="flex items-start gap-5 group">
+                            <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-[#FF4500]/30 transition-all">
+                                <i data-lucide="cpu" class="w-5 h-5 text-[#FF4500]"></i>
                             </div>
                             <div>
-                                <p class="text-xs font-bold text-white mb-1">Auto-Scheduling</p>
-                                <p class="text-[10px] text-white/40 leading-relaxed">Syncs directly with your calendar to book patients instantly.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                                <i data-lucide="trending-up" class="w-4 h-4 text-[#FF4500]"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-white mb-1">Revenue Recovery</p>
-                                <p class="text-[10px] text-white/40 leading-relaxed">Clinics using Catch.ai see an average revenue increase of 22%.</p>
+                                <p class="text-sm font-bold text-white mb-1">Neural Processing</p>
+                                <p class="text-xs text-white/40 leading-relaxed">Advanced language models trained specifically for dentistry.</p>
                             </div>
                         </div>
                     </div>
