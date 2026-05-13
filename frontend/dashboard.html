@@ -23,34 +23,51 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
 
         console.log("Dashboard: Current URL:", window.location.href);
-        console.log("Auth: Current URL:", window.location.href);
-        console.log("Dashboard: Initializing Supabase client...");
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-        });
-        console.log("Dashboard: Supabase client created.");
+        
+        let sb = null;
+        try {
+            console.log("Dashboard: Initializing Supabase client...");
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+            });
+            console.log("Dashboard: Supabase client created.");
+        } catch (e) {
+            console.error("Dashboard: Failed to initialize Supabase client:", e);
+        }
 
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') window.location.replace('auth.html');
-        });
+        if (!sb || !sb.auth) {
+            console.error("Dashboard: Supabase client or auth module failed to initialize. Dashboard functions will be limited.");
+        }
 
-        (async () => {
-            console.log("Dashboard: Checking session...");
-            const { data: { session } } = await supabase.auth.getSession();
-            console.log("Dashboard: Session check result:", session ? "Session active" : "No session");
-            if (!session) {
-                console.log("Dashboard: Redirecting to auth.html (no session)");
-                window.location.replace('auth.html');
-            }
-        })();
+        if (sb) {
+            sb.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT') window.location.replace('auth.html');
+            });
+
+            (async () => {
+                try {
+                    console.log("Dashboard: Checking session...");
+                    const { data: { session } } = await sb.auth.getSession();
+                    console.log("Dashboard: Session check result:", session ? "Session active" : "No session");
+                    if (!session) {
+                        console.log("Dashboard: Redirecting to auth.html (no session)");
+                        window.location.replace('auth.html');
+                    }
+                } catch (sessionErr) {
+                    console.error("Dashboard: Session check failed:", sessionErr);
+                }
+            })();
+        }
 
         async function handleSignOut() {
             console.log("Dashboard: handleSignOut called.");
             console.log("Dashboard: LocalStorage before logout:", Object.keys(localStorage).filter(k => k.startsWith('sb-')));
             try { 
-                console.log("Dashboard: Calling supabase.auth.signOut()...");
-                await supabase.auth.signOut(); 
-                console.log("Dashboard: supabase.auth.signOut() successful.");
+                if (sb) {
+                    console.log("Dashboard: Calling sb.auth.signOut()...");
+                    await sb.auth.signOut(); 
+                    console.log("Dashboard: sb.auth.signOut() successful.");
+                }
             } catch(e) { 
                 console.error('Dashboard: Signout error:', e); 
             }
@@ -1077,13 +1094,19 @@
         // Initialize Icons Safely
         if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
-        // Use the globally defined 'supabase' client from line 25
-        const sb = supabase; 
+        // sb is already defined globally in the Auth Guard block above.
+        // We ensure it's available for the rest of the script.
+        if (!window.sb && typeof sb !== 'undefined') window.sb = sb;
+        const mainSb = window.sb || sb; 
+        const sb = mainSb; // Re-declare locally for functions in this block
 
-        // handleSignOut is already defined at line 38, but we can keep it here if it's called from here
-        // Actually, let's remove the duplicate and ensure the one at line 38 is used.
-        // Wait, line 38 uses window.location.replace('/auth.html'), which is good.
-        // I'll just keep the sb = supabase alias to avoid changing too much code for now.
+        // If sb is still missing, attempt a recovery initialization
+        if (!sb) {
+            console.warn("Dashboard: Main Supabase client missing. Attempting recovery...");
+            try {
+                window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch(e) { console.error("Recovery failed:", e); }
+        }
 
         // ── CONNECTIONS TAB HELPERS ─────────────────────────────────────────
         function copyToClipboard(elementId) {
@@ -1473,9 +1496,10 @@
         (async function initSubscriptionSystem() {
             console.log("Dashboard: initSubscriptionSystem starting...");
             try {
-                if (!sb) {
-                    console.error('Supabase not initialized');
-                    setTimeout(() => window.location.href = '/auth.html', 2000);
+                if (!sb || !sb.auth) {
+                    console.error('Supabase auth module missing in initSubscriptionSystem');
+                    const headerName = document.getElementById('header-user-name');
+                    if (headerName) headerName.innerText = 'USER';
                     return;
                 }
                 
