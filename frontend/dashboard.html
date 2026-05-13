@@ -690,23 +690,23 @@
             <!-- Tab Navigation -->
             <div class="space-y-2 mb-10 gsap-reveal flex-1">
                 <button onclick="switchTab('overview')" id="nav-overview" class="w-full sidebar-tab active">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-white/60 transition-colors"></i>
-                    <span class="text-sm font-semibold tracking-wide">Overview</span>
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
                 </button>
                 
                 <button onclick="switchTab('inbox')" id="nav-inbox" class="w-full sidebar-tab">
-                    <i data-lucide="inbox" class="w-5 h-5 text-white/60 transition-colors"></i>
-                    <span class="text-sm font-semibold tracking-wide">Call Inbox</span>
+                    <i data-lucide="inbox"></i>
+                    <span>Call Inbox</span>
                 </button>
 
                 <button onclick="switchTab('kb')" id="nav-kb" class="w-full sidebar-tab">
-                    <i data-lucide="brain-circuit" class="w-5 h-5 text-white/60 transition-colors"></i>
-                    <span class="text-sm font-semibold tracking-wide">Knowledge Base</span>
+                    <i data-lucide="brain-circuit"></i>
+                    <span>Knowledge Base</span>
                 </button>
 
                 <button onclick="switchTab('connections')" id="nav-connections" class="w-full sidebar-tab">
-                    <i data-lucide="plug" class="w-5 h-5 text-white/60 transition-colors"></i>
-                    <span class="text-sm font-semibold tracking-wide">Connections</span>
+                    <i data-lucide="plug"></i>
+                    <span>Connections</span>
                     <span class="ml-auto text-[9px] font-bold bg-[#10b981]/20 text-[#10b981] px-2 py-0.5 rounded-full border border-[#10b981]/30">New</span>
                 </button>
 
@@ -770,12 +770,11 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Recaptured</p>
-                                <h3 class="text-3xl font-heading text-white">$12,840</h3>
+                                <h3 class="text-3xl font-heading text-white" id="stat-revenue">$0</h3>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded">+22%</span>
-                            <span class="text-[10px] text-white/20">Growth</span>
+                            <span class="text-[10px] text-white/20">Awaiting Calls</span>
                         </div>
                     </div>
 
@@ -788,11 +787,11 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Missed</p>
-                                <h3 class="text-3xl font-heading text-white">142</h3>
+                                <h3 class="text-3xl font-heading text-white" id="stat-calls">0</h3>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded">100% Caught</span>
+                            <span class="text-[10px] text-white/20">Real-time tracking</span>
                         </div>
                     </div>
 
@@ -822,12 +821,12 @@
                                 <i data-lucide="award" class="w-6 h-6 text-emerald-400"></i>
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Global Rank</p>
-                                <h3 class="text-3xl font-heading text-white">#84</h3>
+                                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">System Rank</p>
+                                <h3 class="text-3xl font-heading text-white">A+</h3>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-white/40 uppercase">Top 0.1% Globally</span>
+                            <span class="text-[10px] text-white/40 uppercase">Neural Optimized</span>
                         </div>
                     </div>
                 </div>
@@ -847,7 +846,7 @@
                             </div>
                         </div>
                         <div class="flex-1 rounded-3xl overflow-hidden relative group border border-white/5">
-                            <img src="neural_data_viz_widget_1778663275847.png" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[2000ms]" alt="Neural Viz">
+                            <img src="assets/neural-viz.png" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-[2000ms]" alt="Neural Viz">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                             <div class="absolute bottom-8 left-8 right-8 flex items-center justify-between">
                                 <div class="space-y-2">
@@ -857,8 +856,8 @@
                                     </div>
                                     <p class="text-sm font-mono text-white/60">latency: 24ms • packets: 100%</p>
                                 </div>
-                                <button class="px-8 py-3 bg-white text-black font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-[#FF4500] hover:text-white transition-all shadow-xl">
-                                    Expand Analytics
+                                <button onclick="switchTab('inbox')" class="px-8 py-3 bg-white text-black font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-[#FF4500] hover:text-white transition-all shadow-xl">
+                                    View Full Feed
                                 </button>
                             </div>
                         </div>
@@ -1312,6 +1311,63 @@
 
     <!-- Dashboard Logic & Orchestration -->
     <script>
+        // ── DASHBOARD NAVIGATION ──────────────────────────────────────────
+        function switchTab(tabId) {
+            console.log("Switching to tab:", tabId);
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all nav buttons
+            document.querySelectorAll('.sidebar-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show target tab
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                
+                // GSAP Reveal for content
+                gsap.from(targetTab.children, {
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.5,
+                    stagger: 0.1,
+                    ease: "power2.out"
+                });
+            }
+            
+            // Activate target button
+            const targetBtn = document.getElementById(`nav-${tabId}`);
+            if (targetBtn) targetBtn.classList.add('active');
+            
+            // Update Header Title
+            const titles = {
+                'overview': 'Business Intelligence',
+                'inbox': 'Conversation Feed',
+                'kb': 'Neural Knowledge',
+                'connections': 'Clinic Integration',
+                'billing': 'System License',
+                'profile': 'Operator Profile'
+            };
+            const headerTitle = document.getElementById('header-title');
+            if (headerTitle && titles[tabId]) headerTitle.innerText = titles[tabId];
+            
+            // Mobile Menu Close
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (window.innerWidth < 1024) {
+                if (sidebar) sidebar.style.transform = 'translateX(-100%)';
+                if (overlay) overlay.classList.remove('active');
+            }
+            
+            // Re-run icons
+            if (window.lucide) try { lucide.createIcons(); } catch(e) {}
+        }
+
         // Use the globally initialized client
         const sb = window.sb;
 
