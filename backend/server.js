@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 
 const callRoutes = require('./routes/calls');
@@ -11,6 +12,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 // Middleware to parse JSON
 app.use(express.json());
+// Enable CORS
+app.use(cors());
 // Serve static files from the frontend folder
 app.use(express.static('frontend'));
 
