@@ -1260,15 +1260,21 @@
                 id:           user.id,
                 full_name:    document.getElementById('profile-name')?.value?.trim()   || '',
                 clinic_name:  document.getElementById('profile-clinic')?.value?.trim() || '',
-                gender:       document.getElementById('profile-gender')?.value?.trim()|| '',
                 phone:        document.getElementById('profile-phone')?.value?.trim()  || '',
                 dob:          document.getElementById('profile-dob')?.value            || null,
             };
 
+            const genderVal = document.getElementById('profile-gender')?.value?.trim();
+            if (genderVal) updates.gender = genderVal;
+
             const { error } = await sb.from('profiles').upsert(updates);
             if (error) { 
                 console.error('Save failed:', error);
-                alert('Save failed: ' + error.message); 
+                if (error.message?.includes('column "gender" of relation "profiles" does not exist')) {
+                    alert("DATABASE UPDATE REQUIRED: Please add the 'gender' column to your 'profiles' table in Supabase SQL Editor:\n\nALTER TABLE profiles ADD COLUMN gender TEXT;");
+                } else {
+                    alert('Save failed: ' + error.message); 
+                }
                 return; 
             }
 
@@ -1385,11 +1391,13 @@
                     id:           user.id,
                     full_name:    name,
                     clinic_name:  clinic,
-                    gender:       gender || 'Prefer not to say',
                     phone:        phone,
                     dob:          dob || null,
                     updated_at:   new Date().toISOString()
                 };
+
+                // Only add gender if it won't break the schema (defensive check)
+                if (gender) updates.gender = gender;
 
                 const { error } = await sb.from('profiles').upsert(updates);
                 if (error) throw error;
@@ -1440,7 +1448,14 @@
 
             } catch (err) {
                 console.error("Onboarding Save Error:", err);
-                alert("Error: " + (err.message || 'Failed to save profile. Please try again.'));
+                
+                if (err.message?.includes('column "gender" of relation "profiles" does not exist') || 
+                    err.message?.includes("Could not find the 'gender' column")) {
+                    alert("DATABASE UPDATE REQUIRED: Please add the 'gender' column to your 'profiles' table in Supabase SQL Editor:\n\nALTER TABLE profiles ADD COLUMN gender TEXT;");
+                } else {
+                    alert("Error: " + (err.message || 'Failed to save profile. Please try again.'));
+                }
+                
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
                 if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
