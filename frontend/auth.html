@@ -298,11 +298,14 @@
 
 <script>
 // ── SUPABASE ─────────────────────────────────────────────────────────────────
-const SUPABASE_URL      = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
+const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
+
+console.log("Auth: Initializing Supabase client...");
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
+console.log("Auth: Supabase client initialized.");
 
 // If already logged in, skip to dashboard
 (async () => {
@@ -335,6 +338,7 @@ function showPanel(name) {
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
 async function doLogin() {
+    console.log("Auth: doLogin called.");
     const email = document.getElementById('l-email')?.value?.trim();
     const pass  = document.getElementById('l-pass')?.value;
     const btn   = document.getElementById('btn-login');
@@ -374,6 +378,7 @@ async function doLogin() {
 
 // ── SIGNUP ────────────────────────────────────────────────────────────────────
 async function doSignup() {
+    console.log("Auth: doSignup called.");
     const fname  = document.getElementById('s-fname')?.value?.trim();
     const lname  = document.getElementById('s-lname')?.value?.trim();
     const clinic = document.getElementById('s-clinic')?.value?.trim();
@@ -408,6 +413,7 @@ async function doSignup() {
     btn.textContent = 'Creating account...';
 
     try {
+        console.log("Auth: Calling sb.auth.signUp...");
         const { data, error } = await sb.auth.signUp({
             email, password: pass,
             options: {
@@ -423,6 +429,7 @@ async function doSignup() {
                 emailRedirectTo: window.location.origin + '/dashboard.html'
             }
         });
+        console.log("Auth: sb.auth.signUp result:", { data, error });
 
         if (error) {
             let msg = error.message;
@@ -436,6 +443,7 @@ async function doSignup() {
 
         // Save extended profile data immediately (for free trial users)
         if (data.user) {
+            console.log("Auth: User object found, upserting profile...");
             try {
                 const trialStart = new Date().toISOString();
                 const trialEnd = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();

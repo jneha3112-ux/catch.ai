@@ -22,32 +22,48 @@
         const SUPABASE_URL     = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
 
+        console.log("Dashboard: Current URL:", window.location.href);
+        console.log("Auth: Current URL:", window.location.href);
+        console.log("Dashboard: Initializing Supabase client...");
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
         });
+        console.log("Dashboard: Supabase client created.");
 
         supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_OUT') window.location.replace('auth.html');
         });
 
         (async () => {
+            console.log("Dashboard: Checking session...");
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) window.location.replace('auth.html');
+            console.log("Dashboard: Session check result:", session ? "Session active" : "No session");
+            if (!session) {
+                console.log("Dashboard: Redirecting to auth.html (no session)");
+                window.location.replace('auth.html');
+            }
         })();
 
         async function handleSignOut() {
+            console.log("Dashboard: handleSignOut called.");
+            console.log("Dashboard: LocalStorage before logout:", Object.keys(localStorage).filter(k => k.startsWith('sb-')));
             try { 
+                console.log("Dashboard: Calling supabase.auth.signOut()...");
                 await supabase.auth.signOut(); 
+                console.log("Dashboard: supabase.auth.signOut() successful.");
             } catch(e) { 
-                console.error('Signout error:', e); 
+                console.error('Dashboard: Signout error:', e); 
             }
             // Force wipe Supabase local storage if API fails
+            console.log("Dashboard: Forcing clear of sb- local storage keys...");
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.startsWith('sb-')) {
                     localStorage.removeItem(key);
                 }
             }
+            console.log("Dashboard: LocalStorage after logout:", Object.keys(localStorage).filter(k => k.startsWith('sb-')));
+            console.log("Dashboard: Redirecting to auth.html...");
             window.location.href = 'auth.html';
         }
     </script>
@@ -1113,6 +1129,7 @@
 
         // ── PROFILE HELPERS ─────────────────────────────────────────────────
         function populateProfileUI(profile, user) {
+            console.log("Dashboard: populateProfileUI called with:", { profile, user });
             let name = 'User';
             if (profile?.full_name) name = profile.full_name;
             else if (user?.user_metadata?.first_name) name = user.user_metadata.first_name;
@@ -1454,6 +1471,7 @@
         let currentUserPlan = 'free';
 
         (async function initSubscriptionSystem() {
+            console.log("Dashboard: initSubscriptionSystem starting...");
             try {
                 if (!sb) {
                     console.error('Supabase not initialized');
@@ -1461,7 +1479,9 @@
                     return;
                 }
                 
+                console.log("Dashboard: Fetching session in initSubscriptionSystem...");
                 const { data: { session } } = await sb.auth.getSession();
+                console.log("Dashboard: Session fetched:", session ? "Session active" : "No session");
 
                 if (!session) {
                     window.location.href = 'auth.html';
@@ -1475,7 +1495,9 @@
                 let plan = 'free';
 
                 try {
+                    console.log("Dashboard: Fetching profile for user:", user.id);
                     const { data: existingProfile, error: fetchError } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                    console.log("Dashboard: Profile fetch result:", { existingProfile, fetchError });
                     
                     if (fetchError && fetchError.code === 'PGRST116') {
                         // Profile doesn't exist, create it
@@ -1564,7 +1586,9 @@
                 }
 
                 currentUserPlan = plan;
+                console.log("Dashboard: Applying feature gating for plan:", currentUserPlan);
                 applyFeatureGating(currentUserPlan);
+                console.log("Dashboard: initSubscriptionSystem complete.");
 
                 // 3. Timer / Status display
                 const runTimer = () => {
