@@ -24,16 +24,18 @@
 
         console.log("Dashboard: Current URL:", window.location.href);
         
-        let sb = null;
+        window.sb = null;
         try {
             console.log("Dashboard: Initializing Supabase client...");
-            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                 auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
             });
             console.log("Dashboard: Supabase client created.");
         } catch (e) {
             console.error("Dashboard: Failed to initialize Supabase client:", e);
         }
+
+        const sb = window.sb; // Local alias for this block
 
         if (!sb || !sb.auth) {
             console.error("Dashboard: Supabase client or auth module failed to initialize. Dashboard functions will be limited.");
@@ -1094,11 +1096,8 @@
         // Initialize Icons Safely
         if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
-        // sb is already defined globally in the Auth Guard block above.
-        // We ensure it's available for the rest of the script.
-        if (!window.sb && typeof sb !== 'undefined') window.sb = sb;
-        const mainSb = window.sb || sb; 
-        const sb = mainSb; // Re-declare locally for functions in this block
+        // sb is already defined globally in the Auth Guard block above as window.sb.
+        const sb = window.sb; 
 
         // If sb is still missing, attempt a recovery initialization
         if (!sb) {
