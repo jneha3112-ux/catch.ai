@@ -752,28 +752,11 @@
         <main class="main-content">
             <div class="max-w-[1600px] mx-auto">
                 
-                <!-- GLOBAL NEURAL HEADER (Persists across all tabs) -->
-                <div class="mb-12 gsap-reveal">
-                    <div class="flex items-end justify-between mb-8">
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="w-1.5 h-6 bg-[#FF4500] rounded-full shadow-[0_0_15px_rgba(255,69,0,0.5)]"></span>
-                                <p class="text-[10px] font-mono text-[#FF4500] uppercase tracking-[0.3em]">Operational Environment v4.0</p>
-                            </div>
-                            <h2 class="text-4xl font-heading text-white tracking-tighter mb-1" id="header-title">Business Intelligence</h2>
-                            <p class="text-xs font-mono text-white/30 uppercase tracking-[0.2em]" id="header-subtitle">Neural Processing • Real-time Sync</p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="glass-panel px-6 py-3 rounded-2xl flex items-center gap-3">
-                                <div class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                                <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest">Trial Ends In: <span id="trial-timer-display" class="text-white">--:--:--</span></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- TAB 1: OVERVIEW -->
+                <section id="tab-overview" class="tab-content active">
 
-                               <!-- Premium Overview -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <!-- Revenue Card -->
                     <div class="glass-panel p-8 relative overflow-hidden group">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF4500]/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-[#FF4500]/10 transition-all"></div>
@@ -963,6 +946,7 @@
                         </div>
                     </div>
                 </div>
+                </section><!-- end tab-overview -->
 
                 <!-- TAB 2: CALL INBOX -->
                 <section id="tab-inbox" class="tab-content">
@@ -2019,7 +2003,7 @@
         function applyFeatureGating(plan) {
             // Remove any existing locks first
             document.querySelectorAll('.premium-lock-overlay').forEach(el => el.remove());
-            ['tab-inbox', 'tab-kb', 'tab-connections'].forEach(id => {
+            ['tab-inbox', 'tab-kb'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.remove('locked-tab-content');
             });
@@ -2057,7 +2041,7 @@
                 }
 
                 // 2. Lock advanced tabs
-                const lockedTabs = ['tab-inbox', 'tab-kb', 'tab-connections'];
+                const lockedTabs = ['tab-inbox', 'tab-kb'];
                 lockedTabs.forEach(id => {
                     const tabEl = document.getElementById(id);
                     if (!tabEl) return;
