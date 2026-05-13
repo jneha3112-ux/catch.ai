@@ -1047,8 +1047,8 @@
 
     <!-- Scripts -->
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // Initialize Icons Safely
+        if (window.lucide) lucide.createIcons();
 
         // Use the globally defined 'supabase' client from line 25
         const sb = supabase; 
@@ -1102,7 +1102,11 @@
 
         // ── PROFILE HELPERS ─────────────────────────────────────────────────
         function populateProfileUI(profile, user) {
-            const name    = profile?.full_name   || user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
+            let name = 'User';
+            if (profile?.full_name) name = profile.full_name;
+            else if (user?.user_metadata?.first_name) name = user.user_metadata.first_name;
+            else if (user?.email) name = user.email.split('@')[0];
+
             const clinic  = profile?.clinic_name || 'Your Clinic';
             const email   = user?.email || '';
             const phone   = profile?.phone || '';
@@ -1609,9 +1613,16 @@
 
 
         function applyFeatureGating(plan) {
+            // Remove any existing locks first
+            document.querySelectorAll('.premium-lock-overlay').forEach(el => el.remove());
+            ['tab-inbox', 'tab-kb', 'tab-connections'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('locked-tab-content');
+            });
+
             // ── PRO: Full access, unlock everything
             if (plan === 'pro') {
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
                 return;
             }
 
@@ -1624,25 +1635,58 @@
                     callBtn.classList.add('opacity-50', '!bg-gray-600', 'cursor-not-allowed');
                     callBtn.onclick = () => { switchTab('billing'); };
                 }
-                // Add lock overlay to calendar section if it exists
                 const calSection = document.getElementById('calendar-section');
                 if (calSection) calSection.style.pointerEvents = 'none', calSection.style.opacity = '0.4';
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
                 return;
             }
 
-            // ── FREE TRIAL or EXPIRED: lock everything, show modal
-            const callBtn2 = document.getElementById('simulate-call-btn');
-            if (callBtn2) {
-                callBtn2.disabled = true;
-                callBtn2.innerHTML = '<i data-lucide="lock" class="w-4 h-4 inline mr-1"></i> Upgrade to Call';
-                callBtn2.classList.add('opacity-50', '!bg-gray-700', 'cursor-not-allowed');
-                callBtn2.onclick = () => { document.getElementById('trial-lock-modal').classList.add('is-active'); };
+            // ── FREE TRIAL: Heavily restricted access (Real SaaS approach)
+            if (plan === 'free') {
+                // 1. Lock the Call button
+                const callBtn = document.getElementById('simulate-call-btn');
+                if (callBtn) {
+                    callBtn.disabled = true;
+                    callBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4 inline mr-1"></i> Upgrade to Call';
+                    callBtn.classList.add('opacity-50', '!bg-gray-700', 'cursor-not-allowed');
+                    callBtn.onclick = () => { switchTab('billing'); };
+                }
+
+                // 2. Lock advanced tabs
+                const lockedTabs = ['tab-inbox', 'tab-kb', 'tab-connections'];
+                lockedTabs.forEach(id => {
+                    const tabEl = document.getElementById(id);
+                    if (!tabEl) return;
+                    
+                    // Add lock overlay
+                    const lockHTML = `
+                        <div class="premium-lock-overlay absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md rounded-2xl border border-[#FF4500]/20 m-4">
+                            <div class="text-center p-8 max-w-md bg-[#0a0a0a] border border-[#FF4500]/30 rounded-2xl shadow-[0_0_50px_rgba(255,69,0,0.15)]">
+                                <div class="w-16 h-16 bg-[#FF4500]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#FF4500]/20">
+                                    <i data-lucide="lock" class="w-8 h-8 text-[#FF4500]"></i>
+                                </div>
+                                <h3 class="text-2xl font-heading text-white mb-2">Premium Feature</h3>
+                                <p class="text-sm text-white/50 mb-6">This feature is reserved for Catch.ai Pro and Starter clinics. Upgrade your plan to unlock full capabilities.</p>
+                                <button onclick="switchTab('billing')" class="w-full bg-[#FF4500] hover:bg-[#e63c00] text-white font-bold uppercase tracking-widest py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(255,69,0,0.3)]">
+                                    View Pricing & Upgrade
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    tabEl.style.position = 'relative';
+                    tabEl.insertAdjacentHTML('beforeend', lockHTML);
+                    tabEl.classList.add('locked-tab-content'); // prevents clicking elements underneath
+                });
+
+                if (window.lucide) lucide.createIcons();
+                return;
             }
+
+            // ── EXPIRED: lock everything, show modal
             if (plan === 'expired') {
                 document.getElementById('trial-lock-modal').classList.add('is-active');
             }
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         async function initiateVapiCall() {
