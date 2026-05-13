@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 
 const callRoutes = require('./routes/calls');
 const whatsappRoutes = require('./routes/whatsapp');
@@ -107,9 +108,9 @@ app.post('/api/vapi/call', async (req, res) => {
     }
 });
 
-// Health check endpoint
+// Serve landing page at root
 app.get('/', (req, res) => {
-  res.send('Clinic AI Backend is running.');
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

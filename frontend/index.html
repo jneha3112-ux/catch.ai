@@ -26,12 +26,19 @@
             --bg-dark: #050505;
             --accent-old: #b7c6c2;
         }
-        body {
-            font-family: 'Inter', sans-serif;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
             background-color: var(--bg);
             color: white;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
             position: relative;
         }
         #scroll-progress {
@@ -1257,7 +1264,7 @@
         </div>
     </div>
 
-    <section class="bg-[#050505] relative overflow-hidden min-h-screen flex items-center" id="hero-section">
+    <section class="bg-[#050505] relative overflow-hidden min-h-screen min-h-[100dvh] flex items-center" id="hero-section">
 
         <!-- Background Atmosphere -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
@@ -2705,12 +2712,13 @@
             const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const isMobile = window.innerWidth < 768;
             const lenis = new Lenis({
-                duration: reducedMotion ? 1 : (isMobile ? 1.0 : 1.1),
+                duration: reducedMotion ? 1 : (isMobile ? 1.2 : 1.2),
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 orientation: 'vertical',
                 smoothWheel: true,
-                wheelMultiplier: isMobile ? 1.0 : 1.1,
-                touchMultiplier: 2.0
+                wheelMultiplier: isMobile ? 1.0 : 1.15,
+                touchMultiplier: isMobile ? 1.5 : 2.0,
+                infinite: false
             });
             lenis.on('scroll', ScrollTrigger.update);
             gsap.ticker.add(time => lenis.raf(time * 1000));
