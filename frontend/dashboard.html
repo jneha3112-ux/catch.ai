@@ -27,17 +27,17 @@
         });
 
         supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') window.location.replace('/auth.html');
+            if (event === 'SIGNED_OUT') window.location.replace('auth.html');
         });
 
         (async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) window.location.replace('/auth.html');
+            if (!session) window.location.replace('auth.html');
         })();
 
         async function handleSignOut() {
-            await supabase.auth.signOut();
-            window.location.replace('/auth.html');
+            try { await supabase.auth.signOut(); } catch(e) { console.error('Signout error:', e); }
+            window.location.replace('auth.html');
         }
     </script>
 
@@ -1048,7 +1048,7 @@
     <!-- Scripts -->
     <script>
         // Initialize Icons Safely
-        if (window.lucide) lucide.createIcons();
+        if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
         // Use the globally defined 'supabase' client from line 25
         const sb = supabase; 
@@ -1068,8 +1068,8 @@
                 if (btn) {
                     const original = btn.innerHTML;
                     btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-[#10b981]"></i> <span class="text-[#10b981]">Copied!</span>';
-                    lucide.createIcons();
-                    setTimeout(() => { btn.innerHTML = original; lucide.createIcons(); }, 2000);
+                    try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
+                    setTimeout(() => { btn.innerHTML = original; try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); } }, 2000);
                 }
             }).catch(() => alert('Copy failed. Please copy manually.'));
         }
@@ -1092,11 +1092,11 @@
             const btn = event.currentTarget;
             btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
             btn.classList.replace('bg-[#4285F4]', 'bg-[#10b981]');
-            lucide.createIcons();
+            try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
             setTimeout(() => {
                 btn.innerHTML = '<i data-lucide="calendar-check" class="w-4 h-4"></i> Save Calendar ID';
                 btn.classList.replace('bg-[#10b981]', 'bg-[#4285F4]');
-                lucide.createIcons();
+                try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
             }, 3000);
         }
 
@@ -1192,11 +1192,11 @@
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
             btn.classList.replace('bg-[#FF4500]', 'bg-[#10b981]');
-            lucide.createIcons();
+            try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
                 btn.classList.replace('bg-[#10b981]', 'bg-[#FF4500]');
-                lucide.createIcons();
+                try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
             }, 2500);
         }
 
@@ -1280,7 +1280,7 @@
 
             btn.disabled = true;
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...';
-            if (window.lucide) lucide.createIcons();
+            if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
             try {
                 if (!sb) throw new Error("Supabase not initialized");
@@ -1340,7 +1340,7 @@
                             ease: "power3.out"
                         });
                         
-                        if (window.lucide) lucide.createIcons();
+                        if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
                     }
                 });
 
@@ -1349,7 +1349,7 @@
                 alert("Error: " + (err.message || 'Failed to save profile. Please try again.'));
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
-                if (window.lucide) lucide.createIcons();
+                if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
             }
         }
 
@@ -1453,7 +1453,7 @@
                 const { data: { session } } = await sb.auth.getSession();
 
                 if (!session) {
-                    window.location.href = '/auth.html';
+                    window.location.href = 'auth.html';
                     return;
                 }
 
@@ -1528,7 +1528,7 @@
                         }).select().single();
                         if (upd) { profile = upd; }
                         plan = 'pro';
-                        window.history.replaceState({}, document.title, "/dashboard.html");
+                        window.history.replaceState({}, document.title, "dashboard.html");
                         alert("🎉 Payment Successful! Welcome to Catch.ai Pro. Your plan is active for 30 days.");
                     } catch(e) { console.warn('Plan upgrade failed:', e); }
                 } else if (paymentStatus === 'success_starter') {
@@ -1539,7 +1539,7 @@
                         }).select().single();
                         if (upd) { profile = upd; }
                         plan = 'starter';
-                        window.history.replaceState({}, document.title, "/dashboard.html");
+                        window.history.replaceState({}, document.title, "dashboard.html");
                         alert("🎉 Payment Successful! Welcome to Catch.ai Starter. Your plan is active for 30 days.");
                     } catch(e) { console.warn('Plan upgrade failed:', e); }
                 }
@@ -1606,6 +1606,12 @@
                 console.error("Subscription system failed:", e);
                 const timerEl = document.getElementById('trial-timer-display');
                 if (timerEl) timerEl.innerText = "2d 0h";
+                
+                // Fallback to remove "Loading..." if crash occurs
+                const headerName = document.getElementById('header-user-name');
+                const headerClinic = document.getElementById('header-clinic-name');
+                if (headerName && headerName.innerText === 'Loading...') headerName.innerText = 'USER';
+                if (headerClinic && headerClinic.innerText === 'Connecting...') headerClinic.innerText = 'System Offline';
             }
         })();
 
@@ -1622,7 +1628,7 @@
 
             // ── PRO: Full access, unlock everything
             if (plan === 'pro') {
-                if (window.lucide) lucide.createIcons();
+                if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
                 return;
             }
 
@@ -1637,7 +1643,7 @@
                 }
                 const calSection = document.getElementById('calendar-section');
                 if (calSection) calSection.style.pointerEvents = 'none', calSection.style.opacity = '0.4';
-                if (window.lucide) lucide.createIcons();
+                if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
                 return;
             }
 
@@ -1678,7 +1684,7 @@
                     tabEl.classList.add('locked-tab-content'); // prevents clicking elements underneath
                 });
 
-                if (window.lucide) lucide.createIcons();
+                if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
                 return;
             }
 
@@ -1686,7 +1692,7 @@
             if (plan === 'expired') {
                 document.getElementById('trial-lock-modal').classList.add('is-active');
             }
-            if (window.lucide) lucide.createIcons();
+            if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
         }
 
         async function initiateVapiCall() {
@@ -1722,7 +1728,7 @@
             icon.setAttribute('data-lucide', 'loader-2');
             icon.classList.add('animate-spin');
             btnText.innerText = "Initiating Call...";
-            lucide.createIcons();
+            try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
             try {
                 // SECURITY UPDATE: Use backend proxy instead of frontend API key
@@ -1747,7 +1753,7 @@
                 icon.classList.add('animate-pulse');
                 btn.classList.remove('bg-[#FF4500]', 'hover:bg-[#e63c00]');
                 btn.classList.add('bg-[#10b981]', 'hover:bg-[#059669]', 'shadow-[0_0_20px_rgba(16,185,129,0.3)]');
-                lucide.createIcons();
+                try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
                 // Reset button after 6 seconds
                 setTimeout(() => {
@@ -1758,7 +1764,7 @@
                     icon.setAttribute('data-lucide', 'phone-call');
                     icon.classList.remove('animate-pulse');
                     btnText.innerText = "Initiate Call";
-                    lucide.createIcons();
+                    try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
                 }, 6000);
 
             } catch (error) {
@@ -1771,7 +1777,7 @@
                 icon.setAttribute('data-lucide', 'phone-call');
                 icon.classList.remove('animate-spin');
                 btnText.innerText = "Initiate Call";
-                lucide.createIcons();
+                try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
             }
         }
 
