@@ -312,15 +312,36 @@
 
         .onboarding-card {
             width: 100%;
-            max-width: 540px;
-            background: rgba(10, 10, 10, 0.8);
+            max-width: 900px;
+            background: rgba(10, 10, 10, 0.85);
             border: 1px solid rgba(255, 69, 0, 0.2);
-            border-radius: 2rem;
-            padding: 48px;
-            box-shadow: 0 0 100px rgba(255, 69, 0, 0.1);
+            border-radius: 2.5rem;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), 0 0 100px rgba(255, 69, 0, 0.05);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
+
+        @media (min-width: 768px) {
+            .onboarding-card { flex-direction: row; }
+            .onboarding-left { flex: 1.2; padding: 48px; }
+            .onboarding-right { 
+                flex: 1; 
+                padding: 48px; 
+                background: linear-gradient(135deg, rgba(255,69,0,0.1), transparent), url('premium_saas_onboarding_bg_1778660655282.png');
+                background-size: cover;
+                background-position: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        .onboarding-left { padding: 32px; }
+        .onboarding-right { display: none; }
+        @media (min-width: 768px) { .onboarding-right { display: flex; } }
 
         .onboarding-step { display: none; }
         .onboarding-step.active { display: block; }
@@ -339,6 +360,12 @@
             border-color: #FF4500;
             background: rgba(255, 255, 255, 0.05);
             box-shadow: 0 0 20px rgba(255, 69, 0, 0.1);
+        }
+
+        /* Fix for hidden options in dark mode */
+        .onboarding-input option {
+            background-color: #0a0a0a;
+            color: white;
         }
 
         .btn-premium {
@@ -380,74 +407,126 @@
     <div id="onboarding-overlay">
         <!-- Step 1: Data Collection -->
         <div id="onboarding-step-1" class="onboarding-card onboarding-step active gsap-reveal">
-            <div class="mb-8">
-                <div class="w-12 h-12 bg-[#FF4500]/10 rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="sparkles" class="w-6 h-6 text-[#FF4500]"></i>
+            <div class="onboarding-left">
+                <div class="mb-8">
+                    <div class="w-12 h-12 bg-[#FF4500]/10 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="sparkles" class="w-6 h-6 text-[#FF4500]"></i>
+                    </div>
+                    <h2 class="text-3xl font-heading text-white mb-2">Finalize Your Profile</h2>
+                    <p class="text-white/40 text-sm">We need a few more details to calibrate your Neural Command Center.</p>
                 </div>
-                <h2 class="text-3xl font-heading text-white mb-2">Finalize Your Profile</h2>
-                <p class="text-white/40 text-sm">We need a few more details to calibrate your Neural Command Center.</p>
-            </div>
 
-            <form id="onboarding-form" class="space-y-5">
-                <div>
-                    <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Full Name</label>
-                    <input type="text" id="ob-name" required placeholder="Dr. John Doe" class="onboarding-input">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Clinic Name</label>
-                    <input type="text" id="ob-clinic" required placeholder="Elite Dental Care" class="onboarding-input">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form id="onboarding-form" class="space-y-5">
                     <div>
-                        <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Gender</label>
-                        <select id="ob-gender" required class="onboarding-input">
-                            <option value="" disabled selected>Select gender</option>
-                            <option value="female">Female</option>
-                            <option value="male">Male</option>
-                            <option value="non-binary">Non-binary</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
+                        <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Full Name</label>
+                        <input type="text" id="ob-name" required placeholder="Dr. John Doe" class="onboarding-input">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Mobile Number</label>
-                        <input type="tel" id="ob-phone" required placeholder="+1 234 567 890" class="onboarding-input">
+                        <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Clinic Name</label>
+                        <input type="text" id="ob-clinic" required placeholder="Elite Dental Care" class="onboarding-input">
                     </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Date of Birth</label>
-                        <input type="date" id="ob-dob" required style="color-scheme: dark;" class="onboarding-input">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Gender</label>
+                            <select id="ob-gender" required class="onboarding-input">
+                                <option value="" disabled selected>Select gender</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                                <option value="non-binary">Non-binary</option>
+                                <option value="prefer-not-to-say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Mobile Number</label>
+                            <input type="tel" id="ob-phone" required placeholder="+1 234 567 890" class="onboarding-input">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Date of Birth</label>
+                            <input type="date" id="ob-dob" required style="color-scheme: dark;" class="onboarding-input">
+                        </div>
+                    </div>
+                    <button type="submit" id="ob-submit-btn" class="w-full btn-premium flex items-center justify-center gap-2 mt-4">
+                        Initialize System <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="onboarding-right relative">
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+                <div class="relative z-10">
+                    <div class="inline-block px-3 py-1 bg-[#FF4500]/20 border border-[#FF4500]/30 rounded-full mb-6">
+                        <span class="text-[9px] font-bold text-[#FF4500] uppercase tracking-widest">Neural Calibration</span>
+                    </div>
+                    <h3 class="text-3xl font-heading text-white mb-6 leading-tight">Join the Top 0.1% of Dental Practices</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <i data-lucide="phone-forwarded" class="w-4 h-4 text-[#FF4500]"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-white mb-1">Zero Missed Calls</p>
+                                <p class="text-[10px] text-white/40 leading-relaxed">Our AI receptionist never sleeps, catching 100% of missed opportunities.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <i data-lucide="calendar" class="w-4 h-4 text-[#FF4500]"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-white mb-1">Auto-Scheduling</p>
+                                <p class="text-[10px] text-white/40 leading-relaxed">Syncs directly with your calendar to book patients instantly.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-[#FF4500]"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-white mb-1">Revenue Recovery</p>
+                                <p class="text-[10px] text-white/40 leading-relaxed">Clinics using Catch.ai see an average revenue increase of 22%.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button type="submit" id="ob-submit-btn" class="w-full btn-premium flex items-center justify-center gap-2 mt-4">
-                    Initialize System <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                </button>
-            </form>
+            </div>
         </div>
 
         <!-- Step 2: Welcome / Success -->
-        <div id="onboarding-step-2" class="onboarding-card onboarding-step text-center">
-            <div class="mb-10">
-                <div class="ahead-number" id="ahead-count">1,204</div>
-                <h3 class="text-3xl font-heading text-white mb-4">Congratulations!</h3>
-                <p class="text-white/50 leading-relaxed text-sm">You are now ahead of <span id="welcome-clinic-count">1,204</span> dental clinics. Catch.ai has officially connected with your practice and upgraded your clinic to elite performance.</p>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4 py-8 border-y border-white/5 mb-8">
-                <div class="text-center">
-                    <p class="text-[9px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-2">Neural Status</p>
-                    <div class="flex items-center justify-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
-                        <p class="text-xs font-mono text-white">SYNCHRONIZED</p>
+        <div id="onboarding-step-2" class="onboarding-card onboarding-step active gsap-reveal">
+            <div class="onboarding-left flex flex-col justify-center text-center">
+                <div class="mb-10">
+                    <div class="ahead-number" id="ahead-count">0</div>
+                    <h3 class="text-3xl font-heading text-white mb-4">Congratulations!</h3>
+                    <p class="text-white/50 leading-relaxed text-sm">You are now ahead of <span id="welcome-clinic-count">0</span> dental clinics. Catch.ai has officially connected with your practice.</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 py-8 border-y border-white/5 mb-8">
+                    <div class="text-center">
+                        <p class="text-[9px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-2">Neural Status</p>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
+                            <p class="text-xs font-mono text-white">SYNCHRONIZED</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[9px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-2">Global Rank</p>
+                        <p class="text-xs font-mono text-white">#84 / TOP 0.1%</p>
                     </div>
                 </div>
-                <div class="text-center">
-                    <p class="text-[9px] font-bold text-[#FF4500] uppercase tracking-[0.2em] mb-2">Global Rank</p>
-                    <p class="text-xs font-mono text-white">#84 / TOP 0.1%</p>
+
+                <button onclick="finishOnboarding()" class="w-full btn-premium flex items-center justify-center gap-2">
+                    Launch Dashboard <i data-lucide="zap" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="onboarding-right relative">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-[4px]"></div>
+                <div class="relative z-10 p-8 text-center">
+                    <div class="w-24 h-24 bg-[#FF4500]/10 border border-[#FF4500]/30 rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(255,69,0,0.2)]">
+                        <i data-lucide="rocket" class="w-10 h-10 text-[#FF4500]"></i>
+                    </div>
+                    <h3 class="text-2xl font-heading text-white mb-4">System Initialized</h3>
+                    <p class="text-xs text-white/40 leading-relaxed">Your neural environment is now ready. All missed calls will be routed to your AI agent automatically.</p>
                 </div>
             </div>
-
-            <button onclick="finishOnboarding()" class="w-full btn-premium flex items-center justify-center gap-2">
-                Launch Dashboard <i data-lucide="zap" class="w-4 h-4"></i>
-            </button>
         </div>
     </div>
 
