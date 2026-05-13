@@ -1215,7 +1215,7 @@
 
             // Remember that welcome was shown after first login
             if (step === '2') {
-                localStorage.setItem('catch_welcome_shown', 'true');
+                sessionStorage.setItem('catch_welcome_shown', 'true');
             }
 
             // If showing step 2 directly, animate the clinic count immediately
@@ -1500,13 +1500,13 @@
                 populateProfileUI(profile, user);
 
                 // ── CHECK FOR ONBOARDING ──
-                const isComplete = profile?.full_name?.trim() && profile?.clinic_name?.trim() && profile?.gender?.trim() && profile?.phone?.trim();
-                console.log('Profile complete:', isComplete, { name: profile?.full_name, clinic: profile?.clinic_name, gender: profile?.gender, phone: profile?.phone });
+                const isComplete = profile?.full_name?.trim() && profile?.clinic_name?.trim() && profile?.phone?.trim();
+                console.log('Profile complete:', isComplete, { name: profile?.full_name, clinic: profile?.clinic_name, phone: profile?.phone });
                 
                 if (!isComplete) {
                     console.log("Onboarding triggered: Profile incomplete.");
                     setTimeout(() => showOnboarding('1'), 800); // Small delay to ensure DOM is ready
-                } else if (!localStorage.getItem('catch_welcome_shown')) {
+                } else if (!sessionStorage.getItem('catch_welcome_shown')) {
                     console.log("Showing welcome popup after login.");
                     setTimeout(() => showOnboarding('2'), 800);
                 }
