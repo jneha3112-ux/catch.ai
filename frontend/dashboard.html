@@ -196,22 +196,29 @@
         .top-navbar {
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 90px;
-            z-index: 1000;
+            height: 70px;
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 40px;
-            background: rgba(3, 3, 3, 0.8);
-            backdrop-filter: blur(40px) saturate(150%);
-            border-bottom: 1px solid var(--glass-border);
+            padding: 0 24px;
+            background: rgba(5,5,5,0.92);
+            backdrop-filter: blur(30px) saturate(160%);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 4px 40px rgba(0,0,0,0.5);
         }
 
         .nav-links {
             display: flex;
-            gap: 12px;
             align-items: center;
+            gap: 2px;
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            flex: 1;
+            margin: 0 16px;
         }
+        .nav-links::-webkit-scrollbar { display: none; }
 
         .nav-tab-link {
             font-size: 11px;
@@ -256,7 +263,16 @@
             z-index: 10;
             display: block;
             min-height: 100vh;
-            padding-top: 130px; /* Space for fixed navbar + neural header spacing */
+            padding-top: 86px;
+        }
+        .main-content {
+            padding: 40px 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .main-content { padding: 24px 16px; }
+            .top-navbar { padding: 0 16px; }
         }
 
         /* Animated Graph Line */
@@ -618,27 +634,9 @@
         </div>
     </div>
 
-    <!-- Top Navbar -->
-    <nav class="top-navbar">
-        <a href="/" class="flex items-center gap-3 group">
-            <img src="assets/catch-logo-premium.svg" alt="Catch.ai" class="h-8 w-auto group-hover:scale-105 transition-transform" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block'">
-            <div id="logo-text" style="display:none;" class="font-heading text-2xl tracking-tighter">Catch<span class="text-[#FF4500]">.ai</span></div>
-        </a>
-        <div class="flex items-center gap-8">
-            <a href="/" class="nav-link hidden lg:block">Landing</a>
-            <a class="nav-link hidden lg:block">Settings</a>
-            <button onclick="handleSignOut()" class="nav-link !text-[#FF4500] hover:!text-red-400 hidden lg:block">Disconnect</button>
-            <button onclick="toggleMobileMenu()" class="text-white hover:text-[#FF4500] transition-colors lg:hidden">
-                <i data-lucide="menu" class="w-6 h-6"></i>
-            </button>
-        </div>
-    </nav>
-
     <!-- App Layout -->
     <div id="app-layout">
-        
-        <!-- Mobile Overlay -->
-        <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
 
     <!-- Trial Lock Modal -->
     <div id="trial-lock-modal">
@@ -703,51 +701,50 @@
     </div>
 
 
-    <!-- Navbar -->
+    <!-- Premium Navbar -->
     <nav class="top-navbar">
-        <div class="flex items-center gap-12">
-            <!-- Logo Section -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-[#FF4500] flex items-center justify-center shadow-[0_0_20px_rgba(255,69,0,0.4)]">
-                    <i data-lucide="zap" class="w-5 h-5 text-white"></i>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-[9px] font-mono text-[#FF4500] tracking-[0.3em] uppercase">Neural Hub</span>
-                    <h1 class="text-lg font-heading text-white tracking-tight">Command Center</h1>
-                </div>
+        <!-- Logo -->
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+            <div style="width:36px;height:36px;border-radius:10px;background:#FF4500;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(255,69,0,0.4);">
+                <i data-lucide="zap" style="width:18px;height:18px;color:#fff;"></i>
             </div>
-
-            <!-- Horizontal Menu -->
-            <div class="nav-links flex overflow-x-auto lg:overflow-visible max-w-full pb-2 lg:pb-0 scrollbar-hide">
-                <div onclick="switchTab('overview')" class="nav-tab-link active shrink-0" data-tab-btn="overview">
-                    <i data-lucide="layout-dashboard"></i> Overview
-                </div>
-                <div onclick="switchTab('inbox')" class="nav-tab-link shrink-0" data-tab-btn="inbox">
-                    <i data-lucide="message-square"></i> Inbox
-                </div>
-                <div onclick="switchTab('kb')" class="nav-tab-link shrink-0" data-tab-btn="kb">
-                    <i data-lucide="brain"></i> Knowledge
-                </div>
-                <div onclick="switchTab('connections')" class="nav-tab-link shrink-0" data-tab-btn="connections">
-                    <i data-lucide="link"></i> Connect
-                </div>
-                <div onclick="switchTab('profile')" class="nav-tab-link shrink-0" data-tab-btn="profile">
-                    <i data-lucide="user"></i> Profile
-                </div>
-                <div onclick="switchTab('billing')" class="nav-tab-link shrink-0" data-tab-btn="billing">
-                    <i data-lucide="credit-card"></i> License
-                </div>
+            <div>
+                <div style="font-size:9px;color:#FF4500;letter-spacing:0.25em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;">Catch.ai</div>
+                <div style="font-size:15px;font-weight:700;color:#fff;line-height:1;letter-spacing:-0.02em;">Command Center</div>
             </div>
         </div>
 
-        <div class="flex items-center gap-6">
-            <div class="hidden md:flex flex-col items-end">
-                <span class="text-[10px] font-bold text-white uppercase tracking-widest" id="user-display-name">Loading...</span>
-                <span class="text-[9px] text-white/30 uppercase tracking-widest" id="sidebar-user-clinic">System Syncing...</span>
+        <!-- Nav Links — always visible, scroll on mobile -->
+        <div class="nav-links">
+            <div onclick="switchTab('overview')" class="nav-tab-link active" data-tab-btn="overview">
+                <i data-lucide="layout-dashboard"></i> Overview
             </div>
-            <div class="w-px h-8 bg-white/10"></div>
-            <button onclick="handleSignOut()" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition-all group">
-                <i data-lucide="log-out" class="w-4 h-4 text-white/40 group-hover:text-red-400"></i>
+            <div onclick="switchTab('inbox')" class="nav-tab-link" data-tab-btn="inbox">
+                <i data-lucide="inbox"></i> Inbox
+            </div>
+            <div onclick="switchTab('kb')" class="nav-tab-link" data-tab-btn="kb">
+                <i data-lucide="brain"></i> Knowledge
+            </div>
+            <div onclick="switchTab('connections')" class="nav-tab-link" data-tab-btn="connections">
+                <i data-lucide="plug"></i> Connect
+            </div>
+            <div onclick="switchTab('profile')" class="nav-tab-link" data-tab-btn="profile">
+                <i data-lucide="user"></i> Profile
+            </div>
+            <div onclick="switchTab('billing')" class="nav-tab-link" data-tab-btn="billing">
+                <i data-lucide="credit-card"></i> License
+            </div>
+        </div>
+
+        <!-- Right: User + Logout -->
+        <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+            <div style="text-align:right;display:none;" id="nav-user-block" class="md-show">
+                <div style="font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.1em;" id="user-display-name">Loading...</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;" id="sidebar-user-clinic">Syncing...</div>
+            </div>
+            <div style="width:1px;height:28px;background:rgba(255,255,255,0.08);"></div>
+            <button onclick="handleSignOut()" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.15)';this.style.borderColor='rgba(239,68,68,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(255,255,255,0.08)'">
+                <i data-lucide="log-out" style="width:14px;height:14px;color:rgba(255,255,255,0.5);"></i>
             </button>
         </div>
     </nav>
