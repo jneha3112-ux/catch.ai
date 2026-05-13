@@ -17,74 +17,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Auth Guard -->
+    <!-- Auth Guard: Initialize Supabase & Check Session Immediately -->
     <script>
-        const SUPABASE_URL     = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
+        const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaWJlaGRndm1jcnBnemF4a3Z1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTUwMTEsImV4cCI6MjA5Mzg3MTAxMX0.0STkt1RncpWrahh5kvse8Uf9kyH61Z6ENnt1UZIiHxk';
 
-        console.log("Dashboard: Current URL:", window.location.href);
-        
-        window.sb = null;
-        try {
-            console.log("Dashboard: Initializing Supabase client...");
-            window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-            });
-            console.log("Dashboard: Supabase client created.");
-        } catch (e) {
-            console.error("Dashboard: Failed to initialize Supabase client:", e);
-        }
+        // Initialize Supabase Client exactly ONCE
+        window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        });
 
-        const sb = window.sb; // Local alias for this block
-
-        if (!sb || !sb.auth) {
-            console.error("Dashboard: Supabase client or auth module failed to initialize. Dashboard functions will be limited.");
-        }
-
-        if (sb) {
-            sb.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_OUT') window.location.replace('auth.html');
-            });
-
-            (async () => {
-                try {
-                    console.log("Dashboard: Checking session...");
-                    const { data: { session } } = await sb.auth.getSession();
-                    console.log("Dashboard: Session check result:", session ? "Session active" : "No session");
-                    if (!session) {
-                        console.log("Dashboard: Redirecting to auth.html (no session)");
-                        window.location.replace('auth.html');
-                    }
-                } catch (sessionErr) {
-                    console.error("Dashboard: Session check failed:", sessionErr);
+        // Immediate Auth Check: Prevents layout flashing
+        (async () => {
+            try {
+                const { data: { session } } = await window.sb.auth.getSession();
+                if (!session) {
+                    console.log("No session found. Redirecting to auth...");
+                    window.location.replace('auth.html');
+                    return;
                 }
-            })();
-        }
-
-        async function handleSignOut() {
-            console.log("Dashboard: handleSignOut called.");
-            console.log("Dashboard: LocalStorage before logout:", Object.keys(localStorage).filter(k => k.startsWith('sb-')));
-            try { 
-                if (sb) {
-                    console.log("Dashboard: Calling sb.auth.signOut()...");
-                    await sb.auth.signOut(); 
-                    console.log("Dashboard: sb.auth.signOut() successful.");
-                }
-            } catch(e) { 
-                console.error('Dashboard: Signout error:', e); 
+            } catch (err) {
+                console.error("Auth check failed:", err);
             }
-            // Force wipe Supabase local storage if API fails
-            console.log("Dashboard: Forcing clear of sb- local storage keys...");
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('sb-')) {
-                    localStorage.removeItem(key);
-                }
-            }
-            console.log("Dashboard: LocalStorage after logout:", Object.keys(localStorage).filter(k => k.startsWith('sb-')));
-            console.log("Dashboard: Redirecting to auth.html...");
-            window.location.href = 'auth.html';
-        }
+        })();
+
+        // Listen for sign-out events globally
+        window.sb.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_OUT') window.location.replace('auth.html');
+        });
     </script>
 
     <style>
@@ -1091,20 +1051,25 @@
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Dashboard Logic & Orchestration -->
     <script>
+        // Use the globally initialized client
+        const sb = window.sb;
+
         // Initialize Icons Safely
         if (window.lucide) try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
-        // sb is already defined globally in the Auth Guard block above as window.sb.
-        const sb = window.sb; 
+        async function handleSignOut() {
+            console.log("Sign-out sequence started...");
+            try { 
+                if (sb) await sb.auth.signOut(); 
+            } catch(e) { console.error('Sign-out error:', e); }
 
-        // If sb is still missing, attempt a recovery initialization
-        if (!sb) {
-            console.warn("Dashboard: Main Supabase client missing. Attempting recovery...");
-            try {
-                window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } catch(e) { console.error("Recovery failed:", e); }
+            // Clear local storage prefix as fallback
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('sb-')) localStorage.removeItem(key);
+            });
+            window.location.href = 'auth.html';
         }
 
         // ── CONNECTIONS TAB HELPERS ─────────────────────────────────────────
