@@ -3402,7 +3402,7 @@
             });
         })();
 
-        // ── Auth Check for Navbar Button ──
+        // ── Auth Check for Navbar Button & Auto-Redirect ──
         (async function checkNavbarAuth() {
             try {
                 const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
@@ -3412,13 +3412,8 @@
                     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     const { data: { session } } = await sb.auth.getSession();
                     if (session) {
-                        const navBtn = document.getElementById('nav-auth-btn');
-                        if (navBtn) {
-                            navBtn.href = '/dashboard.html';
-                            navBtn.textContent = 'Dashboard';
-                            navBtn.classList.remove('bg-[#FF4500]');
-                            navBtn.classList.add('bg-[#10b981]', 'hover:bg-[#059669]');
-                        }
+                        // Automatically redirect logged-in users to the dashboard
+                        window.location.replace('dashboard.html');
                     }
                 }
             } catch(e) {
