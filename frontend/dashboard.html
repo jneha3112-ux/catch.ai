@@ -168,28 +168,92 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        /* ── TRIAL LOCK OVERLAY ── */
+        /* ── PREMIUM TRIAL LOCK OVERLAY ── */
         #trial-lock-modal {
             position: fixed;
             inset: 0;
-            z-index: 9999;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(20px);
+            z-index: 10000;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(25px);
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px;
         }
         #trial-lock-modal.is-active { display: flex; }
-        .lock-card {
-            max-width: 480px;
+        
+        .lock-container-premium {
             width: 100%;
-            background: #0a0a0a;
-            border: 1px solid rgba(255,69,0,0.3);
-            border-radius: 2rem;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 0 80px rgba(255,69,0,0.15);
+            max-width: 1000px;
+            background: rgba(10,10,10,0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 100px 200px rgba(0,0,0,0.9);
+            animation: modal-slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (min-width: 768px) {
+            .lock-container-premium { flex-direction: row; height: 600px; }
+        }
+        
+        .lock-visual-side {
+            flex: 1;
+            position: relative;
+            background: url('assets/neural_sync_premium_locked.png') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 50px;
+            overflow: hidden;
+        }
+        .lock-visual-side::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 70%);
+        }
+        
+        .lock-info-side {
+            flex: 1.2;
+            padding: 50px;
+            background: #080808;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-left: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .plan-card-elite {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 24px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .plan-card-elite:hover {
+            background: rgba(255,69,0,0.05);
+            border-color: rgba(255,69,0,0.3);
+            transform: translateY(-4px);
+        }
+        .plan-card-elite.active {
+            background: rgba(255,69,0,0.08);
+            border-color: #FF4500;
+            box-shadow: 0 0 30px rgba(255,69,0,0.15);
+        }
+        
+        .glow-text-orange {
+            color: #FF4500;
+            text-shadow: 0 0 15px rgba(255,69,0,0.5);
+        }
+        
+        @keyframes modal-slide-up {
+            0% { transform: translateY(40px) scale(0.95); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
         /* Typography & Accents */
@@ -676,62 +740,60 @@
 
     <!-- Trial Lock Modal -->
     <div id="trial-lock-modal">
-        <div class="lock-card">
-            <div class="lock-left">
-                <div>
+        <div class="lock-container-premium">
+            <div class="lock-visual-side">
+                <div class="relative z-10">
                     <div class="data-chip !bg-[#FF4500]/20 !border-[#FF4500]/30 !text-white mb-6">
-                        <i data-lucide="shield-alert" class="w-3 h-3"></i>
-                        ACCESS_RESTRICTED
+                        <i data-lucide="shield-alert" class="w-3 h-3 glow-text-orange"></i>
+                        NEURAL_SYNC_INTERRUPTED
                     </div>
-                    <h2 class="text-4xl font-heading text-white mb-4 leading-tight">Neural Trial Concluded.</h2>
-                    <p class="text-sm text-white/40 leading-relaxed mb-8">Your 2-day neural synchronization has ended. To maintain 100% missed call recapture, upgrade to a commercial environment.</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                                <i data-lucide="check" class="w-4 h-4 text-[#FF4500]"></i>
-                            </div>
-                            <span class="text-xs text-white/60">Restore Real-time Sync</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                                <i data-lucide="check" class="w-4 h-4 text-[#FF4500]"></i>
-                            </div>
-                            <span class="text-xs text-white/60">Unlock Pro Analytics</span>
-                        </div>
-                    </div>
+                    <h2 class="text-4xl font-heading text-white mb-4 leading-tight italic">
+                        Neural Trial <br>
+                        <span class="text-[#FF8C69]">Concluded.</span>
+                    </h2>
+                    <p class="text-sm text-white/60 leading-relaxed max-w-xs">
+                        Your clinic's neural bridge has disconnected. Restore synchronization to continue capturing missed revenue automatically.
+                    </p>
                 </div>
             </div>
-            <div class="lock-right">
-                <div class="mb-10">
-                    <h3 class="text-2xl font-heading text-white mb-2">Select Your Tier</h3>
-                    <p class="text-xs text-white/40">Choose the processing power your clinic requires.</p>
+            
+            <div class="lock-info-side">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-white mb-1">Select Tier Power</h3>
+                    <p class="text-xs text-white/40 uppercase tracking-widest">Maintain 100% revenue capture</p>
                 </div>
 
-                <div class="space-y-4 mb-10">
-                    <a href="https://www.paypal.com/ncp/payment/JSMNG7UFHSBXJ?return=https://catch-ai.onrender.com/dashboard.html?payment=success_pro" target="_blank" class="plan-card-premium block active">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="px-3 py-1 bg-[#FF4500]/10 border border-[#FF4500]/30 rounded-full">
-                                <span class="text-[9px] font-bold text-[#FF4500] uppercase tracking-widest">Most Popular</span>
+                <div class="space-y-4 mb-8">
+                    <a href="https://www.paypal.com/ncp/payment/JSMNG7UFHSBXJ?return=https://catch-ai.onrender.com/dashboard.html?payment=success_pro" target="_blank" class="plan-card-elite active block">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-[#FF4500] animate-pulse"></div>
+                                <span class="text-[10px] font-bold text-[#FF4500] uppercase tracking-[0.2em]">Elite Neural Pro</span>
                             </div>
-                            <span class="text-sm font-bold text-white">$199<span class="text-[10px] text-white/40 font-normal">/mo</span></span>
+                            <span class="text-lg font-black text-white">$199<span class="text-[10px] text-white/40 font-normal">/mo</span></span>
                         </div>
-                        <h4 class="text-lg font-heading text-white mb-1">Elite Neural Pro</h4>
-                        <p class="text-[10px] text-white/40">Unlimited calls, full WhatsApp sync, and Priority Support.</p>
+                        <p class="text-[11px] text-white/50 leading-relaxed">Unlimited call intercepts, full Neural Vision AI, and Priority revenue triggers.</p>
                     </a>
 
-                    <a href="https://www.paypal.com/ncp/payment/9VMWA2PPLU77Q?return=https://catch-ai.onrender.com/dashboard.html?payment=success_starter" target="_blank" class="plan-card-premium block">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="px-3 py-1 bg-white/5 border border-white/10 rounded-full">
-                                <span class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Base Layer</span>
+                    <a href="https://www.paypal.com/ncp/payment/9VMWA2PPLU77Q?return=https://catch-ai.onrender.com/dashboard.html?payment=success_starter" target="_blank" class="plan-card-elite block">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-white/20"></div>
+                                <span class="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Starter Core</span>
                             </div>
-                            <span class="text-sm font-bold text-white">$99<span class="text-[10px] text-white/40 font-normal">/mo</span></span>
+                            <span class="text-lg font-black text-white">$99<span class="text-[10px] text-white/40 font-normal">/mo</span></span>
                         </div>
-                        <h4 class="text-lg font-heading text-white mb-1">Starter Core</h4>
-                        <p class="text-[10px] text-white/40">Up to 100 calls/mo, standard AI agent, and basic logging.</p>
+                        <p class="text-[11px] text-white/30 leading-relaxed">Up to 100 calls/mo, standard AI routing, and base activity logging.</p>
                     </a>
                 </div>
 
-                <p class="text-[10px] text-white/20 text-center">Secure encryption active • Automated activation</p>
+                <div class="pt-6 border-t border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-[9px] text-white/20 uppercase tracking-widest">
+                        <i data-lucide="lock" class="w-3 h-3"></i>
+                        SECURE_ENCRYPTION_ACTIVE
+                    </div>
+                    <p class="text-[9px] text-white/20 uppercase tracking-widest">Automated Activation</p>
+                </div>
             </div>
         </div>
     </div>
