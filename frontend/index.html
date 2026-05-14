@@ -1842,11 +1842,24 @@
                 <article class="trust-card light-card lg:col-span-7 rounded-[2rem] border border-white/10 bg-[#101010] p-10 md:p-11 relative overflow-hidden">
                     <div class="flex flex-col md:flex-row gap-10 items-center">
                         <div class="flex-1">
+                            <div class="mb-4">
+                                <!-- Logo -->
+                                <div class="w-12 h-12 bg-[#FF4500] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,69,0,0.4)]">
+                                    <span class="text-white font-black text-base tracking-tight">C.ai</span>
+                                </div>
+                            </div>
                             <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
                                 <i data-lucide="refresh-cw" class="text-white w-6 h-6"></i>
                             </div>
                             <h3 class="font-serif text-4xl text-white">Seamless PMS Integration</h3>
                             <p class="text-white/50 mt-4 leading-relaxed text-lg">Direct two-way sync with Dentrix, Open Dental, and more. No manual entry required.</p>
+                            <div class="mt-6 pt-4 border-t border-gray-800 flex justify-between items-center text-[10px] uppercase font-bold text-white/40">
+                                <div class="flex gap-4">
+                                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Booked</div>
+                                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span> Failed</div>
+                                </div>
+                                <div>Total Syncs: <span class="text-white" id="stat-total-syncs">0</span></div>
+                            </div>
                         </div>
                         <div class="flex gap-4">
                             <div class="w-16 h-16 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
@@ -3402,7 +3415,7 @@
             });
         })();
 
-        // ── Auth Check for Navbar Button & Auto-Redirect ──
+        // ── Auth Check for Navbar Button ──
         (async function checkNavbarAuth() {
             try {
                 const SUPABASE_URL = 'https://wbibehdgvmcrpgzaxkvu.supabase.co';
@@ -3412,8 +3425,12 @@
                     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     const { data: { session } } = await sb.auth.getSession();
                     if (session) {
-                        // Automatically redirect logged-in users to the dashboard
-                        window.location.replace('dashboard.html');
+                        // User is logged in — update the navbar CTA to go to dashboard
+                        const dashBtn = document.getElementById('navbar-cta-btn');
+                        if (dashBtn) {
+                            dashBtn.textContent = 'Go to Dashboard';
+                            dashBtn.href = 'dashboard.html';
+                        }
                     }
                 }
             } catch(e) {

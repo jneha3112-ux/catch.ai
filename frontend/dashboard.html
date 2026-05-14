@@ -744,8 +744,8 @@
         <aside class="w-24 flex flex-col items-center py-8 border-r border-dash-gray gap-8 shrink-0">
             <div class="mb-4">
                 <!-- Logo -->
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                    <span class="text-black font-black text-xl">N</span>
+                <div class="w-12 h-12 bg-[#FF4500] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,69,0,0.4)]">
+                    <span class="text-white font-black text-sm tracking-tight">C.ai</span>
                 </div>
             </div>
             <nav class="flex flex-col gap-6" data-purpose="primary-navigation">
@@ -894,7 +894,7 @@
                                     <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dash-green"></span> Booked</div>
                                     <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dash-orange"></span> Failed</div>
                                 </div>
-                                <div>Total Syncs: <span class="text-white">1,012</span></div>
+                                <div>Total Calls Intercepted: <span class="text-white" id="stat-total-syncs">0</span></div>
                             </div>
                         </section>
                     </div>
@@ -1977,6 +1977,9 @@
                 // Populate header + profile tab with real user data
                 populateProfileUI(profile, user);
 
+                // ── LOAD REAL DASHBOARD STATS ──
+                await loadRealStats(sb, user.id);
+
                 // ── CHECK FOR ONBOARDING ──
                 const isComplete = profile?.full_name?.trim() && profile?.clinic_name?.trim() && profile?.phone?.trim();
                 console.log('Profile complete:', isComplete, { name: profile?.full_name, clinic: profile?.clinic_name, phone: profile?.phone });
@@ -2094,6 +2097,117 @@
 
 
 
+
+        // ── REAL STATS LOADER ────────────────────────────────────────────────
+        async function loadRealStats(sb, userId) {
+            try {
+                // Fetch all call logs for this user from Supabase
+                const { data: logs, error } = await sb
+                    .from('call_logs')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.warn('call_logs fetch error:', error.message);
+                    return; // silently fail — show zeroes
+                }
+
+                const total = logs?.length || 0;
+                const booked = logs?.filter(l => l.booking_status === 'booked').length || 0;
+                const failed = logs?.filter(l => l.booking_status !== 'booked').length || 0;
+
+                // ── Revenue: assume avg $120 per captured lead (conservative)
+                const AVG_VALUE = 120;
+                const revenue = booked * AVG_VALUE;
+
+                // Update Recaptured Rev card
+                const revEl = document.getElementById('stat-revenue');
+                if (revEl) revEl.textContent = '$' + revenue.toLocaleString();
+
+                // Update Missed Intercepts card
+                const callsEl = document.getElementById('stat-calls');
+                if (callsEl) callsEl.textContent = total;
+
+                // Update Total Calls Intercepted footer
+                const syncsEl = document.getElementById('stat-total-syncs');
+                if (syncsEl) syncsEl.textContent = total.toLocaleString();
+
+                // ── Update bar chart with real daily distribution ──
+                const now = new Date();
+                const days = {};
+                for (let i = 8; i >= 0; i--) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - i);
+                    days[d.toDateString()] = { booked: 0, failed: 0 };
+                }
+                logs?.forEach(log => {
+                    const day = new Date(log.created_at).toDateString();
+                    if (days[day]) {
+                        if (log.booking_status === 'booked') days[day].booked++;
+                        else days[day].failed++;
+                    }
+                });
+
+                const barContainer = document.querySelector('[data-purpose="product-distribution-card"] .flex-1');
+                if (barContainer && Object.keys(days).length > 0) {
+                    const maxVal = Math.max(...Object.values(days).map(d => d.booked + d.failed), 1);
+                    barContainer.innerHTML = Object.entries(days).map(([day, d]) => {
+                        const bookedH = Math.max(8, Math.round((d.booked / maxVal) * 128));
+                        const failedH = Math.max(8, Math.round((d.failed / maxVal) * 48));
+                        const bookedColor = d.booked > 0 ? 'bg-dash-green' : 'bg-zinc-700';
+                        const failedColor = d.failed > 0 ? 'bg-dash-orange' : 'bg-zinc-800';
+                        const bookedText = d.booked > 0 ? d.booked : '—';
+                        const failedText = d.failed > 0 ? d.failed : '—';
+                        const textColor = d.booked > 0 ? 'text-black' : 'text-zinc-500';
+                        const failTextColor = d.failed > 0 ? 'text-white' : 'text-zinc-600';
+                        return `<div class="flex flex-col items-center gap-2">
+                            <div class="w-8 rounded-full flex flex-col items-center justify-center text-[10px] font-bold ${bookedColor} ${textColor}" style="height:${bookedH}px">${bookedText}</div>
+                            <div class="w-2 h-2 rounded-full bg-dash-green"></div>
+                            <div class="w-8 rounded-full flex flex-col items-center justify-center text-[10px] font-bold ${failedColor} ${failTextColor}" style="height:${failedH}px">${failedText}</div>
+                        </div>`;
+                    }).join('');
+                }
+
+                // ── Update Live Activity Feed with real entries ──
+                const feed = document.getElementById('neural-activity-feed');
+                if (feed && logs && logs.length > 0) {
+                    feed.innerHTML = logs.slice(0, 8).map(log => {
+                        const timeAgo = getTimeAgo(log.created_at);
+                        const isBooked = log.booking_status === 'booked';
+                        const icon = isBooked ? 'calendar-check' : 'phone-missed';
+                        const color = isBooked ? '#10b981' : '#FF4500';
+                        const label = isBooked ? 'Appointment Booked' : 'Missed Call Intercepted';
+                        const sub = isBooked
+                            ? `${timeAgo} • Booking confirmed`
+                            : `${timeAgo} • AI Follow-up sent`;
+                        return `<div class="flex gap-4 p-4 rounded-2xl bg-dash-gray border border-white/5 hover:border-[#FF4500]/30 transition-all cursor-pointer">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style="background:${color}20">
+                                <i data-lucide="${icon}" class="w-5 h-5" style="color:${color}"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-white mb-1">${label}: ${log.caller_number || log.from_number || 'Unknown'}</p>
+                                <p class="text-[10px] text-dash-text-muted">${sub}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+                    if (window.lucide) try { lucide.createIcons(); } catch(e) {}
+                }
+
+            } catch(e) {
+                console.warn('loadRealStats error:', e);
+            }
+        }
+
+        function getTimeAgo(isoString) {
+            const diff = Date.now() - new Date(isoString).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins} min ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs} hr ago`;
+            return `${Math.floor(hrs / 24)} days ago`;
+        }
 
         function applyFeatureGating(plan) {
             // Remove any existing locks first
