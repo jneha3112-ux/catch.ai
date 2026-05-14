@@ -584,9 +584,55 @@
             margin-bottom: 0.5rem;
         }
 
+        /* ── PREMIUM TOAST SYSTEM ── */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 11000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .toast-premium {
+            min-width: 320px;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            padding: 18px 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+            transform: translateX(120%);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto;
+        }
+        .toast-premium.active { transform: translateX(0); }
+        .toast-premium.success { border-left: 4px solid #10b981; }
+        .toast-premium.error { border-left: 4px solid #ef4444; }
+        .toast-premium.info { border-left: 4px solid #FF4500; }
+        .toast-icon-wrap {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-dash-black font-sans m-0 overflow-hidden">
+    
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
     
     <!-- 3D Background - Keep but hidden behind new grey body or visible around the card -->
     <canvas id="bg-canvas" class="hidden"></canvas>
@@ -2069,7 +2115,7 @@
                         if (upd) { profile = upd; }
                         plan = 'pro';
                         window.history.replaceState({}, document.title, "dashboard.html");
-                        alert("🎉 Payment Successful! Welcome to Catch.ai Pro. Your plan is active for 30 days.");
+                        showToast("Payment Successful! Welcome to Catch.ai Pro. Your plan is active for 30 days.", "success");
                     } catch(e) { console.warn('Plan upgrade failed:', e); }
                 } else if (paymentStatus === 'success_starter') {
                     try {
@@ -2080,7 +2126,7 @@
                         if (upd) { profile = upd; }
                         plan = 'starter';
                         window.history.replaceState({}, document.title, "dashboard.html");
-                        alert("🎉 Payment Successful! Welcome to Catch.ai Starter. Your plan is active for 30 days.");
+                        showToast("Payment Successful! Welcome to Catch.ai Starter. Your plan is active for 30 days.", "success");
                     } catch(e) { console.warn('Plan upgrade failed:', e); }
                 }
 
@@ -2233,10 +2279,10 @@
 
                 // Update UI live
                 populateProfileUI(updates, session.user);
-                alert("✅ Profile updated successfully!");
+                showToast("Profile updated successfully! 🦾", "success");
             } catch (err) {
                 console.error("Save error:", err);
-                alert("❌ Failed to save profile: " + err.message);
+                showToast("Failed to save profile: " + err.message, "error");
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -2244,6 +2290,50 @@
                     if (window.lucide) lucide.createIcons();
                 }
             }
+        }
+
+        // ── PREMIUM TOAST SYSTEM ──
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast-premium ${type}`;
+            
+            const emojis = {
+                success: '✨',
+                error: '⚠️',
+                info: '⚡'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon-wrap">
+                    <span>${emojis[type] || '⚡'}</span>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/30 mb-0.5">${type}</p>
+                    <p class="text-sm font-medium text-white/90">${message}</p>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('active'), 10);
+
+            // Auto-remove
+            setTimeout(() => {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 600);
+            }, 5000);
+        }
+
+        async function handleSignOut() {
+            showToast("Signing out of Neural Hub...", "info");
+            setTimeout(async () => {
+                await sb.auth.signOut();
+                window.location.href = 'auth.html';
+            }, 1000);
         }
 
         // ── REAL STATS LOADER ────────────────────────────────────────────────
