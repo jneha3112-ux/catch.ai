@@ -10,7 +10,10 @@ const whatsappRoutes = require('./routes/whatsapp');
 const app = express();
 
 // Security Headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
 
 // Middleware to parse URL-encoded bodies (which Twilio sends)
 app.use(express.urlencoded({ extended: true }));
