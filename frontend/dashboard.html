@@ -860,9 +860,9 @@
                         <p class="text-sm font-bold" id="user-display-name">Loading...</p>
                         <p class="text-[10px] text-dash-text-muted" id="sidebar-user-clinic">Syncing...</p>
                     </div>
-                    <div class="relative">
-                        <div class="w-10 h-10 rounded-full border-2 border-dash-gray bg-dash-card flex items-center justify-center">
-                            <i data-lucide="user" class="w-5 h-5 text-dash-text-muted"></i>
+                    <div class="relative cursor-pointer group" onclick="switchTab('profile')">
+                        <div class="w-10 h-10 rounded-full border-2 border-dash-gray bg-dash-card flex items-center justify-center group-hover:border-[#FF4500] transition-colors">
+                            <i data-lucide="user" class="w-5 h-5 text-dash-text-muted group-hover:text-[#FF4500]"></i>
                         </div>
                         <span class="absolute -top-1 -right-1 w-4 h-4 bg-dash-green border-2 border-dash-black flex items-center justify-center rounded-full text-[10px] text-black font-bold">1</span>
                     </div>
@@ -2156,10 +2156,95 @@
                 if (headerName && headerName.innerText.toLowerCase().includes('loading')) headerName.innerText = 'USER';
                 if (headerClinic && headerClinic.innerText.toLowerCase().includes('connecting')) headerClinic.innerText = 'System Offline';
             }
-        })();
+        })();        // ── PROFILE MANAGEMENT ───────────────────────────────────────────────
+        function populateProfileUI(profile, user) {
+            if (!profile && !user) return;
+            
+            const name = profile?.full_name || user?.user_metadata?.full_name || '';
+            const clinic = profile?.clinic_name || user?.user_metadata?.clinic_name || '';
+            const phone = profile?.phone || user?.user_metadata?.phone || '';
+            const gender = profile?.gender || user?.user_metadata?.gender || 'female';
+            const dob = profile?.dob || user?.user_metadata?.dob || '';
+            
+            // Header display
+            const headerName = document.getElementById('user-display-name');
+            const headerClinic = document.getElementById('sidebar-user-clinic');
+            if (headerName) headerName.innerText = name || 'Anonymous Operator';
+            if (headerClinic) headerClinic.innerText = clinic || 'Unitialized System';
+            
+            // Profile tab display
+            const pName = document.getElementById('profile-display-name');
+            const pClinic = document.getElementById('profile-display-clinic');
+            const pEmail = document.getElementById('profile-display-email');
+            const pBadge = document.getElementById('profile-plan-badge');
+            
+            if (pName) pName.innerText = name || 'Clinic Operator';
+            if (pClinic) pClinic.innerText = clinic || 'Awaiting calibration...';
+            if (pEmail) pEmail.innerText = user?.email || '—';
+            
+            if (pBadge) {
+                const plan = profile?.plan || 'free';
+                pBadge.innerText = plan.toUpperCase() + (plan === 'free' ? ' TRIAL' : ' PLAN');
+                pBadge.className = `text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${
+                    plan === 'pro' ? 'border-[#10b981] text-[#10b981]' : 
+                    plan === 'starter' ? 'border-blue-400 text-blue-400' : 'border-white/20 text-white/40'
+                }`;
+            }
 
+            // Inputs
+            const inName = document.getElementById('profile-name');
+            const inClinic = document.getElementById('profile-clinic');
+            const inPhone = document.getElementById('profile-phone');
+            const inGender = document.getElementById('profile-gender');
+            const inDob = document.getElementById('profile-dob');
+            const inEmail = document.getElementById('profile-email');
 
+            if (inName) inName.value = name;
+            if (inClinic) inClinic.value = clinic;
+            if (inPhone) inPhone.value = phone;
+            if (inGender) inGender.value = gender;
+            if (inDob) inDob.value = dob;
+            if (inEmail) inEmail.value = user?.email || '';
+        }
 
+        async function saveProfile() {
+            const btn = document.querySelector('button[onclick="saveProfile()"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="animate-spin w-4 h-4 rounded-full border-2 border-white/20 border-t-white"></i> Saving...';
+            }
+
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session) throw new Error("No session");
+
+                const updates = {
+                    id: session.user.id,
+                    full_name: document.getElementById('profile-name').value,
+                    clinic_name: document.getElementById('profile-clinic').value,
+                    phone: document.getElementById('profile-phone').value,
+                    gender: document.getElementById('profile-gender').value,
+                    dob: document.getElementById('profile-dob').value,
+                    updated_at: new Date().toISOString(),
+                };
+
+                const { error } = await sb.from('profiles').upsert(updates);
+                if (error) throw error;
+
+                // Update UI live
+                populateProfileUI(updates, session.user);
+                alert("✅ Profile updated successfully!");
+            } catch (err) {
+                console.error("Save error:", err);
+                alert("❌ Failed to save profile: " + err.message);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Save Changes';
+                    if (window.lucide) lucide.createIcons();
+                }
+            }
+        }
 
         // ── REAL STATS LOADER ────────────────────────────────────────────────
         async function loadRealStats(sb, userId) {
@@ -2234,8 +2319,12 @@
 
                 // ── Update Live Activity Feed with real entries ──
                 const feed = document.getElementById('neural-activity-feed');
-                if (feed && logs && logs.length > 0) {
-                    feed.innerHTML = logs.slice(0, 8).map(log => {
+                if (feed) {
+                    // Clear existing feed (remove fake data)
+                    feed.innerHTML = '';
+
+                    if (logs && logs.length > 0) {
+                        feed.innerHTML = logs.slice(0, 8).map(log => {
                         const timeAgo = getTimeAgo(log.created_at);
                         const isBooked = log.booking_status === 'booked';
                         const icon = isBooked ? 'calendar-check' : 'phone-missed';
@@ -2255,6 +2344,17 @@
                         </div>`;
                     }).join('');
                     if (window.lucide) try { lucide.createIcons(); } catch(e) {}
+                    } else {
+                        // NO ACTIVITY PLACEHOLDER
+                        feed.innerHTML = `
+                            <div class="flex flex-col items-center justify-center py-20 opacity-20">
+                                <i data-lucide="zap-off" class="w-12 h-12 mb-4"></i>
+                                <p class="text-xs uppercase tracking-widest font-bold">No Neural Activity Detected</p>
+                                <p class="text-[10px] mt-1 text-center">Trigger a call to see live follow-ups.</p>
+                            </div>
+                        `;
+                        if (window.lucide) try { lucide.createIcons(); } catch(e) {}
+                    }
                 }
 
             } catch(e) {
