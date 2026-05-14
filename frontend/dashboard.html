@@ -2716,9 +2716,9 @@
         // ── DYNAMIC BILLING LOGIC (PPP) ──
         (async function initDashboardBilling() {
             try {
-                const response = await fetch('https://ipapi.co/json/');
+                const response = await fetch('https://get.geojs.io/v1/ip/country.json');
                 const data = await response.json();
-                const country = data.country_code;
+                const country = data.country;
 
                 const pricing = {
                     "IN": { 
