@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 
 const callRoutes = require('./routes/calls');
@@ -8,12 +9,24 @@ const whatsappRoutes = require('./routes/whatsapp');
 
 const app = express();
 
+// Security Headers
+app.use(helmet());
+
 // Middleware to parse URL-encoded bodies (which Twilio sends)
 app.use(express.urlencoded({ extended: true }));
 // Middleware to parse JSON
 app.use(express.json());
-// Enable CORS
-app.use(cors());
+// Enable strict CORS
+app.use(cors({
+  origin: [
+    'https://catch-ai.onrender.com', 
+    'https://catch-ai.com', 
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
+}));
 // Serve static files from the frontend folder
 app.use(express.static('frontend'));
 
@@ -44,21 +57,13 @@ app.post('/simulate-call', async (req, res) => {
   }
 });
 
-// Get stats for dashboard
-app.get('/api/stats', async (req, res) => {
-  const { readDB } = require('./config/db');
-  const db = await readDB();
-  res.json({
-    totalUsers: Object.keys(db.users).length,
-    totalAppointments: db.appointments.length,
-    availableSlots: db.slots.length,
-    totalMissedCalls: db.missed_calls.length,
-    recentEvents: db.missed_calls.slice(-10).reverse()
-  });
-});
-
 // Vapi Proxy Endpoint
 app.post('/api/vapi/call', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
+    }
+
     const { phoneNumber } = req.body;
     const VAPI_KEY = process.env.VAPI_KEY;
 

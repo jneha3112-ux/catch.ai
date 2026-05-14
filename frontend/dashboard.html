@@ -2551,11 +2551,15 @@
             try { lucide.createIcons(); } catch(e) { console.error('Lucide error:', e); }
 
             try {
-                // SECURITY UPDATE: Use backend proxy instead of frontend API key
+                // SECURITY UPDATE: Use backend proxy instead of frontend API key with Auth Check
+                const { data: { session } } = await sb.auth.getSession();
+                const token = session ? session.access_token : '';
+
                 const response = await fetch("/api/vapi/call", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({ phoneNumber: phoneInput })
                 });
