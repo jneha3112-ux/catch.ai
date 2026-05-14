@@ -13,6 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
     <!-- Inter & Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
@@ -3426,10 +3428,12 @@
                     const { data: { session } } = await sb.auth.getSession();
                     if (session) {
                         // User is logged in — update the navbar CTA to go to dashboard
-                        const dashBtn = document.getElementById('navbar-cta-btn');
+                        const dashBtn = document.getElementById('nav-auth-btn');
                         if (dashBtn) {
                             dashBtn.textContent = 'Go to Dashboard';
                             dashBtn.href = 'dashboard.html';
+                            dashBtn.classList.remove('bg-[#FF4500]');
+                            dashBtn.classList.add('bg-white', '!text-black');
                         }
                     }
                 }
