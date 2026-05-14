@@ -36,6 +36,11 @@ app.use('/api/whatsapp', whatsappRoutes);
 
 // Simulation endpoint for the Demo Dashboard
 app.post('/simulate-call', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
+  }
+
   const { phoneNumber } = req.body;
   const { sendWhatsAppMessage } = require('./services/whatsappService');
   const { readDB, writeDB } = require('./config/db');
