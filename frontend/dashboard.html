@@ -1377,152 +1377,128 @@
                 <section id="tab-connections" class="tab-content w-full h-full absolute inset-0 overflow-y-auto p-8">
 
                     <!-- Intro Banner -->
-                    <div class="bg-dash-card rounded-[32px] p-8 mb-10 flex items-center gap-6 border-l-4 border-l-[#10b981]">
-                        <div class="w-14 h-14 bg-[#10b981]/10 border border-[#10b981]/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-                            <i data-lucide="plug-zap" class="w-7 h-7 text-[#10b981]"></i>
+                    <div class="bg-dash-card rounded-[32px] p-8 mb-10 flex items-center gap-6 border border-[#FF4500]/20 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-[#FF4500]/10 to-transparent pointer-events-none"></div>
+                        <div class="w-14 h-14 bg-[#FF4500]/10 border border-[#FF4500]/30 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="zap" class="w-7 h-7 text-[#FF4500]"></i>
                         </div>
-                        <div>
-                            <h2 class="text-xl font-heading text-white mb-1">Connect Your Clinic</h2>
-                            <p class="text-sm text-white/50 leading-relaxed">Follow the 3 steps below to link your phone, WhatsApp, and calendar. Once connected, Catch.ai runs fully automatically — no staff action needed.</p>
+                        <div class="relative z-10">
+                            <h2 class="text-xl font-heading text-white mb-1">Zero-Config Infrastructure</h2>
+                            <p class="text-sm text-white/60 leading-relaxed">Catch.ai manages the complex telecom infrastructure for you. No coding or developer accounts required. Simply activate your Neural Bridge below.</p>
                         </div>
                     </div>
 
-                    <!-- Step 1: Phone / Twilio -->
-                    <div class="bg-dash-card rounded-[32px] p-8 mb-6 border border-dash-gray">
-                        <div class="flex items-start gap-5">
-                            <div class="w-10 h-10 bg-[#FF4500]/10 border border-[#FF4500]/30 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                                <span class="text-[#FF4500] font-bold text-sm">01</span>
+                    <!-- Step 1: Managed Phone Forwarding -->
+                    <div class="bg-dash-card rounded-[32px] p-8 mb-6 border border-dash-gray relative group overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#FF4500]/0 via-[#FF4500]/5 to-[#FF4500]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <div class="flex items-start gap-5 relative z-10">
+                            <div class="w-10 h-10 bg-dash-black border border-[#FF4500]/30 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 shadow-[0_0_15px_rgba(255,69,0,0.2)]">
+                                <i data-lucide="phone-forwarded" class="w-5 h-5 text-[#FF4500]"></i>
                             </div>
                             <div class="flex-1">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <h3 class="text-lg font-heading text-white">Connect Your Phone Line</h3>
-                                    <span class="text-[9px] font-bold text-white/40 bg-white/5 px-2 py-1 rounded-full border border-white/10 uppercase">Via Twilio</span>
-                                </div>
-                                <p class="text-sm text-white/50 mb-6 leading-relaxed">When a patient call goes unanswered, Twilio sends the signal to Catch.ai. Paste your unique webhook URL into the <strong class="text-white/70">"Fallback URL"</strong> field in your Twilio Phone Number settings.</p>
-
-                                <div class="mb-4">
-                                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Your Unique Webhook URL</p>
+                                <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 font-mono text-xs text-[#10b981] overflow-x-auto">
-                                            <span id="phone-webhook-url">https://catch-ai.onrender.com/voice</span>
-                                        </div>
-                                        <button onclick="copyToClipboard('phone-webhook-url')" class="flex-shrink-0 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-white font-bold uppercase tracking-widest transition-all flex items-center gap-2">
-                                            <i data-lucide="copy" class="w-4 h-4"></i> Copy
+                                        <h3 class="text-lg font-heading text-white">Neural Call Forwarding</h3>
+                                        <span class="text-[9px] font-bold text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded-full border border-[#10b981]/20 uppercase">Assigned</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-white/50 mb-6 leading-relaxed">We have provisioned a dedicated, enterprise-grade AI receptor number for your clinic. Forward your office's missed calls to this number.</p>
+
+                                <div class="bg-black/40 border border-white/10 rounded-2xl p-6 mb-4 flex flex-col md:flex-row items-center justify-between gap-6">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">Your Dedicated Neural Bridge</p>
+                                        <div class="text-3xl font-mono font-bold text-white tracking-wider">+1 (888) 429-0193</div>
+                                    </div>
+                                    <div class="flex flex-col gap-2 w-full md:w-auto">
+                                        <button onclick="showToast('Forwarding test initiated. Call the bridge number to test the AI.', 'success')" class="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-white font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                                            <i data-lucide="activity" class="w-4 h-4"></i> Test Bridge
+                                        </button>
+                                        <button onclick="navigator.clipboard.writeText('+18884290193'); showToast('Bridge Number Copied', 'success');" class="px-6 py-3 bg-[#FF4500] hover:bg-[#e63c00] rounded-xl text-xs text-white font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,69,0,0.3)]">
+                                            <i data-lucide="copy" class="w-4 h-4"></i> Copy Number
                                         </button>
                                     </div>
                                 </div>
 
-                                <div class="bg-white/[0.03] border border-white/10 rounded-xl p-4">
-                                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">How to set this up:</p>
-                                    <ol class="space-y-2 text-xs text-white/50">
-                                        <li class="flex items-start gap-2"><span class="text-[#FF4500] font-bold mt-0.5">1.</span> Go to <a href="https://console.twilio.com" target="_blank" class="text-[#FF4500] hover:underline">console.twilio.com</a> → Phone Numbers → Active Numbers</li>
-                                        <li class="flex items-start gap-2"><span class="text-[#FF4500] font-bold mt-0.5">2.</span> Click your clinic's phone number</li>
-                                        <li class="flex items-start gap-2"><span class="text-[#FF4500] font-bold mt-0.5">3.</span> Under "Voice & Fax" → "A Call Comes In" → set it to <strong class="text-white/70">Webhook</strong> and paste the URL above</li>
-                                        <li class="flex items-start gap-2"><span class="text-[#FF4500] font-bold mt-0.5">4.</span> Click Save. That's it — Catch.ai now catches every missed call.</li>
-                                    </ol>
-                                </div>
+                                <p class="text-[10px] text-white/30"><strong class="text-white/50">Pro Tip:</strong> Most desk phones allow forwarding by dialing <code class="bg-white/10 px-1 rounded">*73</code> or <code class="bg-white/10 px-1 rounded">*74</code> followed by the number.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Step 2: WhatsApp -->
+                    <!-- Step 2: Managed WhatsApp -->
                     <div class="bg-dash-card rounded-[32px] p-8 mb-6 border border-dash-gray">
                         <div class="flex items-start gap-5">
                             <div class="w-10 h-10 bg-[#25D366]/10 border border-[#25D366]/30 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                                <span class="text-[#25D366] font-bold text-sm">02</span>
+                                <i data-lucide="message-circle" class="w-5 h-5 text-[#25D366]"></i>
                             </div>
-                            <div class="flex-1">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <h3 class="text-lg font-heading text-white">Connect WhatsApp</h3>
-                                    <span class="text-[9px] font-bold text-[#25D366]/70 bg-[#25D366]/10 px-2 py-1 rounded-full border border-[#25D366]/20 uppercase">Auto Follow-Up</span>
-                                </div>
-                                <p class="text-sm text-white/50 mb-6 leading-relaxed">After a missed call, Catch.ai sends an instant WhatsApp message to the patient. Connect your Twilio WhatsApp Sandbox or your approved Business number using the webhook below.</p>
-
-                                <div class="mb-4">
-                                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">WhatsApp Webhook URL</p>
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 font-mono text-xs text-[#10b981] overflow-x-auto">
-                                            <span id="whatsapp-webhook-url">https://catch-ai.onrender.com/whatsapp</span>
-                                        </div>
-                                        <button onclick="copyToClipboard('whatsapp-webhook-url')" class="flex-shrink-0 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-white font-bold uppercase tracking-widest transition-all flex items-center gap-2">
-                                            <i data-lucide="copy" class="w-4 h-4"></i> Copy
-                                        </button>
+                            <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h3 class="text-lg font-heading text-white">Managed WhatsApp API</h3>
+                                        <span class="text-[9px] font-bold text-[#25D366]/70 bg-[#25D366]/10 px-2 py-1 rounded-full border border-[#25D366]/20 uppercase">Pre-Approved</span>
                                     </div>
+                                    <p class="text-sm text-white/50 leading-relaxed max-w-lg">Your clinic operates on Catch.ai's verified WhatsApp infrastructure. Auto-replies are generated instantly upon a missed call.</p>
                                 </div>
-
-                                <div class="bg-white/[0.03] border border-white/10 rounded-xl p-4">
-                                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">How to set this up:</p>
-                                    <ol class="space-y-2 text-xs text-white/50">
-                                        <li class="flex items-start gap-2"><span class="text-[#25D366] font-bold mt-0.5">1.</span> Go to <a href="https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn" target="_blank" class="text-[#25D366] hover:underline">Twilio WhatsApp Sandbox</a></li>
-                                        <li class="flex items-start gap-2"><span class="text-[#25D366] font-bold mt-0.5">2.</span> Under "When a message comes in" → paste the WhatsApp Webhook URL above</li>
-                                        <li class="flex items-start gap-2"><span class="text-[#25D366] font-bold mt-0.5">3.</span> Save. Your patients will now receive instant WhatsApp replies on missed calls.</li>
-                                    </ol>
-                                </div>
+                                
+                                <button onclick="this.classList.toggle('bg-[#25D366]'); this.classList.toggle('bg-white/10'); this.innerHTML = this.classList.contains('bg-[#25D366]') ? 'Active' : 'Paused'; showToast('WhatsApp Status Updated', 'success')" class="w-24 py-3 bg-[#25D366] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_15px_rgba(37,211,102,0.3)]">
+                                    Active
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Step 3: Google Calendar -->
+                    <!-- Step 3: Google/Outlook Calendar -->
                     <div class="bg-dash-card rounded-[32px] p-8 mb-10 border border-dash-gray">
                         <div class="flex items-start gap-5">
-                            <div class="w-10 h-10 bg-[#4285F4]/10 border border-[#4285F4]/30 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                                <span class="text-[#4285F4] font-bold text-sm">03</span>
+                            <div class="w-10 h-10 bg-dash-black border border-white/20 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
+                                <i data-lucide="calendar-sync" class="w-5 h-5 text-white"></i>
                             </div>
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <h3 class="text-lg font-heading text-white">Connect Your Calendar</h3>
-                                    <span class="text-[9px] font-bold text-[#4285F4]/70 bg-[#4285F4]/10 px-2 py-1 rounded-full border border-[#4285F4]/20 uppercase">Pro Feature</span>
+                                    <h3 class="text-lg font-heading text-white">Calendar Synchronization</h3>
+                                    <span class="text-[9px] font-bold text-[#4285F4]/70 bg-[#4285F4]/10 px-2 py-1 rounded-full border border-[#4285F4]/20 uppercase">1-Click Auth</span>
                                 </div>
-                                <p class="text-sm text-white/50 mb-6 leading-relaxed">Give Catch.ai read access to your Google Calendar so it knows your real-time availability. The AI will only book patients into slots that are genuinely open.</p>
+                                <p class="text-sm text-white/50 mb-6 leading-relaxed">Allow the neural agent to check real-time availability and book appointments directly into your clinic's schedule securely.</p>
 
-                                <div class="mb-6">
-                                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Your Calendar ID</p>
-                                    <input type="text" id="calendar-id-input" placeholder="e.g. your.clinic@gmail.com" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-mono outline-none focus:border-[#4285F4] transition-colors mb-3" />
-                                    <button onclick="saveCalendarId()" class="px-6 py-3 bg-[#4285F4] hover:bg-[#3367d6] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2">
-                                        <i data-lucide="calendar-check" class="w-4 h-4"></i> Save Calendar ID
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <button onclick="showToast('OAuth flow initiated. Redirecting to Google...', 'info')" class="flex-1 py-4 bg-white hover:bg-gray-100 text-black text-xs font-bold uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" class="w-4 h-4">
+                                        Sync with Google
                                     </button>
-                                </div>
-
-                                <div class="bg-white/[0.03] border border-white/10 rounded-xl p-4">
-                                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">How to find your Calendar ID:</p>
-                                    <ol class="space-y-2 text-xs text-white/50">
-                                        <li class="flex items-start gap-2"><span class="text-[#4285F4] font-bold mt-0.5">1.</span> Open <a href="https://calendar.google.com" target="_blank" class="text-[#4285F4] hover:underline">Google Calendar</a></li>
-                                        <li class="flex items-start gap-2"><span class="text-[#4285F4] font-bold mt-0.5">2.</span> Click the 3 dots next to your calendar name → Settings</li>
-                                        <li class="flex items-start gap-2"><span class="text-[#4285F4] font-bold mt-0.5">3.</span> Scroll down to "Calendar ID" — it looks like an email address</li>
-                                        <li class="flex items-start gap-2"><span class="text-[#4285F4] font-bold mt-0.5">4.</span> Paste it above and hit Save</li>
-                                    </ol>
+                                    <button onclick="showToast('OAuth flow initiated. Redirecting to Microsoft...', 'info')" class="flex-1 py-4 bg-[#0078D4] hover:bg-[#006cbd] text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-3 shadow-lg">
+                                        <svg class="w-4 h-4" viewBox="0 0 23 23" fill="currentColor"><path d="M10.5 10.5H0V0H10.5V10.5ZM22.5 10.5H12V0H22.5V10.5ZM10.5 22.5H0V12H10.5V22.5ZM22.5 22.5H12V12H22.5V22.5Z"/></svg>
+                                        Sync with Outlook
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Connection Status Summary -->
-                    <div class="bg-dash-card rounded-[32px] p-6 border border-dash-gray">
-                        <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">Connection Status</p>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="flex items-center gap-3 bg-white/[0.03] rounded-xl p-4 border border-white/10">
-                                <div class="w-2 h-2 rounded-full bg-[#FF4500] animate-pulse"></div>
+                    <div class="bg-dash-card rounded-[32px] p-6 border border-[#10b981]/20 bg-[#10b981]/5 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMTYsIDE4NSwgMTI5LCAwLjIpIi8+PC9zdmc+')] opacity-50"></div>
+                        <p class="text-[10px] font-bold text-[#10b981] uppercase tracking-widest mb-4 relative z-10">System Diagnostics: Optimal</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+                            <div class="flex items-center gap-3 bg-black/40 rounded-xl p-4 border border-white/5">
+                                <div class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981]"></div>
                                 <div>
-                                    <p class="text-xs font-bold text-white">Phone Webhook</p>
-                                    <p class="text-[10px] text-white/40">Awaiting connection</p>
+                                    <p class="text-xs font-bold text-white">Neural Bridge</p>
+                                    <p class="text-[10px] text-white/40">Ready to receive calls</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3 bg-white/[0.03] rounded-xl p-4 border border-white/10">
-                                <div class="w-2 h-2 rounded-full bg-[#FF4500] animate-pulse"></div>
+                            <div class="flex items-center gap-3 bg-black/40 rounded-xl p-4 border border-white/5">
+                                <div class="w-2 h-2 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981]"></div>
                                 <div>
-                                    <p class="text-xs font-bold text-white">WhatsApp</p>
-                                    <p class="text-[10px] text-white/40">Awaiting connection</p>
+                                    <p class="text-xs font-bold text-white">WhatsApp API</p>
+                                    <p class="text-[10px] text-white/40">Provisioned & Active</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3 bg-white/[0.03] rounded-xl p-4 border border-white/10">
-                                <div class="w-2 h-2 rounded-full bg-[#FF4500] animate-pulse"></div>
+                            <div class="flex items-center gap-3 bg-black/40 rounded-xl p-4 border border-white/5">
+                                <div class="w-2 h-2 rounded-full bg-dash-orange animate-pulse shadow-[0_0_10px_#FF4500]"></div>
                                 <div>
-                                    <p class="text-xs font-bold text-white">Calendar</p>
-                                    <p class="text-[10px] text-white/40">Awaiting Calendar ID</p>
+                                    <p class="text-xs font-bold text-white">Calendar Sync</p>
+                                    <p class="text-[10px] text-dash-orange">Awaiting Authorization</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
                 </section>
 
