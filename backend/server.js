@@ -10,10 +10,7 @@ const whatsappRoutes = require('./routes/whatsapp');
 const app = express();
 
 // Security Headers
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
-}));
+app.use(helmet());
 
 // Middleware to parse URL-encoded bodies (which Twilio sends)
 app.use(express.urlencoded({ extended: true }));
@@ -22,9 +19,9 @@ app.use(express.json());
 // Enable strict CORS
 app.use(cors({
   origin: [
-    'https://catch-ai.onrender.com', 
-    'https://catch-ai.com', 
-    'http://localhost:3000', 
+    'https://catch-ai.onrender.com',
+    'https://catch-ai.com',
+    'http://localhost:3000',
     'http://127.0.0.1:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -41,7 +38,7 @@ app.use('/api/whatsapp', whatsappRoutes);
 app.post('/simulate-call', async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
+    return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
   }
 
   const { phoneNumber } = req.body;
@@ -51,8 +48,8 @@ app.post('/simulate-call', async (req, res) => {
   try {
     // Log to DB
     const db = await readDB();
-    db.missed_calls.push({ 
-      phoneNumber, 
+    db.missed_calls.push({
+      phoneNumber,
       timestamp: new Date().toISOString(),
       status: 'simulated'
     });
@@ -67,61 +64,61 @@ app.post('/simulate-call', async (req, res) => {
 
 // Vapi Proxy Endpoint
 app.post('/api/vapi/call', async (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
-    }
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
+  }
 
-    const { phoneNumber } = req.body;
-    const VAPI_KEY = process.env.VAPI_KEY;
+  const { phoneNumber } = req.body;
+  const VAPI_KEY = process.env.VAPI_KEY;
 
-    if (!phoneNumber) {
-        return res.status(400).json({ success: false, error: 'Phone number is required' });
-    }
+  if (!phoneNumber) {
+    return res.status(400).json({ success: false, error: 'Phone number is required' });
+  }
 
-    try {
-        const payload = {
-            phoneNumberId: "58504387-bfed-4baf-bb45-1fbae6e2a3ec",
-            customer: { number: phoneNumber },
-            assistant: {
-                firstMessage: "Hello! This is Sarah from Catch AI Dental. I saw you requested a callback on our website. How can I help you today?",
-                model: {
-                    provider: "openai",
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                        {
-                            role: "system",
-                            content: "You are Sarah, a highly professional AI receptionist for Catch AI Dental clinic. You are returning a call to a patient who just visited our website. Be extremely warm, ask how you can help them, and attempt to schedule them for a consultation this week. If they ask about pricing, say that it varies but consultations are free. Be concise, polite, and conversational."
-                        }
-                    ]
-                },
-                voice: {
-                    provider: "openai",
-                    voiceId: "alloy"
-                }
+  try {
+    const payload = {
+      phoneNumberId: "58504387-bfed-4baf-bb45-1fbae6e2a3ec",
+      customer: { number: phoneNumber },
+      assistant: {
+        firstMessage: "Hello! This is Sarah from Catch AI Dental. I saw you requested a callback on our website. How can I help you today?",
+        model: {
+          provider: "openai",
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: "You are Sarah, a highly professional AI receptionist for Catch AI Dental clinic. You are returning a call to a patient who just visited our website. Be extremely warm, ask how you can help them, and attempt to schedule them for a consultation this week. If they ask about pricing, say that it varies but consultations are free. Be concise, polite, and conversational."
             }
-        };
-
-        const response = await fetch("https://api.vapi.ai/call/phone", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${VAPI_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || data.error || "Failed to initiate call via Vapi");
+          ]
+        },
+        voice: {
+          provider: "openai",
+          voiceId: "alloy"
         }
+      }
+    };
 
-        res.json({ success: true, data });
-    } catch (error) {
-        console.error("Vapi Proxy Error:", error);
-        res.status(500).json({ success: false, error: error.message });
+    const response = await fetch("https://api.vapi.ai/call/phone", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${VAPI_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error || "Failed to initiate call via Vapi");
     }
+
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error("Vapi Proxy Error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Serve landing page at root
