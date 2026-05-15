@@ -9,8 +9,21 @@ const whatsappRoutes = require('./routes/whatsapp');
 
 const app = express();
 
-// Security Headers
-app.use(helmet());
+// Security Headers - Configured to allow our CDNs and inline scripts
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.tailwindcss.com"],
+      imgSrc: ["'self'", "data:", "https://*", "http://*"],
+      connectSrc: ["'self'", "https://*.supabase.co", "wss://*.supabase.co", "https://api.geojs.io", "https://api.vapi.ai"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+}));
 
 // Middleware to parse URL-encoded bodies (which Twilio sends)
 app.use(express.urlencoded({ extended: true }));
