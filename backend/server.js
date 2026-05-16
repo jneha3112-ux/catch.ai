@@ -15,6 +15,7 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
+      scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.tailwindcss.com"],
       imgSrc: ["'self'", "data:", "https://*", "http://*"],
       connectSrc: ["'self'", "https://*.supabase.co", "wss://*.supabase.co", "https://api.geojs.io", "https://get.geojs.io", "https://api.vapi.ai", "https://unpkg.com", "https://cdn.jsdelivr.net"],
