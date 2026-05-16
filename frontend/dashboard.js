@@ -1,5 +1,5 @@
 /**
- * Catch.ai | Neural Dashboard Core Logic
+ * Catch.ai | Catch.ai Dashboard Core Logic
  * Cleaned and modularized for high-performance iteration.
  */
 
@@ -43,7 +43,7 @@ function switchTab(tabId) {
     const titles = {
         'overview': 'Business Intelligence',
         'inbox': 'Visual Triage Hub',
-        'kb': 'Neural Knowledge',
+        'kb': 'Catch.ai Knowledge',
         'connections': 'Clinic Integration',
         'billing': 'System License',
         'profile': 'Operator Profile'
@@ -57,7 +57,7 @@ function switchTab(tabId) {
 
 // ── AUTH & SESSION ──────────────────────────────────────────────────
 async function handleSignOut() {
-    showToast("Signing out of Neural Hub...", "info");
+    showToast("Signing out of Catch.ai Hub...", "info");
     setTimeout(async () => {
         try {
             if (window.sb) await window.sb.auth.signOut();
@@ -380,10 +380,10 @@ async function loadRealStats(sb, userId) {
 }
 
 function renderActivityFeed(logs) {
-    const feed = document.getElementById('neural-activity-feed');
+    const feed = document.getElementById('Catch.ai-activity-feed');
     if (!feed) return;
     if (!logs || logs.length === 0) {
-        feed.innerHTML = '<div class="py-20 opacity-20 text-center">No Neural Activity</div>';
+        feed.innerHTML = '<div class="py-20 opacity-20 text-center">No Catch.ai Activity</div>';
         return;
     }
     feed.innerHTML = logs.slice(0, 8).map(log => `
