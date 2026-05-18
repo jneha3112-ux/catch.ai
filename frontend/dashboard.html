@@ -1858,33 +1858,44 @@
                     setTimeout(() => showOnboarding('2'), 800);
                 }
 
-                // 2. Handle PayPal Success Redirect — store 30-day subscription end
+                // 2. Handle PayPal Success Redirect — verify server-side
                 const urlParams = new URLSearchParams(window.location.search);
                 const paymentStatus = urlParams.get('payment');
-                const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+                const paymentId = urlParams.get('paymentId') || urlParams.get('token') || `pp_${Date.now()}`;
 
-                if (paymentStatus === 'success_pro' || paymentStatus === 'success') {
+                if (paymentStatus === 'success_pro' || paymentStatus === 'success' || paymentStatus === 'success_starter') {
+                    const planType = (paymentStatus === 'success_starter') ? 'starter' : 'pro';
                     try {
-                        const { data: upd } = await sb.from('profiles').upsert({
-                            id: user.id, email: user.email, plan: 'pro',
-                            subscription_end: thirtyDaysFromNow
-                        }).select().single();
-                        if (upd) { profile = upd; }
-                        plan = 'pro';
-                        window.history.replaceState({}, document.title, "dashboard.html");
-                        showToast("Payment Successful! Welcome to Catch.ai Pro. Your plan is active for 30 days.", "success");
-                    } catch (e) { console.warn('Plan upgrade failed:', e); }
-                } else if (paymentStatus === 'success_starter') {
-                    try {
-                        const { data: upd } = await sb.from('profiles').upsert({
-                            id: user.id, email: user.email, plan: 'starter',
-                            subscription_end: thirtyDaysFromNow
-                        }).select().single();
-                        if (upd) { profile = upd; }
-                        plan = 'starter';
-                        window.history.replaceState({}, document.title, "dashboard.html");
-                        showToast("Payment Successful! Welcome to Catch.ai Starter. Your plan is active for 30 days.", "success");
-                    } catch (e) { console.warn('Plan upgrade failed:', e); }
+                        // Get current session token for server-side verification
+                        const { data: { session: currentSession } } = await sb.auth.getSession();
+                        const accessToken = currentSession?.access_token;
+                        if (!accessToken) throw new Error('No active session');
+
+                        const verifyRes = await fetch('/api/verify-payment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${accessToken}`
+                            },
+                            body: JSON.stringify({ paymentId, planType })
+                        });
+                        const verifyData = await verifyRes.json();
+                        if (verifyData.success) {
+                            // Re-fetch the profile to get the updated plan
+                            const { data: updatedProfile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                            if (updatedProfile) { profile = updatedProfile; }
+                            plan = planType;
+                            window.history.replaceState({}, document.title, "dashboard.html");
+                            showToast(`Payment Verified! Welcome to Catch.ai ${planType === 'pro' ? 'Pro' : 'Starter'}. Your plan is active for 30 days.`, "success");
+                        } else {
+                            console.warn('Payment verification failed:', verifyData.error);
+                            showToast("Payment could not be verified. Please contact support.", "error");
+                        }
+                    } catch (e) {
+                        console.warn('Payment verification error:', e);
+                        showToast("Payment verification failed. Please contact support if you were charged.", "error");
+                    }
+                    window.history.replaceState({}, document.title, "dashboard.html");
                 }
 
                 // Check if a paid subscription has expired — downgrade to free

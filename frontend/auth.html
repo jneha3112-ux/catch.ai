@@ -491,7 +491,7 @@ async function doSignup() {
             console.log("Auth: User object found, upserting profile...");
             try {
                 const trialStart = new Date().toISOString();
-                const trialEnd = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
+                const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7-day free trial
                 
                 await sb.from('profiles').upsert({
                     id: data.user.id,
