@@ -329,6 +329,12 @@
                 Create Account →
             </button>
 
+            <p style="margin-top:12px; font-size:11px; color:rgba(255,255,255,0.3); text-align:center; line-height:1.6;">
+                By creating an account, you agree to our<br>
+                <a href="/terms.html" target="_blank" style="color:#FF8C69; text-decoration:underline;">Terms of Service</a> and 
+                <a href="/privacy.html" target="_blank" style="color:#FF8C69; text-decoration:underline;">Privacy Policy</a>.
+            </p>
+
             <p class="toggle-text" style="margin-top:18px;">Already registered? <span onclick="showPanel('login')">Sign in</span></p>
         </div>
 
@@ -491,7 +497,7 @@ async function doSignup() {
             console.log("Auth: User object found, upserting profile...");
             try {
                 const trialStart = new Date().toISOString();
-                const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7-day free trial
+                const trialEnd = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(); // 2-day free trial
                 
                 await sb.from('profiles').upsert({
                     id: data.user.id,
