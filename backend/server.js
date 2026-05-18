@@ -34,9 +34,7 @@ app.use(express.json());
 app.use(cors({
   origin: [
     'https://catch-ai.onrender.com',
-    'https://catch-ai.com',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
+    'https://catch-ai.com'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
