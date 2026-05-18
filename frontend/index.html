@@ -1714,7 +1714,37 @@
             </div>
             <div class="relative reveal-right p-8">
                 <div class="absolute -inset-4 bg-[#FF4500]/10 blur-3xl rounded-full"></div>
-                <img src="ai_booking_flow.png" alt="AI Booking Flow" class="relative rounded-[40px] shadow-[0_20px_50px_rgba(255,69,0,0.1)] border border-white/10 transform hover:scale-105 transition-transform duration-700">
+                <img src="ai_booking_flow.png" alt="AI Booking Flow" class="relative rounded-[40px] shadow-[0_20px_50px_rgba(255,69,0,0.1)] border border-white/10 transform hover:scale-105 transition-transform duration-700" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <!-- Fallback HTML Mockup -->
+                <div style="display:none" class="relative flex flex-col bg-[#0d0d0d] border border-white/10 rounded-[32px] overflow-hidden shadow-[0_20px_60px_rgba(255,69,0,0.15)] w-full max-w-sm mx-auto">
+                    <!-- Chat header -->
+                    <div class="flex items-center gap-3 bg-[#151515] border-b border-white/10 px-5 py-4">
+                        <div class="w-10 h-10 rounded-full bg-[#FF4500] flex items-center justify-center text-white font-black text-sm">C</div>
+                        <div>
+                            <p class="text-white font-semibold text-sm">Catch.ai</p>
+                            <p class="text-green-400 text-xs">● Online now</p>
+                        </div>
+                    </div>
+                    <!-- Messages -->
+                    <div class="flex flex-col gap-4 p-5">
+                        <div class="self-start bg-[#1e1e1e] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[78%]">
+                            <p class="text-white/80 text-sm leading-relaxed">Hi! You missed our call earlier. Want to book a quick appointment? We have slots today 🗓️</p>
+                            <p class="text-white/30 text-[10px] mt-1">3s after missed call</p>
+                        </div>
+                        <div class="self-end bg-[#FF4500] rounded-2xl rounded-tr-sm px-4 py-3 max-w-[70%]">
+                            <p class="text-white text-sm">Yes! What times do you have?</p>
+                        </div>
+                        <div class="self-start bg-[#1e1e1e] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                            <p class="text-white/80 text-sm leading-relaxed">Great! I have 2 PM today or 10 AM tomorrow. Which works for you?</p>
+                        </div>
+                        <div class="self-end bg-[#FF4500] rounded-2xl rounded-tr-sm px-4 py-3 max-w-[60%]">
+                            <p class="text-white text-sm">2 PM today 👍</p>
+                        </div>
+                        <div class="self-start bg-green-900/50 border border-green-500/30 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                            <p class="text-green-300 text-sm font-semibold">✅ Confirmed! See you at 2 PM. A reminder will be sent 1hr before.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1724,7 +1754,48 @@
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div class="relative order-2 lg:order-1 reveal-left p-8">
                 <div class="absolute -inset-4 bg-white/5 blur-3xl rounded-full"></div>
-                <img src="dashboard_analytics.png" alt="Analytics Dashboard" class="relative rounded-[40px] shadow-[0_20px_50px_rgba(255,255,255,0.05)] border border-white/10 transform hover:rotate-2 hover:scale-105 transition-transform duration-700">
+                <img src="dashboard_analytics.png" alt="Analytics Dashboard" class="relative rounded-[40px] shadow-[0_20px_50px_rgba(255,255,255,0.05)] border border-white/10 transform hover:rotate-2 hover:scale-105 transition-transform duration-700" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <!-- Fallback HTML Dashboard Mockup -->
+                <div style="display:none" class="relative bg-[#0d0d0d] border border-white/10 rounded-[32px] overflow-hidden shadow-[0_20px_60px_rgba(255,255,255,0.04)] w-full p-6 space-y-4">
+                    <p class="text-white/40 text-xs uppercase tracking-widest font-bold">Catch.ai Dashboard</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-[#181818] border border-white/10 rounded-2xl p-4">
+                            <p class="text-white/40 text-xs uppercase tracking-widest">Recovered</p>
+                            <p class="text-white font-serif text-3xl mt-1">$12,480</p>
+                            <p class="text-green-400 text-xs mt-1">↑ 34% this week</p>
+                        </div>
+                        <div class="bg-[#181818] border border-white/10 rounded-2xl p-4">
+                            <p class="text-white/40 text-xs uppercase tracking-widest">Calls Caught</p>
+                            <p class="text-white font-serif text-3xl mt-1">84</p>
+                            <p class="text-[#FF8C69] text-xs mt-1">↑ 12 today</p>
+                        </div>
+                        <div class="bg-[#181818] border border-white/10 rounded-2xl p-4">
+                            <p class="text-white/40 text-xs uppercase tracking-widest">Bookings</p>
+                            <p class="text-white font-serif text-3xl mt-1">38</p>
+                            <p class="text-green-400 text-xs mt-1">100% booked</p>
+                        </div>
+                        <div class="bg-[#181818] border border-white/10 rounded-2xl p-4">
+                            <p class="text-white/40 text-xs uppercase tracking-widest">Avg ROI</p>
+                            <p class="text-white font-serif text-3xl mt-1">8.5x</p>
+                            <p class="text-[#8cbcff] text-xs mt-1">vs last month</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#181818] border border-white/10 rounded-2xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-white/40 text-xs uppercase tracking-widest">This Week</p>
+                            <span class="text-green-400 text-xs font-bold">+34%</span>
+                        </div>
+                        <div class="flex items-end gap-2 h-12">
+                            <div class="flex-1 bg-[#FF4500]/40 rounded" style="height:40%"></div>
+                            <div class="flex-1 bg-[#FF4500]/50 rounded" style="height:55%"></div>
+                            <div class="flex-1 bg-[#FF4500]/60 rounded" style="height:70%"></div>
+                            <div class="flex-1 bg-[#FF4500]/80 rounded" style="height:85%"></div>
+                            <div class="flex-1 bg-[#FF4500] rounded" style="height:100%"></div>
+                            <div class="flex-1 bg-[#FF4500]/90 rounded" style="height:90%"></div>
+                            <div class="flex-1 bg-[#FF4500] rounded shadow-[0_0_12px_rgba(255,69,0,0.7)]" style="height:100%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="order-1 lg:order-2 reveal-right">
                 <div class="inline-block bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold text-white uppercase tracking-widest mb-6">Step 02: Scale</div>
@@ -2186,66 +2257,126 @@
         </div>
     </section>
 
-    <section class="py-28 px-6 bg-[#050505] border-t border-white/5" id="micro-demo-section">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div class="lg:col-span-5">
-                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF8C69] border border-[#FF4500]/35 bg-[#FF4500]/10 rounded-full px-4 py-2 inline-flex">Interactive Demo</span>
-                <h2 class="font-serif text-5xl text-white mt-6 leading-tight">How it works in<br><span class="italic text-white/45">3 quick taps</span></h2>
-                <p class="text-white/55 mt-5">Click each step to see the state transition from lost call to booked appointment.</p>
-                <div class="mt-8 space-y-3" id="micro-demo-steps">
-                    <button class="demo-step active w-full text-left rounded-2xl p-4" data-step="0">
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-white/45">Step 01</p>
-                        <p class="text-white font-semibold mt-1">Missed Call Detected</p>
-                    </button>
-                    <button class="demo-step w-full text-left rounded-2xl p-4" data-step="1">
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-white/45">Step 02</p>
-                        <p class="text-white font-semibold mt-1">AI Reply Sent</p>
-                    </button>
-                    <button class="demo-step w-full text-left rounded-2xl p-4" data-step="2">
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-white/45">Step 03</p>
-                        <p class="text-white font-semibold mt-1">Booking Confirmed</p>
-                    </button>
-                </div>
+
+    <!-- HOW IT WORKS — Premium 3-Step Section -->
+    <section class="py-40 px-6 bg-[#050505] overflow-hidden border-t border-white/5" id="micro-demo-section">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- Header -->
+            <div class="text-center mb-24">
+                <span class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF8C69]">How It Works</span>
+                <h2 class="font-serif text-5xl md:text-7xl text-white tracking-tight mt-8 mb-6 leading-[1.05]">Up and running in
+                    <span class="italic text-white/45">3 quick taps.</span>
+                </h2>
+                <p class="text-white/50 font-light text-xl max-w-2xl mx-auto leading-relaxed">No training required. No IT team needed. Catch handles everything from the moment a call is missed.</p>
             </div>
-            <div class="lg:col-span-7">
-                <div class="flow-3d-stage p-7" id="micro-demo-stage">
-                    <div class="flow-grid"></div>
-                    <div class="flow-core"></div>
-                    <div class="flow-beam" id="flow-beam"></div>
-                    <div class="flow-particles" id="flow-particles"></div>
 
-                    <article class="flow-node flow-node--left is-active" data-node="0">
-                        <p class="text-[9px] uppercase tracking-[0.16em] text-white/45">Step 01</p>
-                        <p class="font-semibold mt-1">Missed call event</p>
-                    </article>
-                    <article class="flow-node flow-node--right" data-node="1">
-                        <p class="text-[9px] uppercase tracking-[0.16em] text-white/45">Step 02</p>
-                        <p class="font-semibold mt-1">AI sends reply</p>
-                    </article>
-                    <article class="flow-node flow-node--bottom" data-node="2">
-                        <p class="text-[9px] uppercase tracking-[0.16em] text-white/45">Step 03</p>
-                        <p class="font-semibold mt-1">Booking confirmed</p>
-                    </article>
+            <!-- Steps -->
+            <div class="space-y-6">
 
-                    <div class="absolute left-6 right-6 bottom-6 rounded-2xl border border-white/10 bg-black/45 p-5">
-                        <div class="flex items-center justify-between pb-3 border-b border-white/10">
-                            <p class="text-white font-semibold">Catch.ai Flow State</p>
-                            <span class="text-[10px] uppercase tracking-[0.2em] text-white/45" id="micro-demo-status">Lead Captured</span>
+                <!-- Step 1 -->
+                <div class="hiw-step group flex flex-col lg:flex-row gap-10 items-center bg-[#0d0d0d] border border-white/10 rounded-[2.5rem] p-10 md:p-14 hover:border-[#FF4500]/30 transition-all duration-500" data-hiw="0">
+                    <div class="lg:w-1/2 space-y-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-[#FF4500]/15 border border-[#FF4500]/30 flex items-center justify-center text-[#FF8C69] font-black text-lg">01</div>
+                            <span class="text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF8C69]">Missed Call Detected</span>
                         </div>
-                        <div class="pt-4">
-                            <p class="text-[#FF8C69] text-[10px] uppercase tracking-[0.2em] font-bold mb-2" id="micro-demo-tag">Incoming call</p>
-                            <h3 class="text-2xl font-serif text-white mb-2" id="micro-demo-title">No answer detected in 12s.</h3>
-                            <p class="text-white/60 text-sm leading-relaxed" id="micro-demo-copy">Catch tags the lead instantly and starts the follow-up sequence without waiting for staff availability.</p>
-                            <div class="mt-4 flex items-center gap-3">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] border border-[#FF8C69]/30 text-[#ffb7a2]" id="micro-demo-chip">Missed Call</span>
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] border border-white/20 text-white/60" id="micro-demo-time">+00:05</span>
+                        <h3 class="font-serif text-4xl md:text-5xl text-white leading-[1.1]">Someone calls.<br><span class="italic text-white/45">You can't answer.</span></h3>
+                        <p class="text-white/55 font-light text-lg leading-relaxed">The moment a call goes unanswered, Catch triggers instantly — no delay, no manual step from your team.</p>
+                    </div>
+                    <div class="lg:w-1/2 flex justify-center">
+                        <div class="bg-[#0a0a0a] border border-white/8 rounded-2xl p-5 w-full max-w-xs">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center"><i data-lucide="phone-missed" class="w-5 h-5 text-red-400"></i></div>
+                                <div>
+                                    <p class="text-white text-sm font-semibold">Missed call</p>
+                                    <p class="text-white/40 text-xs">+1 (555) 234-7890 — 0s ago</p>
+                                </div>
+                                <span class="ml-auto text-[10px] text-red-400 font-bold uppercase tracking-widest">LIVE</span>
+                            </div>
+                            <div class="h-px bg-white/5 mb-4"></div>
+                            <p class="text-[10px] text-white/30 uppercase tracking-widest">Catch trigger fired ↓</p>
+                            <div class="mt-3 bg-[#FF4500]/10 border border-[#FF4500]/25 rounded-xl px-4 py-3">
+                                <p class="text-[#FF8C69] text-xs font-bold">⚡ WhatsApp follow-up queued</p>
+                                <p class="text-white/50 text-xs mt-1">Sending in 3 seconds...</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Step 2 -->
+                <div class="hiw-step group flex flex-col lg:flex-row-reverse gap-10 items-center bg-[#0d0d0d] border border-white/10 rounded-[2.5rem] p-10 md:p-14 hover:border-[#FF4500]/30 transition-all duration-500" data-hiw="1">
+                    <div class="lg:w-1/2 space-y-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-[#FF4500]/15 border border-[#FF4500]/30 flex items-center justify-center text-[#FF8C69] font-black text-lg">02</div>
+                            <span class="text-[10px] font-bold uppercase tracking-[0.22em] text-[#FF8C69]">AI Engages on WhatsApp</span>
+                        </div>
+                        <h3 class="font-serif text-4xl md:text-5xl text-white leading-[1.1]">Catch texts back<br><span class="italic text-white/45">in under 3 seconds.</span></h3>
+                        <p class="text-white/55 font-light text-lg leading-relaxed">A friendly, human-sounding message lands on WhatsApp. Catch qualifies their need and shows available slots — all automatically.</p>
+                    </div>
+                    <div class="lg:w-1/2 flex justify-center">
+                        <div class="bg-[#0a0a0a] border border-white/8 rounded-2xl overflow-hidden w-full max-w-xs">
+                            <div class="flex items-center gap-3 bg-[#111] border-b border-white/5 px-4 py-3">
+                                <div class="w-8 h-8 rounded-full bg-[#FF4500] flex items-center justify-center text-white font-black text-xs">C</div>
+                                <div><p class="text-white text-sm font-semibold">Catch.ai</p><p class="text-green-400 text-xs">● Online</p></div>
+                            </div>
+                            <div class="flex flex-col gap-3 p-4">
+                                <div class="self-start bg-[#1e1e1e] border border-white/8 rounded-2xl rounded-tl-sm px-3 py-2 max-w-[85%]">
+                                    <p class="text-white/80 text-xs leading-relaxed">Hi! We missed your call. Want to book? We have today at 2 PM or tomorrow at 10 AM 🗓️</p>
+                                </div>
+                                <div class="self-end bg-[#FF4500] rounded-2xl rounded-tr-sm px-3 py-2">
+                                    <p class="text-white text-xs">2 PM today please!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="hiw-step group flex flex-col lg:flex-row gap-10 items-center bg-[#0a1a0a] border border-green-500/20 rounded-[2.5rem] p-10 md:p-14 hover:border-green-400/40 transition-all duration-500" data-hiw="2">
+                    <div class="lg:w-1/2 space-y-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-400 font-black text-lg">03</div>
+                            <span class="text-[10px] font-bold uppercase tracking-[0.22em] text-green-400">Appointment Booked</span>
+                        </div>
+                        <h3 class="font-serif text-4xl md:text-5xl text-white leading-[1.1]">Lead confirmed.<br><span class="italic text-green-400/70">Revenue recovered.</span></h3>
+                        <p class="text-white/55 font-light text-lg leading-relaxed">The slot is locked in, a reminder is scheduled, and your calendar is updated. Zero effort from your team.</p>
+                    </div>
+                    <div class="lg:w-1/2 flex justify-center">
+                        <div class="bg-[#0a0a0a] border border-green-500/20 rounded-2xl p-5 w-full max-w-xs">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center"><i data-lucide="calendar-check" class="w-5 h-5 text-green-400"></i></div>
+                                <div><p class="text-white text-sm font-semibold">Booking Confirmed</p><p class="text-white/40 text-xs">Today at 2:00 PM</p></div>
+                            </div>
+                            <div class="h-px bg-white/5 mb-4"></div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-white/40">Patient</span><span class="text-white font-medium">Sarah M.</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-white/40">Slot</span><span class="text-green-400 font-medium">2:00 PM — Confirmed ✓</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-white/40">Reminder</span><span class="text-white/60">Sent 1hr before</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- CTA -->
+            <div class="text-center mt-20">
+                <a href="/auth.html" class="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-[#FF4500] text-white text-sm font-bold uppercase tracking-widest shadow-[0_0_40px_rgba(255,69,0,0.35)] hover:scale-105 transition-transform duration-300">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    See It In Action
+                </a>
+            </div>
+
         </div>
     </section>
+
 
     <!-- What Catch.ai Does / Why Better for Business -->
     <section class="py-32 px-6 bg-[#050505] border-t border-white/5 overflow-hidden">
